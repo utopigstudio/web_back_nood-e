@@ -7,6 +7,7 @@ use App\Http\Controllers\NoodeEntityController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\TopicController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,12 @@ Route::get('/comment/{comment}', [CommentController::class, 'show']);
 Route::post('/comment', [CommentController::class, 'store']);
 Route::put('/comment/{comment}', [CommentController::class, 'update']);
 Route::delete('/comment/{comment}', [CommentController::class, 'destroy']);
+
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/user/{user}', [UserController::class, 'show']);
+Route::post('/user', [UserController::class, 'store']);
+Route::put('/user/{user}', [UserController::class, 'update']);
+Route::delete('/user/{user}', [UserController::class, 'destroy']);
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('/entities', NoodeEntityController::class);
