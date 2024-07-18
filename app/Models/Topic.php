@@ -14,6 +14,7 @@ class Topic extends Model
         'author',
         'description',
         'user_id',
+        'discussion_id',
         'comments_counter',
         'last_update',
     ];
@@ -21,5 +22,10 @@ class Topic extends Model
     public function discussion()
     {
         return $this->belongsTo(Discussion::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

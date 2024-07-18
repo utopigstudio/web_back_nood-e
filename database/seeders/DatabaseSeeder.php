@@ -19,6 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(RoomSeeder::class);
         $this->call(DiscussionSeeder::class);
         $this->call(TopicSeeder::class);
-
+        $this->call(CommentSeeder::class);
     }
 }

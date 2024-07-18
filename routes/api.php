@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NoodeEntityController;
@@ -38,6 +39,12 @@ Route::get('/topic/{topic}', [TopicController::class, 'show']);
 Route::post('/topic', [TopicController::class, 'store']);
 Route::put('/topic/{topic}', [TopicController::class, 'update']);
 Route::delete('/topic/{topic}', [TopicController::class, 'destroy']);
+
+Route::get('/comments', [CommentController::class, 'index']);
+Route::get('/comment/{comment}', [CommentController::class, 'show']);
+Route::post('/comment', [CommentController::class, 'store']);
+Route::put('/comment/{comment}', [CommentController::class, 'update']);
+Route::delete('/comment/{comment}', [CommentController::class, 'destroy']);
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('/entities', NoodeEntityController::class);
