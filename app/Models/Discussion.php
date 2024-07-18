@@ -22,4 +22,14 @@ class Discussion extends Model
     {
         return $this->hasMany(Topic::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function topics()
+    {
+        return $this->hasMany(Topic::class);
+    }
 }

@@ -16,4 +16,9 @@ class Room extends Model
         'capacity',
         'status',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
