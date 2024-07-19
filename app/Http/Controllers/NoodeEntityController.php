@@ -32,11 +32,6 @@ class NoodeEntityController extends Controller
         return response()->json($entity);
     }
 
-    public function edit(User $entity)
-    {
-        return response()->json($entity);
-    }
-
     public function update(UpdateEntityRequest $request, User $entity)
     {
         $entity->update($request->validated());
