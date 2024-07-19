@@ -29,11 +29,11 @@ class UpdateOrganizationRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                Rule::unique('users')->ignore($this->tenant)
+                Rule::unique('users')->ignore($this->user)
             ],
             'domain' => [
                 'required',
-                Rule::unique('users')->ignore($this->tenant)
+                Rule::unique('users')->ignore($this->user)
             ]
             ];
     }
