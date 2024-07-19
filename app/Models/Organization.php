@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class NoodeEntity extends Model
+class Organization extends Model
 {
     use HasFactory;
 
@@ -14,8 +15,8 @@ class NoodeEntity extends Model
         'domain' 
     ];
 
-    public function user()
+    public function user(): HasMany
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(User::class);
     }
 }
