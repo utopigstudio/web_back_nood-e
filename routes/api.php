@@ -53,11 +53,11 @@ Route::post('/users', [UserController::class, 'store']);
 Route::put('/users/{user}', [UserController::class, 'update']);
 Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
-Route::get('/entities', [OrganizationController::class, 'index']);
-Route::get('/entities/{organization}', [OrganizationController::class, 'show']);
-Route::post('/entities', [OrganizationController::class, 'store']);
-Route::put('/entities/{organization}', [OrganizationController::class, 'update']);
-Route::delete('/entities/{organization}', [OrganizationController::class, 'destroy']);
+Route::get('/organizations', [OrganizationController::class, 'index']);
+Route::get('/organizations/{organization}', [OrganizationController::class, 'show']);
+Route::post('/organizations', [OrganizationController::class, 'store']);
+Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
+Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
 
 Route::group(['middleware' => ['auth']], function () {
     Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
