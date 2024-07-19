@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreEntityRequest;
-use App\Http\Requests\UpdateEntityRequest;
+use App\Http\Requests\StoreOrganizationRequest;
+use App\Http\Requests\UpdateOrganizationRequest;
 use App\Models\User;
 use App\Notifications\EntityInviteNotification;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
-class NoodeEntityController extends Controller
+class OrganizationController extends Controller
 {
     public function index()
     {
@@ -17,7 +16,7 @@ class NoodeEntityController extends Controller
         return response()->json($entities);
     }
     
-    public function store(StoreEntityRequest $request)
+    public function store(StoreOrganizationRequest $request)
     {
         $user = User::create($request->validated() + ['role_id' => 2], ['password' => bcrypt('password')]);
 
@@ -32,7 +31,7 @@ class NoodeEntityController extends Controller
         return response()->json($entity);
     }
 
-    public function update(UpdateEntityRequest $request, User $entity)
+    public function update(UpdateOrganizationRequest $request, User $entity)
     {
         $entity->update($request->validated());
         return response()->json(['message' => 'entity updated successfully'], 200);
