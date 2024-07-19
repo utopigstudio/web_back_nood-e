@@ -3,7 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\NoodeEntityController;
+use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\TopicController;
@@ -15,45 +15,50 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/invitation/{user}', [NoodeEntityController::class, 'invitation'])->name('invitation');
+Route::get('/invitation/{user}', [OrganizationController::class, 'invitation'])->name('invitation');
 
 Route::get('/events', [EventController::class, 'index']);
-Route::get('/event{event}', [EventController::class, 'show']);
-Route::post('/event', [EventController::class, 'store']);
-Route::put('/event/{event}', [EventController::class, 'update']);
+Route::get('/events/{event}', [EventController::class, 'show']);
+Route::post('/events', [EventController::class, 'store']);
+Route::put('/events/{event}', [EventController::class, 'update']);
 Route::delete('/events/{event}', [EventController::class, 'destroy']);
 
-Route::get('/disscussions', [DiscussionController::class, 'index']);
-Route::get('/discussion/{discussion}', [DiscussionController::class, 'show']);
-Route::post('/discussion', [DiscussionController::class, 'store']);
-Route::put('/discussion/{discussion}', [DiscussionController::class, 'update']);
-Route::delete('/discussion/{discussion}', [DiscussionController::class, 'destroy']);
+Route::get('/discussions', [DiscussionController::class, 'index']);
+Route::get('/discussions/{discussion}', [DiscussionController::class, 'show']);
+Route::post('/discussions', [DiscussionController::class, 'store']);
+Route::put('/discussions/{discussion}', [DiscussionController::class, 'update']);
+Route::delete('/discussions/{discussion}', [DiscussionController::class, 'destroy']);
 
 Route::get('/rooms', [RoomController::class, 'index']);
-Route::get('/room/{room}', [RoomController::class, 'show']);
-Route::post('/room', [RoomController::class, 'store']);
-Route::put('/room/{room}', [RoomController::class, 'update']);
-Route::delete('/room/{room}', [RoomController::class, 'destroy']);
+Route::get('/rooms/{room}', [RoomController::class, 'show']);
+Route::post('/rooms', [RoomController::class, 'store']);
+Route::put('/rooms/{room}', [RoomController::class, 'update']);
+Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
 
 Route::get('/topics', [TopicController::class, 'index']);
-Route::get('/topic/{topic}', [TopicController::class, 'show']);
-Route::post('/topic', [TopicController::class, 'store']);
-Route::put('/topic/{topic}', [TopicController::class, 'update']);
-Route::delete('/topic/{topic}', [TopicController::class, 'destroy']);
+Route::get('/topics/{topic}', [TopicController::class, 'show']);
+Route::post('/topics', [TopicController::class, 'store']);
+Route::put('/topics/{topic}', [TopicController::class, 'update']);
+Route::delete('/topics/{topic}', [TopicController::class, 'destroy']);
 
 Route::get('/comments', [CommentController::class, 'index']);
-Route::get('/comment/{comment}', [CommentController::class, 'show']);
-Route::post('/comment', [CommentController::class, 'store']);
-Route::put('/comment/{comment}', [CommentController::class, 'update']);
-Route::delete('/comment/{comment}', [CommentController::class, 'destroy']);
+Route::get('/comments/{comment}', [CommentController::class, 'show']);
+Route::post('/comments', [CommentController::class, 'store']);
+Route::put('/comments/{comment}', [CommentController::class, 'update']);
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
 Route::get('/users', [UserController::class, 'index']);
-Route::get('/user/{user}', [UserController::class, 'show']);
-Route::post('/user', [UserController::class, 'store']);
-Route::put('/user/{user}', [UserController::class, 'update']);
-Route::delete('/user/{user}', [UserController::class, 'destroy']);
+Route::get('/users/{user}', [UserController::class, 'show']);
+Route::post('/users', [UserController::class, 'store']);
+Route::put('/users/{user}', [UserController::class, 'update']);
+Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+Route::get('/entities', [OrganizationController::class, 'index']);
+Route::get('/entities/{organization}', [OrganizationController::class, 'show']);
+Route::post('/entities', [OrganizationController::class, 'store']);
+Route::put('/entities/{organization}', [OrganizationController::class, 'update']);
+Route::delete('/entities/{organization}', [OrganizationController::class, 'destroy']);
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('/entities', NoodeEntityController::class);
     Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
 });
