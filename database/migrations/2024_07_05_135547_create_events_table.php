@@ -15,13 +15,13 @@ class CreateEventsTable extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->default('');
-            $table->longText('description')->default('');
-            $table->dateTime('start_date')->default('2024-07-05 13:55:47');
-            $table->dateTime('end_date')->default('2024-07-05 13:55:47');
-            $table->string('room')->default('');
+            $table->string('title')->default('Untitled event');
+            $table->longText('description')->default('Add description');
+            $table->dateTime('start_date')->default(now());
+            $table->dateTime('end_date')->default(now());
+            $table->string('room')->default('Add room');
             $table->decimal('price', 8, 2)->default(0.00);
-            $table->string('image')->default('');
+            $table->string('image')->default('Add image');
             $table->timestamps();
         });
     }
