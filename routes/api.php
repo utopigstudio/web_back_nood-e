@@ -15,6 +15,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['prefix' => '/v1' ], function () {
 Route::get('/invitation/{user}', [OrganizationController::class, 'invitation'])->name('invitation');
 
 Route::get('/events', [EventController::class, 'index']);
@@ -58,6 +59,7 @@ Route::get('/organizations/{organization}', [OrganizationController::class, 'sho
 Route::post('/organizations', [OrganizationController::class, 'store']);
 Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
 Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
+});
 
 Route::group(['middleware' => ['auth']], function () {
     Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
