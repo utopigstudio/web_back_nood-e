@@ -17,7 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('floor');
-            $table->string('building');
+            $table->string('room_number');
+            $table->string('building_number');
+            $table->string('address');
             $table->integer('capacity');
             $table->boolean('status');
             $table->timestamps();
