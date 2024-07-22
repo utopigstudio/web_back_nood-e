@@ -26,8 +26,8 @@ class StoreOrganizationRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
-            'domain' => 'required|string|min:8',
-            'role_id' => 'required|exists:roles,id',
+            'description' => 'required|string',
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ];
     }
 }

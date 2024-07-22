@@ -6,25 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name')->default('Organization name');
             $table->text('description')->default('Organization description');
-            $table->string('team')->default('no team');
+            $table->string('team')->default('No people in the team yet');
             $table->string('logo')->nullable();
             $table->foreignId('role_id')->constrained();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('organizations');
