@@ -2,54 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreOrganizationRequest;
-use App\Http\Requests\UpdateOrganizationRequest;
-use App\Models\User;
-use App\Notifications\EntityInviteNotification;
-use Illuminate\Support\Facades\URL;
+use App\Http\Requests\OrganizationRequest;
+use App\Models\Organization;
 
 class OrganizationController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $entities = User::where('role_id', 2)->get();
-        return response()->json($entities);
-    }
-    
-    public function store(StoreOrganizationRequest $request)
-    {
-        $user = User::create($request->validated() + ['role_id' => 2], ['password' => bcrypt('password')]);
-
-        $url = URL::signedRoute('invitation', $user);
-
-        $user->notify(new EntityInviteNotification($url));
-        return response()->json(['message' => 'Entity invited successfully'], 201);
+        $Organizations = Organization::all();
+        return response()->json($Organizations, 200);
     }
 
-    public function show(User $entity)
+    public function store(OrganizationRequest $request)
     {
-        return response()->json($entity);
+        $Organization = Organization::create($request->all());
+        return response()->json($Organization, 201);
     }
 
-    public function update(UpdateOrganizationRequest $request, User $entity)
+    public function show(string $id)
     {
-        $entity->update($request->validated());
-        return response()->json(['message' => 'entity updated successfully'], 200);
+        $Organization = Organization::find($id);
+        return response()->json($Organization, 200);
     }
 
-    public function destroy(User $entity)
+    public function update(OrganizationRequest $request, string $id)
     {
-        $entity->delete();
-        return response()->json(['message' => 'entity deleted successfully'], 204);
+        $Organization = Organization::find($id);
+        $Organization->update($request->all());
     }
 
-    public function invitation(User $user)
+    public function destroy(string $id)
     {
-        if (!request()->hasValidSignature() || $user->passord != 'password') {
-            abort(401, 'Unauthorized');
-        }
-
-        auth()->login($user);
-        return json_encode($user);
+        $Organization = Organization::find($id);
+        $Organization->delete();
+        return response()->json('Organization deleted successfully', 204);
     }
 }

@@ -2,42 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Notifications\EntityInviteNotification;
+use Illuminate\Support\Facades\URL;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $users = User::all();
-        return response()->json($users, 200);
+        $entities = User::where('role_id', 2)->get();
+        return response()->json($entities);
+    }
+    
+    public function store(UserRequest $request)
+    {
+        $user = User::create($request->validated() + ['role_id' => 2], ['password' => bcrypt('password')]);
+
+        $url = URL::signedRoute('invitation', $user);
+
+        $user->notify(new EntityInviteNotification($url));
+        return response()->json(['message' => 'Invitation sent successfully'], 201);
     }
 
-    public function store(Request $request)
+    public function show(User $entity)
     {
-        $user = User::create($request->all());
-        return response()->json($user, 201);
+        return response()->json($entity);
     }
 
-    public function show(string $id)
+    public function update(UserRequest $request, User $entity)
     {
-        $user = User::find($id);
-        return response()->json($user, 200);
+        $entity->update($request->validated());
+        return response()->json(['message' => 'Changes saved successfully'], 200);
     }
 
-    public function update(Request $request, string $id)
+    public function destroy(User $entity)
     {
-        $user = User::find($id);
-        $user->update($request->all());
+        $entity->delete();
+        return response()->json(['message' => 'entity deleted successfully'], 204);
     }
 
-    public function destroy(string $id)
+    public function invitation(User $user)
     {
-        $user = User::find($id);
-        $user->delete();
-        return response()->json('User deleted successfully', 204);
+        if (!request()->hasValidSignature() || $user->passord != 'password') {
+            abort(401, 'Unauthorized');
+        }
+
+        auth()->login($user);
+        return json_encode($user);
     }
 }
