@@ -15,7 +15,7 @@ class CommentController extends Controller
 
     public function store(CommentRequest $request)
     {
-        $comment = Comment::create($request->all());
+        $comment = Comment::create($request->validated());
         return response()->json($comment, 201);
     }
 
@@ -28,7 +28,7 @@ class CommentController extends Controller
     public function update(CommentRequest $request, string $id)
     {
         $comment = Comment::find($id);
-        $comment->update($request->all());
+        $comment->update($request->validated());
         return response()->json($comment, 200);
     }
 

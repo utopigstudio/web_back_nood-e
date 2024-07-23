@@ -12,32 +12,32 @@ class OrganizationController extends Controller
      */
     public function index()
     {
-        $Organizations = Organization::all();
-        return response()->json($Organizations, 200);
+        $organizations = Organization::all();
+        return response()->json($organizations, 200);
     }
 
     public function store(OrganizationRequest $request)
     {
-        $Organization = Organization::create($request->all());
-        return response()->json($Organization, 201);
+        $organization = Organization::create($request->validated());
+        return response()->json($organization, 201);
     }
 
     public function show(string $id)
     {
-        $Organization = Organization::find($id);
-        return response()->json($Organization, 200);
+        $organization = Organization::find($id);
+        return response()->json($organization, 200);
     }
 
     public function update(OrganizationRequest $request, string $id)
     {
-        $Organization = Organization::find($id);
-        $Organization->update($request->all());
+        $organization = Organization::find($id);
+        $organization->update($request->validated());
     }
 
     public function destroy(string $id)
     {
-        $Organization = Organization::find($id);
-        $Organization->delete();
+        $organization = Organization::find($id);
+        $organization->delete();
         return response()->json('Organization deleted successfully', 204);
     }
 }

@@ -11,8 +11,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        $entities = User::where('role_id', 2)->get();
-        return response()->json($entities);
+        $users = User::where('role_id', 2)->get();
+        return response()->json($users);
     }
     
     public function store(UserRequest $request)
@@ -25,20 +25,20 @@ class UserController extends Controller
         return response()->json(['message' => 'Invitation sent successfully'], 201);
     }
 
-    public function show(User $entity)
+    public function show(User $user)
     {
-        return response()->json($entity);
+        return response()->json($user);
     }
 
-    public function update(UserRequest $request, User $entity)
+    public function update(UserRequest $request, User $user)
     {
-        $entity->update($request->validated());
+        $user->update($request->validated());
         return response()->json(['message' => 'Changes saved successfully'], 200);
     }
 
-    public function destroy(User $entity)
+    public function destroy(User $user)
     {
-        $entity->delete();
+        $user->delete();
         return response()->json(['message' => 'entity deleted successfully'], 204);
     }
 

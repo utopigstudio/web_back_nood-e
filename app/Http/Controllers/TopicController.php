@@ -15,7 +15,7 @@ class TopicController extends Controller
 
     public function store(Request $request)
     {
-        $topic = Topic::create($request->all());
+        $topic = Topic::create($request->validated());
         return response()->json($topic, 201);
     }
 
@@ -28,7 +28,7 @@ class TopicController extends Controller
     public function update(Request $request, $id)
     {
         $topic = Topic::find($id);
-        $topic->update($request->all());
+        $topic->update($request->validated());
         return response()->json($topic, 200);
     }
 

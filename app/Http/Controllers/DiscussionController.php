@@ -16,7 +16,7 @@ class DiscussionController extends Controller
 
     public function store(DiscussionRequest $request)
     {
-        $discussion = Discussion::create($request->all());
+        $discussion = Discussion::create($request->validated());
         return response()->json($discussion, 201);
     }
 
@@ -29,13 +29,14 @@ class DiscussionController extends Controller
     public function update(DiscussionRequest $request, $id)
     {
         $discussion = Discussion::find($id);
-        $discussion->update($request->all());
+        $discussion->update($request->validated());
         return response()->json($discussion, 200);
     }
 
     public function destroy($id)
     {
-        Discussion::destroy($id);
-        return response()->json(null, 204);
+        $discussion = Discussion::find($id);
+        $discussion->delete();
+        return response()->json('Discussion deleted successfully', 204);
     }
 }

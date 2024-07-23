@@ -17,7 +17,7 @@ class RoomController extends Controller
 
     public function store(RoomRequest $request)
     {
-        $room = Room::create($request->all());
+        $room = Room::create($request->validated());
         return response()->json($room, 201);
     }
 
@@ -30,7 +30,7 @@ class RoomController extends Controller
     public function update(RoomRequest $request, $id)
     {
         $room = Room::find($id);
-        $room->update($request->all());
+        $room->update($request->validated());
         return response()->json($room, 200);
     }
 
