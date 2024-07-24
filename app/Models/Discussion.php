@@ -15,8 +15,7 @@ class Discussion extends Model
     protected $fillable = [
         'title',
         'content',
-        'user_id',
-        'topic_id'
+        'user_id'
     ];  
 
     public function topic(): HasMany

@@ -18,9 +18,9 @@ class DiscussionFactory extends Factory
     {
         return [
             'title' => fake()->name(),
-            'content' => fake()->paragraph(),
-            'user_id' => fake()->randomDigit(),
+            'description' => fake()->paragraph(),
             'topic_id' => fake()->randomDigit(),
+            'user_id' => fake()->randomDigit()
         ];
     }
 }
