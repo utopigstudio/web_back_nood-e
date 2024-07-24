@@ -14,8 +14,7 @@ class Organization extends Model
         'name', 
         'description',
         'team',
-        'logo',
-        
+        'image'
     ];
 
     public function user(): HasMany

@@ -20,7 +20,7 @@ class OrganizationFactory extends Factory
             'name' => fake()->company(),
             'description' => fake()->paragraph(),
             'team' => fake()->name(),
-            'logo' => fake()->imageUrl(),
+            'image' => fake()->imageUrl(),
             'role_id' => rand(1, 2)
         ];
     }

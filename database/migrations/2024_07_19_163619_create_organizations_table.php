@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name')->default('Organization name');
             $table->string('description')->default('Organization description');
             $table->string('team')->default('No people in the team yet');
-            $table->string('logo')->nullable();
+            $table->string('image')->nullable();
             $table->foreignId('role_id')->constrained();
             $table->timestamps();
         });
