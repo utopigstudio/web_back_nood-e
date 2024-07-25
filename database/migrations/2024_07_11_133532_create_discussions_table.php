@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('discussions', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('content');
+            $table->longText('description')->nullable();
             $table->foreignId('user_id');
             $table->foreignId('topic_id');
             $table->timestamps();

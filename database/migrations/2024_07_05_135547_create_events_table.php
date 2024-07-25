@@ -16,7 +16,7 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('title')->default('Untitled event');
-            $table->string('description')->default('Add description');
+            $table->longText('description')->nullable();
             $table->dateTime('start_date')->default(now());
             $table->dateTime('end_date')->default(now());
             $table->string('room')->default('Add room');

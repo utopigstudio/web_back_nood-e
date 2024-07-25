@@ -15,7 +15,20 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::prefix('v1')->group(function () {
-    Route::get('/invitation/{user}', [OrganizationController::class, 'invitation'])->name('invitation');
+    Route::get('/invitation/{user}', [UserController::class, 'invitation'])->name('invitation');
+    Route::patch('/users/setPassword/{user}', [UserController::class, 'setPassword'])->name('setPassword');
+    
+    Route::get('/comments', [CommentController::class, 'index']);
+    Route::get('/comments/{comment}', [CommentController::class, 'show']);
+    Route::post('/comments', [CommentController::class, 'store']);
+    Route::put('/comments/{comment}', [CommentController::class, 'update']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+    
+    Route::get('/discussions', [DiscussionController::class, 'index']);
+    Route::get('/discussions/{discussion}', [DiscussionController::class, 'show']);
+    Route::post('/discussions', [DiscussionController::class, 'store']);
+    Route::put('/discussions/{discussion}', [DiscussionController::class, 'update']);
+    Route::delete('/discussions/{discussion}', [DiscussionController::class, 'destroy']);
     
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/events/{event}', [EventController::class, 'show']);
@@ -23,11 +36,11 @@ Route::prefix('v1')->group(function () {
     Route::put('/events/{event}', [EventController::class, 'update']);
     Route::delete('/events/{event}', [EventController::class, 'destroy']);
     
-    Route::get('/discussions', [DiscussionController::class, 'index']);
-    Route::get('/discussions/{discussion}', [DiscussionController::class, 'show']);
-    Route::post('/discussions', [DiscussionController::class, 'store']);
-    Route::put('/discussions/{discussion}', [DiscussionController::class, 'update']);
-    Route::delete('/discussions/{discussion}', [DiscussionController::class, 'destroy']);
+    Route::get('/organizations', [OrganizationController::class, 'index']);
+    Route::get('/organizations/{organization}', [OrganizationController::class, 'show']);
+    Route::post('/organizations', [OrganizationController::class, 'store']);
+    Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
+    Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
     
     Route::get('/rooms', [RoomController::class, 'index']);
     Route::get('/rooms/{room}', [RoomController::class, 'show']);
@@ -41,23 +54,11 @@ Route::prefix('v1')->group(function () {
     Route::put('/topics/{topic}', [TopicController::class, 'update']);
     Route::delete('/topics/{topic}', [TopicController::class, 'destroy']);
     
-    Route::get('/comments', [CommentController::class, 'index']);
-    Route::get('/comments/{comment}', [CommentController::class, 'show']);
-    Route::post('/comments', [CommentController::class, 'store']);
-    Route::put('/comments/{comment}', [CommentController::class, 'update']);
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
-    
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
-    
-    Route::get('/organizations', [OrganizationController::class, 'index']);
-    Route::get('/organizations/{organization}', [OrganizationController::class, 'show']);
-    Route::post('/organizations', [OrganizationController::class, 'store']);
-    Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
-    Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
 });
 
 Route::group(['middleware' => ['auth']], function () {
