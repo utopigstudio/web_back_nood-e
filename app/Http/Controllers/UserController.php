@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SetPasswordRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Notifications\EntityInviteNotification;
+use App\Notifications\UserInviteNotification;
 use Illuminate\Support\Facades\URL;
 
 class UserController extends Controller
@@ -17,11 +18,11 @@ class UserController extends Controller
     
     public function store(UserRequest $request)
     {
-        $user = User::create($request->validated() + ['role_id' => 2], ['password' => bcrypt('password')]);
+        $user = User::create($request->validated() + ['role_id' => 0], ['password' =>'password']);
 
         $url = URL::signedRoute('invitation', $user);
 
-        $user->notify(new EntityInviteNotification($url));
+        $user->notify(new UserInviteNotification($url));
         return response()->json(['message' => 'Invitation sent successfully'], 201);
     }
 
@@ -50,5 +51,11 @@ class UserController extends Controller
 
         auth()->login($user);
         return json_encode($user);
+    }
+
+    public function setPassword(SetPasswordRequest $request, User $user)
+    {
+        $user->update(['password' => bcrypt($request->password)]);
+        return response()->json(['message' => 'Password set successfully'], 200);
     }
 }
