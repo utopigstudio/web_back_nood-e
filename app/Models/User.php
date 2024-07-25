@@ -38,9 +38,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function role(): BelongsTo
+    public function role(): HasMany
     {
-        return $this->belongsTo(Role::class);
+        return $this->hasMany(Role::class);
     }
 
     public function events(): HasMany

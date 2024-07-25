@@ -10,10 +10,23 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id'];
+    protected $fillable = ['role'];
+    private $role;
 
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function setRole () {
+        if ($this->role == 0) {
+            return 'User';
+        } elseif ($this->role == 1) {
+            return 'Organization User';
+        } elseif ($this->role == 2) {
+            return 'Admin';
+        } elseif ($this->role == 3) {
+            return 'Super Admin';
+        }
     }
 }
