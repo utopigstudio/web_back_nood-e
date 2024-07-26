@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements getJWTIdentifier
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
@@ -45,6 +46,12 @@ class User extends Authenticatable implements getJWTIdentifier
 
     public function getJWTCustomClaims(): array
     {
+        if ($this->role) {
+            return [
+                'role' => $this->role->name,
+                'permissions' => $this->permissions,
+            ];
+        }
         return [];
     }
 
