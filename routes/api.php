@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EventController;
@@ -14,10 +16,15 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'auth',
 ], function($router) {
-
-    Route::get('/invitation/{user}', [UserController::class, 'invitation'])->name('invitation');
-    Route::post('/users/setPassword/{user}', [UserController::class, 'setPassword'])->name('setPassword');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::post('/me', [AuthController::class, 'me']);
+    Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
 });
+
+    Route::get('/invitation/{user}', [UserController::class, 'invitation']);
+    Route::post('/users/setPassword/{user}', [UserController::class, 'setPassword']);
     
     Route::get('/comments', [CommentController::class, 'index']);
     Route::get('/comments/{comment}', [CommentController::class, 'show']);

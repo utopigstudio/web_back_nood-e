@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\PasswordSetMiddleware;
 use App\Http\Requests\SetPasswordRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Notifications\UserInviteNotification;
 use Illuminate\Support\Facades\URL;
 
-class UserController extends Controller
+class UserController extends Controller 
 {
     public function index()
     {
@@ -50,7 +51,7 @@ class UserController extends Controller
         }
 
         auth()->login($user);
-        return json_encode($user);
+        return response()->json($user);
     }
 
     public function setPassword(SetPasswordRequest $request, User $user)
