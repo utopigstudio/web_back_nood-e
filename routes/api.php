@@ -8,15 +8,16 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
-});
-Route::prefix('v1')->group(function () {
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth',
+], function($router) {
+
     Route::get('/invitation/{user}', [UserController::class, 'invitation'])->name('invitation');
-    Route::patch('/users/setPassword/{user}', [UserController::class, 'setPassword'])->name('setPassword');
+    Route::post('/users/setPassword/{user}', [UserController::class, 'setPassword'])->name('setPassword');
+});
     
     Route::get('/comments', [CommentController::class, 'index']);
     Route::get('/comments/{comment}', [CommentController::class, 'show']);
@@ -54,12 +55,11 @@ Route::prefix('v1')->group(function () {
     Route::put('/topics/{topic}', [TopicController::class, 'update']);
     Route::delete('/topics/{topic}', [TopicController::class, 'destroy']);
     
-    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users', [UserController::class, 'index'])->middleware('auth');
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
-});
 
 Route::group(['middleware' => ['auth']], function () {
     Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
