@@ -13,12 +13,11 @@ class Event extends Model
     protected $fillable = [
         'title',
         'description',
-        'start',
-        'end',
+        'start_date',
+        'end_date',
         'room',
         'price',
-        'image',
-        'link'
+        'image'
     ];
 
     public function user(): BelongsTo
