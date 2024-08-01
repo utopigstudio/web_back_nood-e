@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('role_id')->nullable()->index();
             $table->foreignId('organization_id')->nullable()->index();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('reset password')->nullable();
+            $table->string('reset_password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
