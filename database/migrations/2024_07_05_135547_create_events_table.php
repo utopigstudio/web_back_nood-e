@@ -17,11 +17,12 @@ class CreateEventsTable extends Migration
             $table->id();
             $table->string('title')->default('Untitled event');
             $table->longText('description')->nullable();
-            $table->dateTime('start_date')->default(now());
-            $table->dateTime('end_date')->default(now());
-            $table->string('room')->default('Add room');
+            $table->dateTime('start')->default(now());
+            $table->dateTime('end')->default(now());
+            $table->foreignId('room_id');
             $table->decimal('price', 8, 2)->default(0.00);
             $table->string('image')->default('Add image');
+            $table->string('link')->nullable();
             $table->timestamps();
         });
     }
