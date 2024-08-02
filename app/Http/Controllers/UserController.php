@@ -56,7 +56,8 @@ class UserController extends Controller
 
     public function setPassword(SetPasswordRequest $request, User $user)
     {
-        $user->update(['password' => bcrypt($request->password)]);
+        $user->update(['password' => bcrypt($request->validated())]);
+        auth()->login($user);
         return response()->json(['message' => 'Password set successfully'], 200);
     }
 }
