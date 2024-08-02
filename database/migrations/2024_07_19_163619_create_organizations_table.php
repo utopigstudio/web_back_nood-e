@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->default('Organization name');
+            $table->string('name');
             $table->text('description')->nullable();
-            $table->string('team')->default('No people in the team yet');
+            $table->string('team')->nullable();
             $table->string('image')->nullable();
             $table->foreignId('role_id')->constrained();
             $table->timestamps();
