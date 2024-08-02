@@ -25,13 +25,9 @@ class EventRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'start_date' => 'required|date|after:today',
-            'end_date' => 'required|date|after:start_date',
-            'room' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'image' => 'required|image',
-            'user_id' => 'required|exists:users,id',
+            'date' => 'required|date',
+            'start' => 'required|date|now',
+            'end' => 'required|date|after:start',
         ];
     }
 }
