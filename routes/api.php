@@ -23,7 +23,7 @@ Route::group([
     Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
 });
 
-    Route::get('/invitation/{user}', [UserController::class, 'invitation']);
+    Route::get('/invitation/{user}', [UserController::class, 'invitation'])->name('invitation');
     Route::post('/users/setPassword/{user}', [UserController::class, 'setPassword']);
     
     Route::get('/comments', [CommentController::class, 'index']);
