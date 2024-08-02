@@ -25,8 +25,8 @@ class EventRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'date' => 'required|date',
-            'start' => 'required|date|now',
+            'date' => 'required|date|after_or_equal:date',
+            'start' => 'required|date|after_or_equal:date',
             'end' => 'required|date|after:start',
         ];
     }
