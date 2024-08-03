@@ -2,46 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SetPasswordRequest;
+use App\Http\Requests\UserRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    public function __construct()
+    public function login(UserRequest $request)
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
-    }
+        $credentials = $request->only('email', 'password');
 
-    public function login()
-    {
-        $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->attempt($credentials)) {
+        if (!$token = Auth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token); # If all credentials are correct - we are going to generate a new access token and send it back on response
+        return $this->respondWithToken($token);
     }
+
+    public function setPassword(SetPasswordRequest $request)
+    {
+        $user = User::where('email', $request->email)->firstOrFail();
+        $user->password = bcrypt($request->password);
+        $user->save();
+        
+        $token = JWTAuth::fromUser($user); 
+        return $this->respondWithToken($token);
+
+    }   
+
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json(auth('api')->user());
     }
+
     public function logout()
     {
-        auth()->logout();
+        auth('api')->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
+
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth('api')->refresh());
     }
+
     protected function respondWithToken($token)
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth('api')->factory()->getTTL() * 9847547847943
         ]);
     }
 }

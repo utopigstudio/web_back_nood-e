@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->default('Anonymous');
-            $table->string('surname')->default('Anonymous');
+            $table->string('name');
+            $table->string('surname')->nullable();
             $table->string('email')->unique();
             $table->string('password')->default('password');
             $table->string('description')->nullable();

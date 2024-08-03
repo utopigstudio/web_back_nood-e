@@ -47,10 +47,7 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims(): array
     {
         if ($this->role) {
-            return [
-                'role' => $this->role->name,
-                'permissions' => $this->permissions,
-            ];
+            return [];
         }
         return [];
     }

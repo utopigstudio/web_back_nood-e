@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Middleware\PasswordSetMiddleware;
-use App\Http\Requests\SetPasswordRequest;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Notifications\UserInviteNotification;
 use Illuminate\Support\Facades\URL;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller 
 {
@@ -50,14 +51,18 @@ class UserController extends Controller
             abort(401, 'Unauthorized');
         }
 
-        auth()->login($user);
-        return response()->json($user);
+        $token = JWTAuth::fromUser($user); 
+        return $this->respondWithToken($token);
     }
 
-    public function setPassword(SetPasswordRequest $request, User $user)
+    protected function respondWithToken($token)
     {
-        $user->update(['password' => bcrypt($request->validated())]);
-        auth()->login($user);
-        return response()->json(['message' => 'Password set successfully'], 200);
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 9847547847943
+        ]);
     }
+
+    
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
@@ -12,18 +11,18 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth',
-], function($router) {
+Route::group(['prefix' => 'auth',], function($router) {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::post('/me', [AuthController::class, 'me']);
-    Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
+    Route::post('/set-password', [AuthController::class, 'setPassword'])->name('set-password');
 });
 
-    Route::get('/invitation/{user}', [UserController::class, 'invitation'])->name('invitation');
+Route::middleware(['auth:api'])->group( function () {
+    Route::post('/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+});
+
+    Route::get('/invitation', [UserController::class, 'invitation'])->name('invitation');
     Route::post('/users/setPassword/{user}', [UserController::class, 'setPassword']);
     
     Route::get('/comments', [CommentController::class, 'index']);
@@ -67,7 +66,3 @@ Route::group([
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
-
-Route::group(['middleware' => ['auth']], function () {
-    Route::post('/set-password', [SetPasswordController::class, 'setPassword'])->name('set-password');
-});
