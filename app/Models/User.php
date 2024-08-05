@@ -31,6 +31,8 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
+    protected $primaryKey = 'user_id';
+
     protected function casts(): array
     {
         return [
@@ -41,7 +43,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTIdentifier(): mixed
     {
-        return $this->getKey();
+        return $this->primaryKey;
     }
 
     public function getJWTCustomClaims(): array

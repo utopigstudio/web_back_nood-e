@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
@@ -47,12 +46,13 @@ class UserController extends Controller
 
     public function invitation(User $user)
     {
-        if (!request()->hasValidSignature() || $user->passord != 'password') {
+        if (!request()->hasValidSignature() || $user->passord != $user->password) {
             abort(401, 'Unauthorized');
         }
-
-        $token = JWTAuth::fromUser($user); 
-        return $this->respondWithToken($token);
+        
+        $this->respondWithToken(JWTAuth::fromUser($user));
+        auth('api')->login($user);
+        return response()->json(['message' => 'Authenticated successfully']);
     }
 
     protected function respondWithToken($token)
