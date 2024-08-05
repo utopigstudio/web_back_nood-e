@@ -20,6 +20,12 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+
+    Route::get('/events', [EventController::class, 'index']);
+    Route::get('/events/{event}', [EventController::class, 'show']);
+    Route::post('/events', [EventController::class, 'store']);
+    Route::put('/events/{event}', [EventController::class, 'update']);
+    Route::delete('/events/{event}', [EventController::class, 'destroy']);
 });
 
     Route::get('/invitation', [UserController::class, 'invitation'])->name('invitation');
@@ -36,12 +42,6 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/discussions', [DiscussionController::class, 'store']);
     Route::put('/discussions/{discussion}', [DiscussionController::class, 'update']);
     Route::delete('/discussions/{discussion}', [DiscussionController::class, 'destroy']);
-    
-    Route::get('/events', [EventController::class, 'index']);
-    Route::get('/events/{event}', [EventController::class, 'show']);
-    Route::post('/events', [EventController::class, 'store']);
-    Route::put('/events/{event}', [EventController::class, 'update']);
-    Route::delete('/events/{event}', [EventController::class, 'destroy']);
     
     Route::get('/organizations', [OrganizationController::class, 'index']);
     Route::get('/organizations/{organization}', [OrganizationController::class, 'show']);
