@@ -19,9 +19,13 @@ class OrganizationFactory extends Factory
         return [
             'name' => fake()->company(),
             'description' => fake()->paragraph(),
-            'team' => fake()->name(),
+            'team' => json_encode([
+                ['name' => fake()->name],
+                ['name' => fake()->name],
+                ['name' => fake()->name],
+            ]),
             'image' => fake()->imageUrl(),
-            'role_id' => rand(1, 2)
+            'user_id' => fake()->numberBetween(1, 10),
         ];
     }
 }

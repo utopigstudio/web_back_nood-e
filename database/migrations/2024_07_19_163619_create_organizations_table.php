@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('team')->nullable();
+            $table->json('team')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('role_id')->constrained();
+            $table->foreignId('user_id')->nullable();
             $table->timestamps();
         });
     }
