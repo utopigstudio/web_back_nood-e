@@ -26,8 +26,7 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/events', [EventController::class, 'store']);
     Route::put('/events/{event}', [EventController::class, 'update']);
     Route::delete('/events/{event}', [EventController::class, 'destroy']);
-});
-
+    
     Route::get('/invitation', [UserController::class, 'invitation'])->name('invitation');
     Route::post('/users/setPassword/{user}', [UserController::class, 'setPassword']);
     
@@ -66,3 +65,4 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
+});
