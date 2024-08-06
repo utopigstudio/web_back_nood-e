@@ -6,14 +6,13 @@ use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\RoomController;
-use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'auth',], function($router) {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/set-password', [AuthController::class, 'setPassword'])->name('set-password');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/set-password/{user}', [AuthController::class, 'setPassword'])->name('set-password');
 });
 
 Route::middleware(['auth:api'])->group( function () {
@@ -26,9 +25,6 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/events', [EventController::class, 'store']);
     Route::put('/events/{event}', [EventController::class, 'update']);
     Route::delete('/events/{event}', [EventController::class, 'destroy']);
-    
-    Route::get('/invitation', [UserController::class, 'invitation'])->name('invitation');
-    Route::post('/users/setPassword/{user}', [UserController::class, 'setPassword']);
     
     Route::get('/comments', [CommentController::class, 'index']);
     Route::get('/comments/{comment}', [CommentController::class, 'show']);
@@ -60,6 +56,8 @@ Route::middleware(['auth:api'])->group( function () {
     Route::put('/topics/{topic}', [TopicController::class, 'update']);
     Route::delete('/topics/{topic}', [TopicController::class, 'destroy']);
     
+    Route::get('/invitation', [UserController::class, 'invitation'])->name('invitation');
+    Route::get('/invitation/{user}', [UserController::class, 'acceptedInvitation'])->name('invitation-accepted');
     Route::get('/users', [UserController::class, 'index'])->middleware('auth');
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::post('/users', [UserController::class, 'store']);

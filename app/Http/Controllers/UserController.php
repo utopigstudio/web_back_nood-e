@@ -19,7 +19,7 @@ class UserController extends Controller
     
     public function store(UserRequest $request)
     {
-        $user = User::create($request->validated() + ['role_id' => 0], ['password' =>'password']);
+        $user = User::create($request->validated() + ['role_id' => 0], ['password' => bcrypt('password')]);
 
         $url = URL::signedRoute('invitation', $user);
 
@@ -46,21 +46,41 @@ class UserController extends Controller
 
     public function invitation(User $user)
     {
+        $user = User::findOrFail($user->id);
+
         if (!request()->hasValidSignature() || $user->passord != $user->password) {
             abort(401, 'Unauthorized');
         }
         
-        $this->respondWithToken(JWTAuth::fromUser($user));
+        
+        $token = JWTAuth::fromUser($user);
+
         auth('api')->login($user);
-        return response()->json(['message' => 'Authenticated successfully']);
+        
+        return response()->json([
+            'message' => 'Authenticated successfully.',
+            'token' => $token
+        ], 200);
+    }
+
+    public function acceptedInvitation(User $user) 
+    {
+        $user = User::findOrFail($user->id);
+        $token = JWTAuth::fromUser($user);
+
+        $user->markEmailAsVerified();
+
+        return response()->json(['message' => 'Email verified successfully'], 200);
     }
 
     protected function respondWithToken($token)
     {
+        $expirationTokenTime = 9847547847943;
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 9847547847943
+            'expires_in' => auth('api')->factory()->getTTL() * $expirationTokenTime
         ]);
     }
 
