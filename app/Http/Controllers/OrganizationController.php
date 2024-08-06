@@ -32,6 +32,7 @@ class OrganizationController extends Controller
     {
         $organization = Organization::find($id);
         $organization->update($request->validated());
+        return response()->json($organization, 200);
     }
 
     public function destroy(string $id)
