@@ -14,7 +14,7 @@ class Discussion extends Model
 
     protected $fillable = [
         'title',
-        'content',
+        'description',
         'user_id'
     ];  
 
