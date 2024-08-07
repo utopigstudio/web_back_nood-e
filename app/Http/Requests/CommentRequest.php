@@ -23,9 +23,8 @@ class CommentRequest extends FormRequest
     {
         return [
             'content' => 'required|string',
-            'author' => 'required|string',
-            'topic_id' => 'required|integer | exists:topics,id',
-            'user_id' => 'required|integer | exists:users,id'
+            'author' => 'required|string|exists:users,name',
+            'topic_id' => 'required|integer|exists:topics,id'
         ];
     }
 }
