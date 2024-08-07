@@ -13,9 +13,8 @@ class Topic extends Model
 
     protected $fillable = [
         'title',
-        'author',
-        'description',
         'user_id',
+        'description',
         'discussion_id',
         'comments_counter',
         'last_update',

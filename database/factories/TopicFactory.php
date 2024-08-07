@@ -18,9 +18,9 @@ class TopicFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'author' => fake()->name(),
-            'description' => fake()->paragraph(),
             'user_id' => fake()->randomDigit(),
+            'description' => fake()->paragraph(),
+            'discussion_id' => fake()->randomDigit(),
             'comments_counter' => fake()->randomDigit(),
             'last_update' => fake()->date(),
         ];

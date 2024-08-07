@@ -25,11 +25,9 @@ class TopicRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'author' => 'required|string',
+            'user_id' => 'required|integer|exists:users,id',
             'description' => 'required|string',
-            'user_id' => 'required|integer',
-            'comments_counter' => 'required|integer',
-            'last_update' => 'required|string',
+            'discussion_id' => 'required|integer|exists:discussions,id',
         ];
     }
 }

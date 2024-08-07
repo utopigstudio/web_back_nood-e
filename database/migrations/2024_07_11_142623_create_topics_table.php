@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::create('topics', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('author');
-            $table->text('description');
             $table->integer('user_id');
-            $table->integer('comments_counter');
-            $table->string('last_update');
+            $table->text('description');
+            $table->integer('discussion_id');
+            $table->integer('comments_counter')->default(0);
+            $table->string('last_update')->nullable();
             $table->timestamps();
         });
     }
