@@ -5,14 +5,11 @@ namespace Tests\Feature\Organizations;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Arr;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class OrganizationsCrudTest extends TestCase
+class OrganizationCrudAuthTest extends TestCase
 {
     use RefreshDatabase;
 
