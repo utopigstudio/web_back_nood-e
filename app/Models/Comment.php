@@ -12,9 +12,8 @@ class Comment extends Model
 
     protected $fillable = [
         'content',
-        'author',
-        'topic_id',
-        'user_id'
+        'user_id',
+        'topic_id'
     ];
 
     public function topic(): BelongsTo

@@ -18,9 +18,8 @@ class CommentFactory extends Factory
     {
         return [
             'content' => $this->faker->text,
-            'author' => $this->faker->name,
-            'topic_id' => $this->faker->numberBetween(1, 100),
             'user_id' => $this->faker->numberBetween(1, 100),
+            'topic_id' => $this->faker->numberBetween(1, 100),
         ];
     }
 }
