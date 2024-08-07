@@ -25,9 +25,9 @@ class EventRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'date' => 'required|date|date_format:d/m/Y|after_or_equal:today',
-            'start' => 'required|date|date_format:H:i:s A|after_or_equal:date',
-            'end' => 'required|date|date_format:H:i:s A|after:start',
+            'date' => 'required|date|date_format:d-m-Y|after_or_equal:today',
+            'start' => 'required|date_format:H:i',
+            'end' => 'required|date_format:H:i|after:start',
         ];
     }
 }
