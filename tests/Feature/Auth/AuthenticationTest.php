@@ -14,7 +14,7 @@ class AuthenticationTest extends TestCase
 
     private function createAuthUser (): Authenticatable
     {
-        return $user = User::create([
+        $user = User::create([
             'name' => 'John Doe',
             'email' => 'johndoe@mail.com',
             'password' => bcrypt('password123')
@@ -25,6 +25,7 @@ class AuthenticationTest extends TestCase
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+        return $user;
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void
@@ -74,17 +75,18 @@ class AuthenticationTest extends TestCase
         $user = User::create([
             'name' => 'John Doe',
             'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123'),
-            'role_id'  => 0
+            'password' => bcrypt('password123')
         ]);
 
         $token = JWTAuth::fromUser($user);
 
-        $response = $this->withHeaders([
+        $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
 
+        $this->actingAs($user);
         $response = $this->post('/api/v1/logout');
+
 
         $response->assertStatus(200)
         ->assertJsonFragment([

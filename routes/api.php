@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'auth',], function($router) {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/set-password/{user}', [AuthController::class, 'setPassword'])->name('set-password');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('forgot-password');
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
 });
 
 Route::middleware(['auth:api'])->group( function () {
