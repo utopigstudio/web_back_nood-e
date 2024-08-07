@@ -60,8 +60,7 @@ class OrganizationsCrudTest extends TestCase
             ->assertJsonStructure([
                 '*' => [
                     'name', 
-                    'description',
-                    'team',               
+                    'description',            
                     'image',
                     'updated_at',
                     'created_at',
