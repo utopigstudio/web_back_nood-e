@@ -16,12 +16,9 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('floor');
-            $table->string('room_number');
-            $table->string('building_number');
-            $table->string('address');
-            $table->integer('capacity');
-            $table->boolean('status');
+            $table->string('description')->nullable();
+            $table->string('image')->nullable();
+            $table->boolean('is_available')->nullable();
             $table->timestamps();
         });
     }

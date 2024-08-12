@@ -12,14 +12,21 @@ class Room extends Model
 
     protected $fillable = [
         'name',
-        'floor',
-        'building',
-        'capacity',
-        'status',
+        'description',
+        'image',
+        'is_available',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function status(): bool
+    {
+        if ($this->status === true) {
+            return 'available';
+        }
+        return 'unavailable';
     }
 }
