@@ -12,11 +12,22 @@ class PasswordResetTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function createAuthUser(): User
+    {
+        $user = User::create([
+            'name' => 'John Doe',
+            'email' => 'johndoe@mail.com',
+            'password' => bcrypt('password123')
+        ]);
+
+        return $user;
+    }
+
     public function test_reset_password_link_can_be_requested(): void
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = $this->createAuthUser();
 
         $this->post('/api/v1/auth/forgot-password', ['email' => $user->email]);
 
@@ -27,7 +38,7 @@ class PasswordResetTest extends TestCase
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = $this->createAuthUser();
 
         $this->post('/api/v1/auth/forgot-password', ['email' => $user->email]);
 
