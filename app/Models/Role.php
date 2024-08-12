@@ -22,11 +22,14 @@ class Role extends Model
         if ($this->role == 0) {
             return 'User';
         } elseif ($this->role == 1) {
-            return 'Organization User';
+             return 'Admin';
         } elseif ($this->role == 2) {
-            return 'Admin';
-        } elseif ($this->role == 3) {
             return 'Super Admin';
         }
+    }
+
+    public function getRole () 
+    {
+        return $this->role;
     }
 }
