@@ -7,18 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Topic;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Discussion extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'title',
         'description',
-        'user_id'
+        'user_id',
+        'topic_id'
     ];  
 
-    public function topic(): HasMany
+    public function topics(): HasMany
     {
         return $this->hasMany(Topic::class);
     }
@@ -26,10 +28,5 @@ class Discussion extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function topics(): HasMany
-    {
-        return $this->hasMany(Topic::class);
     }
 }

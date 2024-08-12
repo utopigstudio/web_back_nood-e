@@ -22,7 +22,7 @@ class DiscussionController extends Controller
 
     public function show($id)
     {
-        $discussion = Discussion::find($id);
+        $discussion = Discussion::with('topics')->findOrFail($id);
         return response()->json($discussion, 200);
     }
 

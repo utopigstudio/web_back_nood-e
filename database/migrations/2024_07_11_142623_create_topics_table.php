@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('topics', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->integer('user_id');
+            $table->foreignId('user_id');
             $table->text('description');
-            $table->integer('discussion_id');
+            $table->foreignId('discussion_id')->constrained()->onDelete('cascade');
             $table->integer('comments_counter')->default(0);
-            $table->string('last_update')->nullable();
-            $table->timestamps();
+            $table->timestamp('last_update')->nullable();
+            $table->softDeletes();
         });
     }
 

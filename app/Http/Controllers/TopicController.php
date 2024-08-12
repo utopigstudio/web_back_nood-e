@@ -8,12 +8,6 @@ use Illuminate\Http\Request;
 
 class TopicController extends Controller
 {
-    public function index()
-    {
-        $topics = Topic::all();
-        return response()->json($topics, 200);
-    }
-
     public function store(TopicRequest $request)
     {
         $topic = Topic::create($request->validated());
@@ -22,7 +16,7 @@ class TopicController extends Controller
 
     public function show($id)
     {
-        $topic = Topic::find($id);
+        $topic = Topic::with('comments')->findOrFail($id);
         return response()->json($topic, 200);
     }
 

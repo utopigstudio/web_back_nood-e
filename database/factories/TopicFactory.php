@@ -2,6 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Comment;
+use App\Models\Discussion;
+use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,9 +22,9 @@ class TopicFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'user_id' => fake()->randomDigit(),
+            'user_id' => User::factory()->create()->id,
             'description' => fake()->paragraph(),
-            'discussion_id' => fake()->randomDigit(),
+            'discussion_id' => Discussion::factory()->create()->id,
             'comments_counter' => fake()->randomDigit(),
             'last_update' => fake()->date(),
         ];
