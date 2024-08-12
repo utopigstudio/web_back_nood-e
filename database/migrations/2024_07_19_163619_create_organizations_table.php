@@ -13,6 +13,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('image')->nullable();
+            $table->foreignId('user_id')->nullable();
+            $table->foreignId('discussion_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
