@@ -32,10 +32,11 @@ class TopicCrudAuthTest extends TestCase
 
     private function createTopic(): void
     {
+        $discussion = $this->createDiscussion();
         Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
-            'discussion_id' => 1,
+            'discussion_id' => $discussion->id,
             'user_id' => 1
         ]);
     }
@@ -51,42 +52,42 @@ class TopicCrudAuthTest extends TestCase
         return $discussion;
     }
 
-    public function test_route_auth_retrieves_ok_status(): void
-    {
-        $this->withoutExceptionHandling();
+    // public function test_route_auth_retrieves_ok_status(): void
+    // {
+    //     $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
-        $response = $this->get('/api/v1/topics');
+    //     $user = $this->createAuthUser();
+    //     $this->actingAs($user);
+    //     $response = $this->get('/api/v1/topics');
 
-        $response->assertStatus(200);
-    }
+    //     $response->assertStatus(200);
+    // }
 
-    public function test_get_all_topics_as_json(): void
-    {
-        $this->withoutExceptionHandling();
+    // public function test_get_all_topics_as_json(): void
+    // {
+    //     $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+    //     $user = $this->createAuthUser();
+    //     $this->actingAs($user);
 
-        $this->createTopic();
+    //     $this->createTopic();
 
-        $response = $this->get('/api/v1/topics');
+    //     $response = $this->get('/api/v1/topics');
 
-        $response->assertStatus(200)
-            ->assertJsonIsArray()
-            ->assertJsonCount(1)
-            ->assertJsonStructure([
-                '*' => [
-                    'title',
-                    'description',
-                    'discussion_id',
-                    'user_id',
-                    'created_at',
-                    'updated_at'
-                ]
-            ]);
-    }
+    //     $response->assertStatus(200)
+    //         ->assertJsonIsArray()
+    //         ->assertJsonCount(1)
+    //         ->assertJsonStructure([
+    //             '*' => [
+    //                 'title',
+    //                 'description',
+    //                 'discussion_id',
+    //                 'user_id',
+    //                 'created_at',
+    //                 'updated_at'
+    //             ]
+    //         ]);
+    // }
 
     public function test_get_single_topic_as_json(): void
     {

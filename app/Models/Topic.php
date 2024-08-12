@@ -17,7 +17,6 @@ class Topic extends Model
         'user_id',
         'description',
         'discussion_id',
-        'comment_id',
         'comments_counter',
         'last_update',
     ];
@@ -27,7 +26,7 @@ class Topic extends Model
         return $this->belongsTo(Discussion::class);
     }
 
-    public function comment(): HasMany
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('discussion_id')->constrained()->onDelete('cascade');
             $table->integer('comments_counter')->default(0);
             $table->timestamp('last_update')->nullable();
+            $table->timestamps();
             $table->softDeletes();
         });
     }
