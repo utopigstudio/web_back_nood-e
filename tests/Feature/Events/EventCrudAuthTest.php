@@ -23,8 +23,7 @@ class EventCrudAuthTest extends TestCase
             'start' => '12:00',
             'end' => '14:00',
             'room_id' => 'Room 1',
-            'price' => 100,
-            'image' => 'image.jpg'
+            'meet_link' => 'https://meet.google.com/abc-def-ghi',
         ]);
     }
 
@@ -64,8 +63,7 @@ class EventCrudAuthTest extends TestCase
                     'start',
                     'end',
                     'room_id',
-                    'price',
-                    'image'
+                    'meet_link'
                 ]
             ])
             ->assertJsonFragment([
@@ -75,8 +73,7 @@ class EventCrudAuthTest extends TestCase
                 'start' => '12:00',
                 'end' => '14:00',
                 'room_id' => 'Room 1',
-                'price' => 100,
-                'image' => 'image.jpg'
+                'meet_link' => 'https://meet.google.com/abc-def-ghi'
             ]);
     }
 
@@ -95,8 +92,7 @@ class EventCrudAuthTest extends TestCase
             'start' => '12:00',
             'end' => '14:00',
             'room_id' => 'Room 1',
-            'price' => 100,
-            'image' => 'image.jpg'
+            'meet_link' => 'https://meet.google.com/abc-def-ghi'
         ]);
 
         $response->assertStatus(200);
