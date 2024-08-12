@@ -10,10 +10,11 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->string('content');
-            $table->foreignId('user_id');
-            $table->foreignId('topic_id');
+            $table->string('description');
+            $table->foreignId('user_id')->constrainted()->onDelete('cascade');
+            $table->foreignId('topic_id')->nullable()->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Comments;
 
 use App\Models\Comment;
+use App\Models\Discussion;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -32,7 +33,7 @@ class CommentCrudAuthTest extends TestCase
     private function createComment(): void
     {
         Comment::create([
-            'content' => 'Comment content',
+            'description' => 'Comment description',
             'user_id' => 1,
             'topic_id' => 1
         ]);
@@ -40,14 +41,26 @@ class CommentCrudAuthTest extends TestCase
 
     private function createTopic(): Topic
     {
+        $discussion = $this->createDiscussion();
         $topic = Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
             'user_id' => 1,
-            'discussion_id' => 1,
+            'discussion_id' => $discussion->id,
         ]);
 
         return $topic;
+    }
+
+    private function createDiscussion(): Discussion
+    {
+        $discussion = Discussion::create([
+            'title' => 'Discussion title',
+            'description' => 'Discussion description',
+            'user_id' => 1
+        ]);
+
+        return $discussion;
     }
 
     public function test_route_auth_commets_retrieves_ok_status(): void
@@ -78,7 +91,7 @@ class CommentCrudAuthTest extends TestCase
             ->assertJsonCount(1)
             ->assertJsonStructure([
                 '*' => [
-                    'content',
+                    'description',
                     'user_id',
                     'topic_id',
                     'created_at',
@@ -97,14 +110,14 @@ class CommentCrudAuthTest extends TestCase
         $topic = $this->createtopic();
 
         $response = $this->post('/api/v1/comments', [
-            'content' => 'Comment content',
+            'description' => 'Comment description',
             'user_id' => $user->id,
             'topic_id' => $topic->id
         ]);
 
         $response->assertCreated()
         ->assertJsonFragment([
-            'content' => 'Comment content',
+            'description' => 'Comment description',
             'user_id' => $user->id,
             'topic_id' => $topic->id
         ]);
@@ -117,7 +130,7 @@ class CommentCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $comment = $this->createComment();
+        $this->createComment();
 
         $response = $this->delete('/api/v1/comments/1');
 
