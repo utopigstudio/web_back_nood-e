@@ -17,8 +17,7 @@ class Event extends Model
         'start',
         'end',
         'room_id',
-        'price',
-        'image'
+        'meet_link'
     ];
 
     public function user(): BelongsTo

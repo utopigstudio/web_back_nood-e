@@ -15,12 +15,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password')->default('password');
             $table->string('description')->nullable();
-            $table->foreignId('role_id')->nullable()->index();
-            $table->foreignId('organization_id')->nullable()->index();
+            $table->foreignId('organization_id')->nullable()->onDelete('cascade');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('reset_password')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

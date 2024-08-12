@@ -21,10 +21,10 @@ class CreateEventsTable extends Migration
             $table->dateTime('start')->default(now());
             $table->dateTime('end')->default(now());
             $table->string('link')->nullable();
-            $table->string('room_id')->nullable();
-            $table->decimal('price', 8, 2)->default(0.00);
-            $table->string('image')->nullable();
+            $table->foreignId('room_id')->nullable();
+            $table->string('meet_link')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
