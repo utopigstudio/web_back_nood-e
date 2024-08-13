@@ -54,11 +54,10 @@ Route::middleware(['auth:api'])->group( function () {
     Route::put('/rooms/{room}', [RoomController::class, 'update']);
     Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
     
-    Route::get('/topics', [TopicController::class, 'index']);
-    Route::get('/topics/{topic}', [TopicController::class, 'show']);
-    Route::post('/topics', [TopicController::class, 'store']);
-    Route::put('/topics/{topic}', [TopicController::class, 'update']);
-    Route::delete('/topics/{topic}', [TopicController::class, 'destroy']);
+    Route::get('/discussions/{discussion}/{topic}', [TopicController::class, 'show']);
+    Route::post('/discussions/{discussion}', [TopicController::class, 'store']);
+    Route::put('/discussions/{discussion}/{topic}', [TopicController::class, 'update']);
+    Route::delete('/discussions/{discussion}/{topic}', [TopicController::class, 'destroy']);
     
     Route::get('/invitation', [UserController::class, 'invitation'])->name('invitation');
     Route::get('/invitation/{user}', [UserController::class, 'acceptedInvitation'])->name('invitation-accepted');

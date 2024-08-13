@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TopicRequest;
+use App\Models\Discussion;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 
@@ -14,15 +15,20 @@ class TopicController extends Controller
         return response()->json($topic, 201);
     }
 
-    public function show($id)
+    public function show(Discussion $discussion, Topic $topic)
     {
-        $topic = Topic::with('comments')->findOrFail($id);
-        return response()->json($topic, 200);
+        if ($topic->discussion_id !== $discussion->id) {
+            return response()->json(['error' => 'Topic not found in this discussion'], 404);
+        }
+
+        return response()->json($topic);
     }
 
-    public function update(TopicRequest $request, $id)
+    public function update(TopicRequest $request, Discussion $discussion, Topic $topic)
     {
-        $topic = Topic::find($id);
+        if ($topic->discussion_id !== $discussion->id) {
+            return response()->json(['error' => 'Topic does not belong to this discussion'], 403);
+        }
         $topic->update($request->validated());
         return response()->json($topic, 200);
     }

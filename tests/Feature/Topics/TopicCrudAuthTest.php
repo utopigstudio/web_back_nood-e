@@ -30,10 +30,9 @@ class TopicCrudAuthTest extends TestCase
         ]);
     }
 
-    private function createTopic(): void
+    private function createTopic($discussion): Topic
     {
-        $discussion = $this->createDiscussion();
-        Topic::create([
+        return Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
             'discussion_id' => $discussion->id,
@@ -96,9 +95,11 @@ class TopicCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $this->createTopic();
+        $discussion = $this->createDiscussion();
 
-        $response = $this->get('/api/v1/topics/1');
+        $topic = $this->createTopic($discussion);
+
+        $response = $this->get("/api/v1/discussions/{$discussion->id}/{$topic->id}");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -127,7 +128,7 @@ class TopicCrudAuthTest extends TestCase
             'user_id' => 1
         ];
 
-        $response = $this->post('/api/v1/topics', $data);
+        $response = $this->post("/api/v1/discussions/{$discussion->id}", $data);
 
         $response->assertStatus(201)
             ->assertJson([
@@ -153,17 +154,17 @@ class TopicCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $this->createTopic();
         $discussion = $this->createDiscussion();
+        $topic = $this->createTopic($discussion);
 
         $data = [
             'title' => 'Updated topic title',
             'description' => 'Updated topic description',
             'discussion_id' => $discussion->id,
-            'user_id' => 1
+            'user_id' => $user->id
         ];
 
-        $response = $this->put('/api/v1/topics/1', $data);
+        $response = $this->put("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data);
 
         $response->assertStatus(200)
             ->assertJson([
@@ -189,11 +190,14 @@ class TopicCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $this->createTopic();
+        $discussion = $this->createDiscussion();
 
-        $response = $this->delete('/api/v1/topics/1');
+        $topic = $this->createTopic($discussion);
 
-        $response->assertStatus(204);
+        $response = $this->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}");
+
+        $response->assertStatus(204)
+            ->assertNoContent();
     }
 
 
