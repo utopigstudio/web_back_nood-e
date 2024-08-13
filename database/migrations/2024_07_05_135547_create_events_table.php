@@ -17,12 +17,13 @@ class CreateEventsTable extends Migration
             $table->id();
             $table->string('title');
             $table->longText('description')->nullable();
+            $table->string('image')->nullable();
             $table->date('date')->default(now());
             $table->dateTime('start')->default(now());
             $table->dateTime('end')->default(now());
-            $table->string('link')->nullable();
-            $table->foreignId('room_id')->nullable();
             $table->string('meet_link')->nullable();
+            $table->foreignId('room_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

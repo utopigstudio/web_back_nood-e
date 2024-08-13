@@ -3,6 +3,7 @@
 namespace Tests\Feature\Events;
 
 use App\Models\Event;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,22 +15,24 @@ class EventCrudAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createEvent(): void
+    private function createEvent($room, $user): Event
     {
-        Event::create([
+        return Event::create([
             'title' => 'Event title',
             'description' => 'Event description',
+            'image' => 'room1.jpg',
             'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
-            'room_id' => 'Room 1',
             'meet_link' => 'https://meet.google.com/abc-def-ghi',
+            'room_id' => $room->id,
+            'user_id' => $user->id,
         ]);
     }
 
     private function createAuthUser (): Authenticatable
     {
-        return $user = User::create([
+        $user = User::create([
             'name' => 'John Doe',
             'email' => 'johndoe@mail.com',
             'password' => bcrypt('password123')
@@ -40,6 +43,18 @@ class EventCrudAuthTest extends TestCase
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+        return $user;
+    }
+
+    private function createRoom(): Room
+    {
+        return Room::create([
+            'name' => 'Room 1',
+            'image' => 'room1.jpg', 
+            'description' => 'Room 1 description',
+            'is_available' => true
+        ]);
+
     }
 
 
@@ -47,9 +62,12 @@ class EventCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
+        $room = $this->createRoom();
+
         $user = $this->createAuthUser();
-        $this-> actingAs($user);
-        $this->createEvent();
+        $this->actingAs($user);
+
+        $this->createEvent($room, $user);
         $response = $this->get('/api/v1/events');
 
         $response->assertStatus(200)
@@ -59,21 +77,25 @@ class EventCrudAuthTest extends TestCase
                 '*' => [
                     'title',
                     'description',
+                    'image',
                     'date',
                     'start',
                     'end',
+                    'meet_link',
                     'room_id',
-                    'meet_link'
+                    'user_id'
                 ]
             ])
             ->assertJsonFragment([
                 'title' => 'Event title',
                 'description' => 'Event description',
+                'image' => 'room1.jpg',
                 'date' => '30-09-2024',
                 'start' => '12:00',
                 'end' => '14:00',
-                'room_id' => 'Room 1',
-                'meet_link' => 'https://meet.google.com/abc-def-ghi'
+                'meet_link' => 'https://meet.google.com/abc-def-ghi',
+                'room_id' => $room->id,
+                'user_id' => $user->id
             ]);
     }
 
@@ -81,18 +103,23 @@ class EventCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
+        $room = $this->createRoom();
+
         $user = $this->createAuthUser();
-        $this-> actingAs($user);
-        $this->createEvent();
+        $this->actingAs($user);
+        
+        $this->createEvent($user, $room);
 
         $response = $this->get('/api/v1/events/1')->assertJson([
-            'title' => 'Event title',
+           'title' => 'Event title',
             'description' => 'Event description',
+            'image' => 'room1.jpg',
             'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
-            'room_id' => 'Room 1',
-            'meet_link' => 'https://meet.google.com/abc-def-ghi'
+            'meet_link' => 'https://meet.google.com/abc-def-ghi',
+            'room_id' => $room->id,
+            'user_id' => $user->id
         ]);
 
         $response->assertStatus(200);
@@ -103,13 +130,14 @@ class EventCrudAuthTest extends TestCase
         $this->withoutExceptionHandling();
 
         $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $this->actingAs($user);
 
         $response = $this->post('/api/v1/events', [
             'title' => 'Event title',
             'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
+            'user_id' => $user->id
         ]);
 
         $response->assertStatus(201)
@@ -125,16 +153,19 @@ class EventCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $room = $this->createRoom();
 
-        $this->createEvent();
+        $user = $this->createAuthUser();
+        $this->actingAs($user);
+
+        $this->createEvent($user, $room);
 
         $response = $this->put('/api/v1/events/1', [
             'title' => 'Updated event title',
             'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
+            'user_id' => $user->id
         ]);
 
         $response->assertStatus(200)
@@ -150,10 +181,12 @@ class EventCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $room = $this->createRoom();
 
-        $this->createEvent();
+        $user = $this->createAuthUser();
+        $this->actingAs($user);
+
+        $this->createEvent($user, $room);
 
         $response = $this->delete('/api/v1/events/1');
 

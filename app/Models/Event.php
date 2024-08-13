@@ -13,15 +13,22 @@ class Event extends Model
     protected $fillable = [
         'title',
         'description',
+        'image',
         'date',
         'start',
         'end',
+        'meet_link',
         'room_id',
-        'meet_link'
+        'user_id'
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
     }
 }

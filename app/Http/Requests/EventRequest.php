@@ -28,6 +28,7 @@ class EventRequest extends FormRequest
             'date' => 'required|date|date_format:d-m-Y|after_or_equal:today',
             'start' => 'required|date_format:H:i',
             'end' => 'required|date_format:H:i|after:start',
+            'user_id' => 'required|exists:users,id',
         ];
     }
 }

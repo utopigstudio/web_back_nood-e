@@ -20,12 +20,13 @@ class EventFactory extends Factory
         return [
             'title' => fake()->name(),
             'description' => fake()->paragraph(),
+            'image' => fake()->imageUrl(),
+            'date' => fake()->date()-min('now'),
             'start' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '1 days', $timezone = null),
             'end' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '7 days', $timezone = null),
+            'meet_link' => fake()->url(),
             'room_id' => fake()->randomDigit(),
-            'price' => fake()->randomFloat(2, 1, 100),
-            'image' => fake()->imageUrl(),
-            'link' => fake()->url()
+            'user_id' => fake()->randomDigit() 
         ];
     }
 }
