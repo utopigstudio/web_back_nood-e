@@ -14,7 +14,8 @@ class Organization extends Model
     protected $fillable = [
         'name', 
         'description',
-        'image'
+        'image',
+        'user_id'
     ];
 
     public function user(): HasMany

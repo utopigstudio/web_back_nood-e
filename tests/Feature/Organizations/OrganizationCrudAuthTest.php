@@ -13,14 +13,15 @@ class OrganizationCrudAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createOrganization()
+    private function createOrganization($user): Organization
     {
-        $organization = Organization::create([
+        return Organization::create([
             'name' => 'Organization name', 
             'description' => 'Organization description',                                 
-            'image' => 'image.jpg'
+            'image' => 'image.jpg',
+            'user_id' => $user->id
         ]);
-        return $organization;
+        
     }
 
     private function createAuthUser (): Authenticatable
@@ -46,10 +47,8 @@ class OrganizationCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this-> actingAs($user);
 
-        $this->createOrganization();
+        $this->createOrganization($user);
         $response = $this->get('/api/v1/organizations');
-
-        // dd($response->getContent());
 
         $response->assertStatus(200)
             ->assertJsonIsArray()
@@ -59,6 +58,7 @@ class OrganizationCrudAuthTest extends TestCase
                     'name', 
                     'description',            
                     'image',
+                    'user_id',
                     'updated_at',
                     'created_at',
                     ]]);
@@ -71,18 +71,20 @@ class OrganizationCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this-> actingAs($user);
 
-        $this->createOrganization();
+        $this->createOrganization($user);
 
         $response = $this->get('/api/v1/organizations/1')
             ->assertJson([
                 'name' => 'Organization name', 
                 'description' => 'Organization description',
-                'image' => 'image.jpg'
+                'image' => 'image.jpg',
+                'user_id' => $user->id
                 ])
             ->assertJsonStructure([
                     'name', 
                     'description',             
-                    'image'])
+                    'image',
+                    'user_id',])
             ->assertStatus(200);
     }
 
@@ -95,7 +97,8 @@ class OrganizationCrudAuthTest extends TestCase
 
         $data = [
             'name' => 'Organization name', 
-            'description' => 'Organization description'
+            'description' => 'Organization description',
+            'user_id' => $user->id
         ];
 
         $response = $this->post('/api/v1/organizations', $data);
@@ -103,7 +106,8 @@ class OrganizationCrudAuthTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonFragment([
                 'name' => 'Organization name', 
-                'description' => 'Organization description'
+                'description' => 'Organization description',
+                'user_id' => $user->id
         ])->assertCreated();
     }
 
@@ -114,12 +118,13 @@ class OrganizationCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this-> actingAs($user);
 
-        $this->createOrganization();
+        $this->createOrganization($user);
 
         $response = $this->put('/api/v1/organizations/1', [
             'name' => 'Updated organization name', 
             'description' => 'Updated organization description',
-            'image' => 'image.jpg'
+            'image' => 'image.jpg',
+            'user_id' => $user->id
             ]);
 
         $response->assertStatus(200)
@@ -127,6 +132,7 @@ class OrganizationCrudAuthTest extends TestCase
                 'name' => 'Updated organization name', 
                 'description' => 'Updated organization description',
                 'image' => 'image.jpg',
+                'user_id' => $user->id
             ]);
     }
 
@@ -137,7 +143,7 @@ class OrganizationCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this-> actingAs($user);
 
-        $this->createOrganization();
+        $this->createOrganization($user);
 
         $response = $this->delete('/api/v1/organizations/1');
 

@@ -26,6 +26,8 @@ class OrganizationRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+            'discussion_id' => 'nullable|exists:discussions,id',
         ];
     }
 }
