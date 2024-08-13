@@ -30,37 +30,33 @@ class CommentCrudAuthTest extends TestCase
         ]);
     }
 
-    private function createComment(): void
+    private function createComment($user, $topic): void
     {
         Comment::create([
             'description' => 'Comment description',
-            'user_id' => 1,
-            'topic_id' => 1
+            'user_id' => $user->id,
+            'topic_id' => $topic->id
         ]);
     }
 
-    private function createTopic(): Topic
+    private function createTopic($user): Topic
     {
-        $discussion = $this->createDiscussion();
-        $topic = Topic::create([
+        $discussion = $this->createDiscussion($user);
+        return Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
-            'user_id' => 1,
+            'user_id' => $user->id,
             'discussion_id' => $discussion->id,
         ]);
-
-        return $topic;
     }
 
-    private function createDiscussion(): Discussion
+    private function createDiscussion($user): Discussion
     {
-        $discussion = Discussion::create([
+        return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => 1
+            'user_id' => $user->id,
         ]);
-
-        return $discussion;
     }
 
     public function test_route_auth_commets_retrieves_ok_status(): void
@@ -82,7 +78,9 @@ class CommentCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $comment = $this->createComment();
+        $topic = $this->createTopic($user);
+
+        $this->createComment($user, $topic);
 
         $response = $this->get('/api/v1/comments');
 
@@ -106,8 +104,8 @@ class CommentCrudAuthTest extends TestCase
 
         $user = $this->createAuthUser();
         $this->actingAs($user);
-
-        $topic = $this->createtopic();
+        
+        $topic = $this->createtopic($user);
 
         $response = $this->post('/api/v1/comments', [
             'description' => 'Comment description',
@@ -129,8 +127,9 @@ class CommentCrudAuthTest extends TestCase
 
         $user = $this->createAuthUser();
         $this->actingAs($user);
+        $topic = $this->createtopic($user);
 
-        $this->createComment();
+        $this->createComment($user, $topic);
 
         $response = $this->delete('/api/v1/comments/1');
 
