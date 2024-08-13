@@ -18,7 +18,7 @@ class UserRequest extends FormRequest
             'surname' => 'nullable|string',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'nullable|string|min:8',
-            'role_id' => 'required|integer|exists:roles,id',
+            'role_id' => 'nullable|integer|exists:roles,id',
             'organization_id' => 'nullable|integer|exists:organizations,id',
             'description' => 'nullable|string',
         ];

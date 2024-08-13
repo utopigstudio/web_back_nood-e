@@ -22,6 +22,7 @@ class UserFactory extends Factory
             'password' => 'password',
             'role_id' => rand(0, 4),
             'organization_id' => rand(1, 15),
+            'image' => fake()->imageUrl(),
             'remember_token' => Str::random(10),
         ];
     }
