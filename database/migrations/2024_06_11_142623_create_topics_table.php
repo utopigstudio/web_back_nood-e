@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('topics', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignId('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('description');
             $table->foreignId('discussion_id')->constrained()->onDelete('cascade');
             $table->integer('comments_counter')->default(0);
