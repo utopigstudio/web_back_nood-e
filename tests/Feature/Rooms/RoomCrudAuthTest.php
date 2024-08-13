@@ -18,6 +18,7 @@ class RoomCrudAuthTest extends TestCase
         $user = User::create([
             'name' => 'John Doe',
             'email' => 'johndoe@mail.com',
+            'role_id' => 1,
             'password' => bcrypt('password123')
         ]);
 
