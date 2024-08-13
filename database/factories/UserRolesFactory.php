@@ -11,8 +11,8 @@ class UserRolesFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => fake()->name(),
-            'role_id' => rand(0, 4),
+            'user_id' => User::factory(),
+            'role_id' => Role::factory(),
         ];
     }
 }

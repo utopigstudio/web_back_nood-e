@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Discussion;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class OrganizationFactory extends Factory
@@ -12,8 +14,8 @@ class OrganizationFactory extends Factory
             'name' => fake()->company(),
             'description' => fake()->paragraph(),
             'image' => fake()->imageUrl(),
-            'user_id' => fake()->randomDigit(),
-            'discussion_id' => fake()->randomDigit(),
+            'user_id' => rand(1, 10),
+            'discussion_id' => rand(1,10),
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Room;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
@@ -10,23 +12,19 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class EventFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    
     public function definition()
     {
         return [
             'title' => fake()->name(),
             'description' => fake()->paragraph(),
             'image' => fake()->imageUrl(),
-            'date' => fake()->date()-min('now'),
+            'date' => fake()->date(),
             'start' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '1 days', $timezone = null),
             'end' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '7 days', $timezone = null),
             'meet_link' => fake()->url(),
-            'room_id' => fake()->randomDigit(),
-            'user_id' => fake()->randomDigit() 
+            'room_id' => Room::factory(),
+            'user_id' => rand(1, 10), 
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Organization;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -21,7 +22,7 @@ class UserFactory extends Factory
             // 'password' => static::$password ??= Hash::make('password'),
             'password' => 'password',
             'role_id' => rand(0, 4),
-            'organization_id' => rand(1, 15),
+            'organization_id' => rand(1, 10),
             'image' => fake()->imageUrl(),
             'remember_token' => Str::random(10),
         ];

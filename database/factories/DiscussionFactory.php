@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +20,7 @@ class DiscussionFactory extends Factory
         return [
             'title' => fake()->name(),
             'description' => fake()->paragraph(),
-            'user_id' => fake()->randomDigit(),
+            'user_id' => rand(1, 10),
         ];
     }
 }

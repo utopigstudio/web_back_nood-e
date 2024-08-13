@@ -22,9 +22,9 @@ class TopicFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'user_id' => User::factory()->create()->id,
+            'user_id' => rand(1, 10),
             'description' => fake()->paragraph(),
-            'discussion_id' => Discussion::factory()->create()->id,
+            'discussion_id' => rand(1, 10),
             'comments_counter' => fake()->randomDigit(),
             'last_update' => fake()->date(),
         ];
