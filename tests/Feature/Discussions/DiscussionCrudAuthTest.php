@@ -100,20 +100,8 @@ class DiscussionCrudAuthTest extends TestCase
         $this->createTopic($discussion);
 
         $response = $this->get("/api/v1/discussions/{$discussion->id}");
-
+        
         $response->assertStatus(200)
-            ->assertJsonIsArray()
-            ->assertJsonCount(1)
-            ->assertJsonStructure([
-                '*' => [
-                    'id',
-                    'title',
-                    'description',
-                    'user_id',
-                    'created_at',
-                    'updated_at',
-                ]
-            ])
             ->assertJsonFragment([
                 'id' => $discussion->id,
                 'title' => 'Discussion title',

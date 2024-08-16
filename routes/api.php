@@ -53,7 +53,7 @@ Route::middleware(['auth:api'])->group( function () {
     Route::put('/rooms/{room}', [RoomController::class, 'update']);
     Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
     
-    Route::get('/discussions/{discussion}', [TopicController::class, 'index']);
+    // Route::get('/discussions/{discussion}', [TopicController::class, 'index']);
     Route::get('/discussions/{discussion}/{topic}', [TopicController::class, 'show']);
     Route::post('/discussions/{discussion}', [TopicController::class, 'store']);
     Route::put('/discussions/{discussion}/{topic}', [TopicController::class, 'update']);
