@@ -30,71 +30,114 @@ class CommentCrudAuthTest extends TestCase
         ]);
     }
 
-    private function createComment($user, $topic): void
+    private function createComment(): Comment
     {
-        Comment::create([
+        return Comment::create([
             'description' => 'Comment description',
-            'user_id' => $user->id,
-            'topic_id' => $topic->id
+            'user_id' => 1,
+            'topic_id' => 1
         ]);
     }
 
-    private function createTopic($user): Topic
+    private function createTopic(): Topic
     {
-        $discussion = $this->createDiscussion($user);
         return Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
-            'user_id' => $user->id,
-            'discussion_id' => $discussion->id,
+            'discussion_id' => 1,
+            'user_id' => 1
         ]);
     }
 
-    private function createDiscussion($user): Discussion
+    private function createDiscussion(): Discussion
     {
         return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => $user->id,
+            'user_id' => 1,
         ]);
     }
 
-    public function test_route_auth_commets_retrieves_ok_status(): void
+    public function test_route_auth_comments_retrieves_ok_status(): void
     {
         $this->withoutExceptionHandling();
 
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $response = $this->get('/api/v1/comments');
+        $discussion = $this->createDiscussion($user);
+        $topic = $this->createTopic($discussion, $user);
+
+        $response = $this->get("api/v1/discussions/{$discussion->id}/{$topic->id}");
 
         $response->assertStatus(200);
     }   
 
-    public function test_get_all_comments_as_json(): void
+    public function test_get_comments_in_topic(): void
+    {
+        $this->withoutExceptionHandling();
+    
+        $user = $this->createAuthUser();
+        $this->actingAs($user);
+    
+        $discussion = $this->createDiscussion();
+        $topic = $this->createTopic();
+
+        Comment::create([
+            'description' => 'Comment description',
+            'user_id' => 1,
+            'topic_id' => 1
+        ]);
+
+
+        $response = $this->get("/api/v1/discussions/{$discussion->id}/{$topic->id}");
+    
+        $response->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonStructure([
+                'comments' => [
+                    '*' => [
+                        'description',
+                        'user_id',
+                        'topic_id',
+                        'created_at',
+                        'updated_at'
+                    ]
+                ],
+                'topic' => [
+                    'title',
+                    'description',
+                    'discussion_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at'
+                ]
+            ]);
+    }
+
+    public function test_create_comment_only_required_fields(): void
     {
         $this->withoutExceptionHandling();
 
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $topic = $this->createTopic($user);
+        $discussion = $this->createDiscussion($user);
+        $topic = $this->createTopic($discussion, $user);;
 
-        $this->createComment($user, $topic);
+        $data = [
+            'description' => 'Comment description',
+            'user_id' => $user->id,
+            'topic_id' => $topic->id
+        ];
 
-        $response = $this->get('/api/v1/comments');
+        $response = $this->post("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data);
 
-        $response->assertStatus(200)
-            ->assertJsonIsArray()
-            ->assertJsonCount(1)
-            ->assertJsonStructure([
-                '*' => [
-                    'description',
-                    'user_id',
-                    'topic_id',
-                    'created_at',
-                    'updated_at'
-                ]
+        $response->assertStatus(201)
+            ->assertJsonFragment([
+                'description' => 'Comment description',
+                'user_id' => $user->id,
+                'topic_id' => $topic->id
             ]);
     }
 
@@ -105,17 +148,23 @@ class CommentCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
         
-        $topic = $this->createtopic($user);
+        $discussion = $this->createDiscussion($user);
+        $topic = $this->createTopic($discussion, $user);;
 
-        $response = $this->post('/api/v1/comments', [
-            'description' => 'Comment description',
+        $comment = $this->createComment($user, $topic);
+
+        $data = [
+            'description' => 'Update comment description',
             'user_id' => $user->id,
             'topic_id' => $topic->id
-        ]);
+        ];
 
-        $response->assertCreated()
+        $response = $this->put("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}", $data);
+        
+
+        $response->assertStatus(200)
         ->assertJsonFragment([
-            'description' => 'Comment description',
+            'description' => 'Update comment description',
             'user_id' => $user->id,
             'topic_id' => $topic->id
         ]);
@@ -127,11 +176,13 @@ class CommentCrudAuthTest extends TestCase
 
         $user = $this->createAuthUser();
         $this->actingAs($user);
-        $topic = $this->createtopic($user);
 
-        $this->createComment($user, $topic);
+        $discussion = $this->createDiscussion();
+        $topic = $this->createTopic();;
 
-        $response = $this->delete('/api/v1/comments/1');
+        $comment = $this->createComment();
+
+        $response = $this->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}");
 
         $response->assertNoContent();
     }

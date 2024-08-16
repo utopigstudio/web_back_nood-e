@@ -30,11 +30,10 @@ Route::middleware(['auth:api'])->group( function () {
     Route::put('/events/{event}', [EventController::class, 'update']);
     Route::delete('/events/{event}', [EventController::class, 'destroy']);
     
-    Route::get('/comments', [CommentController::class, 'index']);
-    Route::get('/comments/{comment}', [CommentController::class, 'show']);
-    Route::post('/comments', [CommentController::class, 'store']);
-    Route::put('/comments/{comment}', [CommentController::class, 'update']);
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+    
+    Route::post('/discussions/{discussion}/{topic}', [CommentController::class, 'store']);
+    Route::put('/discussions/{discussion}/{topic}/{comment}', [CommentController::class, 'update']);
+    Route::delete('/discussions/{discussion}/{topic}/{comment}', [CommentController::class, 'destroy']);
     
     Route::get('/discussions', [DiscussionController::class, 'index']);
     Route::get('/discussions/{discussion}', [DiscussionController::class, 'show']);
