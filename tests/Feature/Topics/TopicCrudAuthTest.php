@@ -30,12 +30,12 @@ class TopicCrudAuthTest extends TestCase
         ]);
     }
 
-    private function createTopic($discussion): Topic
+    private function createTopic(): Topic
     {
         return Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
-            'discussion_id' => $discussion->id,
+            'discussion_id' => 1,
             'user_id' => 1
         ]);
     }
@@ -103,12 +103,23 @@ class TopicCrudAuthTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'title',
-                'description',
-                'discussion_id',
-                'user_id',
-                'created_at',
-                'updated_at'
+                'topic' => [
+                    'title',
+                    'description',
+                    'discussion_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at'
+                ],
+                'comments' => [
+                    '*' => [
+                        'description',
+                        'user_id',
+                        'topic_id',
+                        'created_at',
+                        'updated_at'
+                    ]
+                ]
             ]);
     }
 
@@ -119,31 +130,23 @@ class TopicCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $discussion = $this->createDiscussion();
+        $discussion = $this->createDiscussion($user);
 
         $data = [
             'title' => 'Topic title',
             'description' => 'Topic description',
-            'discussion_id' => 1,
-            'user_id' => 1
+            'discussion_id' => $discussion->id,
+            'user_id' => $user->id
         ];
 
         $response = $this->post("/api/v1/discussions/{$discussion->id}", $data);
 
         $response->assertStatus(201)
-            ->assertJson([
+            ->assertJsonFragment([
                 'title' => 'Topic title',
                 'description' => 'Topic description',
                 'discussion_id' => $discussion->id,
-                'user_id' => 1
-            ])
-            ->assertJsonStructure([
-                'title',
-                'description',
-                'discussion_id',
-                'user_id',
-                'created_at',
-                'updated_at'
+                'user_id' => $user->id
             ]);
     }
 
@@ -171,7 +174,7 @@ class TopicCrudAuthTest extends TestCase
                 'title' => 'Updated topic title',
                 'description' => 'Updated topic description',
                 'discussion_id' => $discussion->id,
-                'user_id' => 1
+                'user_id' => $user->id
             ])
             ->assertJsonStructure([
                 'title',

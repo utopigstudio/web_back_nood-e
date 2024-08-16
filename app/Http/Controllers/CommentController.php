@@ -47,15 +47,15 @@ class CommentController extends Controller
 
     public function destroy(Discussion $discussion, Topic $topic, Comment $comment)
     {
-    if ($comment->topic_id !== $topic->id) {
-        return response()->json(['error' => 'Comment does not belong to this topic'], 403);
-    }
+        if ($comment->topic_id !== $topic->id) {
+            return response()->json(['error' => 'Comment does not belong to this topic'], 403);
+        }
 
-    if ($topic->discussion_id !== $discussion->id) {
-        return response()->json(['error' => 'Topic does not belong to this discussion'], 403);
-    }
+        if ($topic->discussion_id !== $discussion->id) {
+            return response()->json(['error' => 'Topic does not belong to this discussion'], 403);
+        }
 
-    $comment->delete();
+        $comment->delete();
         return response()->json('Comment deleted successfully', 204);
     }
 }
