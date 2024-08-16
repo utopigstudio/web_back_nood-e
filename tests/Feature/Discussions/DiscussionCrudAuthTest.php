@@ -3,6 +3,7 @@
 namespace Tests\Feature\Discussions;
 
 use App\Models\Discussion;
+use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,12 +30,24 @@ class DiscussionCrudAuthTest extends TestCase
         ]);
     }
 
-    private function createDiscussion(): void
+    private function createDiscussion(): Discussion
     {
-        Discussion::create([
+        $discussion = Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
             'user_id' => 1,
+        ]);
+
+        return $discussion;
+    }
+
+    private function createTopic(Discussion $discussion): Topic
+    {
+        return Topic::create([
+            'title' => 'Topic title',
+            'description' => 'Topic description',
+            'discussion_id' => 1,
+            'user_id' => 1
         ]);
     }
 
@@ -57,7 +70,8 @@ class DiscussionCrudAuthTest extends TestCase
         $this->actingAs($user);
 
         $this->createDiscussion();
-        $response = $this->get('/api/v1/discussions');
+
+        $response = $this->get("/api/v1/discussions");
 
         $response->assertStatus(200)
             ->assertJsonIsArray()
@@ -77,27 +91,34 @@ class DiscussionCrudAuthTest extends TestCase
     public function test_get_single_discussion_as_json(): void
     {
         $this->withoutExceptionHandling();
-
+        
         $user = $this->createAuthUser();
         $this->actingAs($user);
+        
+        $discussion = $this->createDiscussion($user);
 
-        $this->createDiscussion();
-        $response = $this->get('/api/v1/discussions/1');
+        $this->createTopic($discussion);
+
+        $response = $this->get("/api/v1/discussions/{$discussion->id}");
 
         $response->assertStatus(200)
+            ->assertJsonIsArray()
+            ->assertJsonCount(1)
             ->assertJsonStructure([
-                'id',
-                'title',
-                'description',
-                'user_id',
-                'created_at',
-                'updated_at',
+                '*' => [
+                    'id',
+                    'title',
+                    'description',
+                    'user_id',
+                    'created_at',
+                    'updated_at',
+                ]
             ])
             ->assertJsonFragment([
-                'id' => 1,
+                'id' => $discussion->id,
                 'title' => 'Discussion title',
                 'description' => 'Discussion description',
-                'user_id' => 1
+                'user_id' => $user->id,
             ]);
     }
 
@@ -137,8 +158,8 @@ class DiscussionCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $this->createDiscussion();
-        $response = $this->put('/api/v1/discussions/1', [
+        $discussion = $this->createDiscussion();
+        $response = $this->put("/api/v1/discussions/{$discussion->id}", [
             'title' => 'Discussion title updated',
             'description' => 'Discussion description updated',
             'user_id' => 1
@@ -167,8 +188,9 @@ class DiscussionCrudAuthTest extends TestCase
         $user = $this->createAuthUser();
         $this->actingAs($user);
 
-        $this->createDiscussion();
-        $response = $this->delete('/api/v1/discussions/1');
+        $discussion = $this->createDiscussion();
+
+        $response = $this->delete("/api/v1/discussions/{$discussion->id}");
 
         $response->assertStatus(204);
     }
