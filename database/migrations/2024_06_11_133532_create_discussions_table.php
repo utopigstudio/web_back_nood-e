@@ -16,10 +16,9 @@ return new class extends Migration
         Schema::create('discussions', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->longText('description')->nullable();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->text('description')->nullable()->default(null);
+            $table->foreignId('user_id')->constrained()->onDelete('restrict');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

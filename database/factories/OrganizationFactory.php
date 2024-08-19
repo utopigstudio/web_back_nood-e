@@ -15,7 +15,6 @@ class OrganizationFactory extends Factory
             'description' => fake()->paragraph(),
             'image' => fake()->imageUrl(),
             'user_id' => rand(1, 10),
-            'discussion_id' => rand(1,10),
         ];
     }
 }

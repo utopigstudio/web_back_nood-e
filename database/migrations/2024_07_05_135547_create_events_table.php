@@ -16,16 +16,13 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->longText('description')->nullable();
-            $table->string('image')->nullable();
-            $table->date('date')->default(now());
+            $table->text('description')->nullable()->default(null);
             $table->dateTime('start')->default(now());
             $table->dateTime('end')->default(now());
             $table->string('meet_link')->nullable();
-            $table->foreignId('room_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('room_id')->nullable()->constrained()->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onDelete('restrict');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

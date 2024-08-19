@@ -20,20 +20,14 @@ class AdminUserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@admin.com',
             'password' => bcrypt('password'),
-            'role_id' => 1
+            'role_id' => 2
         ]);
 
         User::create([
             'name' => 'Test',
             'email' => 'test@test.com',
             'password' => bcrypt('password'),
-            'role_id' => 2
+            'role_id' => 3
         ]);
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

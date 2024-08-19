@@ -18,8 +18,6 @@ class EventFactory extends Factory
         return [
             'title' => fake()->name(),
             'description' => fake()->paragraph(),
-            'image' => fake()->imageUrl(),
-            'date' => fake()->date(),
             'start' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '1 days', $timezone = null),
             'end' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '7 days', $timezone = null),
             'meet_link' => fake()->url(),
