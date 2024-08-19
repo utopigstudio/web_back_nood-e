@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ImageTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmailContract
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, ImageTrait;
 
     protected $fillable = [
         'name',
@@ -34,6 +35,12 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmailContrac
     ];
 
     protected $primaryKey = 'id';
+
+    protected $image_fields = ['image'];
+
+    protected $image_prefixes = [
+        'image' => 'users-'
+    ];
 
     protected function casts(): array
     {

@@ -34,12 +34,24 @@ class UserController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+           if ($user->image) {
+               $user->deleteImage($user->image, 'local');
+           }
+
+           $data['image'] = User::store64Image($request->input('image'), 'users/images');
+        }
         $user->update($request->validated());
         return response()->json(['message' => 'Changes saved successfully'], 200);
     }
 
     public function destroy(User $user)
     {
+        if ($user->image) {
+            $user->deleteImage($user->image, 'local');
+        }
         $user->delete();
         return response()->json(['message' => 'entity deleted successfully'], 204);
     }
