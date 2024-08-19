@@ -20,8 +20,6 @@ class EventCrudAuthTest extends TestCase
         return Event::create([
             'title' => 'Event title',
             'description' => 'Event description',
-            'image' => 'room1.jpg',
-            'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
             'meet_link' => 'https://meet.google.com/abc-def-ghi',
@@ -77,8 +75,6 @@ class EventCrudAuthTest extends TestCase
                 '*' => [
                     'title',
                     'description',
-                    'image',
-                    'date',
                     'start',
                     'end',
                     'meet_link',
@@ -89,8 +85,6 @@ class EventCrudAuthTest extends TestCase
             ->assertJsonFragment([
                 'title' => 'Event title',
                 'description' => 'Event description',
-                'image' => 'room1.jpg',
-                'date' => '30-09-2024',
                 'start' => '12:00',
                 'end' => '14:00',
                 'meet_link' => 'https://meet.google.com/abc-def-ghi',
@@ -113,8 +107,6 @@ class EventCrudAuthTest extends TestCase
         $response = $this->get('/api/v1/events/1')->assertJson([
            'title' => 'Event title',
             'description' => 'Event description',
-            'image' => 'room1.jpg',
-            'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
             'meet_link' => 'https://meet.google.com/abc-def-ghi',
@@ -134,7 +126,6 @@ class EventCrudAuthTest extends TestCase
 
         $response = $this->post('/api/v1/events', [
             'title' => 'Event title',
-            'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
             'user_id' => $user->id
@@ -143,7 +134,6 @@ class EventCrudAuthTest extends TestCase
         $response->assertStatus(201)
             ->assertJson([
                 'title' => 'Event title',
-                'date' => '30-09-2024',
                 'start' => '12:00',
                 'end' => '14:00',
         ])->assertCreated();
@@ -162,7 +152,6 @@ class EventCrudAuthTest extends TestCase
 
         $response = $this->put('/api/v1/events/1', [
             'title' => 'Updated event title',
-            'date' => '30-09-2024',
             'start' => '12:00',
             'end' => '14:00',
             'user_id' => $user->id
@@ -171,7 +160,6 @@ class EventCrudAuthTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'title' => 'Updated event title',
-                'date' => '30-09-2024',
                 'start' => '12:00',
                 'end' => '14:00',
             ]);
