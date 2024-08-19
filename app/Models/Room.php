@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ImageTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,13 +10,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Room extends Model
 {
-    use HasFactory;
+    use HasFactory, ImageTrait;
 
     protected $fillable = [
         'name',
         'description',
         'image',
         'is_available',
+    ];
+
+    protected $image_fields = ['image'];
+
+    protected $image_prefixes = [
+        'image' => 'room-'
     ];
 
     public function user(): BelongsTo

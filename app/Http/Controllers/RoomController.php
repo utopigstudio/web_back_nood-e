@@ -17,7 +17,13 @@ class RoomController extends Controller
 
     public function store(RoomRequest $request)
     {
-        $room = Room::create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $data['image'] = Room::store64Image($request->input('image'), 'rooms/images');
+        }
+
+        $room = Room::create($data);
         return response()->json($room, 201);
     }
 
@@ -30,13 +36,30 @@ class RoomController extends Controller
     public function update(RoomRequest $request, $id)
     {
         $room = Room::find($id);
+
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+           if ($room->image) {
+               $room->deleteImage($room->image, 'local');
+           }
+
+           $data['image'] = Room::store64Image($request->input('image'), 'rooms/images');
+        }
+
         $room->update($request->validated());
         return response()->json($room, 200);
     }
 
-    public function destroy($id)
+    public function destroy(Room $room)
     {
-        Room::destroy($id);
-        return response()->json(null, 204);
+        Room::destroy($room);
+
+        if ($room->image) {
+            $room->deleteImage($room->image, 'local');
+        }
+
+        $room->delete();
+        return response()->json('Room deleted successfully', 204);
     }
 }

@@ -15,10 +15,9 @@ class RoomCrudAuthTest extends TestCase
 
     private function createAuthUser (): Authenticatable
     {
-        $user = User::create([
+        return $user = User::create([
             'name' => 'John Doe',
             'email' => 'johndoe@mail.com',
-            'role_id' => 1,
             'password' => bcrypt('password123')
         ]);
 
@@ -27,34 +26,33 @@ class RoomCrudAuthTest extends TestCase
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
-
-        return $user;
     }
 
     private function createRoom (): Room
     {
-        $room = Room::create([
+        return Room::create([
             'name' => 'Room name',
-            'is_available' => 'available',
+            'description' => 'Room description',
+            'image' => 'image.jpg',
+            'is_available' => true,
         ]);
 
-        return $room;
     }
 
     public function test_users_can_create_rooms()
     {
         $user = $this->createAuthUser();
-
         $this->actingAs($user);
-        
-        $this->createRoom();
 
-        $response = $this->post('/api/v1/rooms', [
+        $data = [
             'name' => 'Room name',
             'description' => 'Room description',
             'image' => 'image.jpg',
-            'is_available' => 'available',
-        ]);
+            'is_available' => true,
+        ];
+        
+        $response = $this->post('/api/v1/rooms', $data);
+ 
 
         $response->assertCreated()
             ->assertJsonStructure([
@@ -69,30 +67,32 @@ class RoomCrudAuthTest extends TestCase
     public function test_users_can_update_rooms()
     {
         $user = $this->createAuthUser();
-        $room = Room::factory()->create();
-
         $this->actingAs($user);
 
+        $this->createRoom();
+
         $response = $this->put('/api/v1/rooms/1', [
-            'name' => 'Room name',
-            'description' => 'Room description',
+            'name' => 'Update room name',
+            'description' => 'Update room description',
             'image' => 'image.jpg',
-            'is_available' => 'available',
+            'is_available' => true,
             ]);
 
         $response->assertStatus(200)
                 ->assertJsonFragment([
-                    'name' => 'Room name',
-                    'description' => 'Room description',
+                    'name' => 'Update room name',
+                    'description' => 'Update room description',
                     'image' => 'image.jpg',
-                    'is_available' => 'available',
+                    'is_available' => true,
                 ]);
     }
 
     public function test_users_can_delete_rooms()
     {
         $user = $this->createAuthUser();
-        $room = $this->createRoom();
+        $this->actingAs($user);
+
+        $this->createRoom();
 
         $response = $this->actingAs($user)->delete('/api/v1/rooms/1');
 

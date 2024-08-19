@@ -26,8 +26,8 @@ class RoomRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'image' => 'nullable|string|max:255',
-            'is_available' => 'nullable|string|max:255',
+            'image' => 'nullable|string',
+            'is_available' => 'nullable|boolean|max:255',
         ];
     }
 }
