@@ -18,7 +18,13 @@ class OrganizationController extends Controller
 
     public function store(OrganizationRequest $request)
     {
-        $organization = Organization::create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $data['image'] = Organization::store64Image($request->input('image'), 'organizations/images');
+        }
+
+        $organization = Organization::create($data);
         return response()->json($organization, 201);
     }
 
@@ -31,6 +37,17 @@ class OrganizationController extends Controller
     public function update(OrganizationRequest $request, string $id)
     {
         $organization = Organization::find($id);
+
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+           if ($organization->image) {
+               $organization->deleteImage($organization->image, 'local');
+           }
+
+           $data['image'] = Organization::store64Image($request->input('image'), 'organizations/images');
+        }
+
         $organization->update($request->validated());
         return response()->json($organization, 200);
     }
@@ -38,6 +55,11 @@ class OrganizationController extends Controller
     public function destroy(string $id)
     {
         $organization = Organization::find($id);
+
+        if ($organization->image) {
+            $organization->deleteImage($organization->image, 'local');
+        }
+        
         $organization->delete();
         return response()->json('Organization deleted successfully', 204);
     }
