@@ -18,16 +18,18 @@ class AdminUserSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@admin.com',
+            'email' => 'admin@test.com',
             'password' => bcrypt('password'),
-            'role_id' => 2
         ]);
 
         User::create([
-            'name' => 'Test',
-            'email' => 'test@test.com',
+            'name' => 'Superadmin',
+            'email' => 'superadmin@test.com',
             'password' => bcrypt('password'),
-            'role_id' => 3
         ]);
+
+        //Add roles to admin and superadmin users
+        User::find(11)->roles()->attach(2);
+        User::find(12)->roles()->attach(3);
     }
 }
