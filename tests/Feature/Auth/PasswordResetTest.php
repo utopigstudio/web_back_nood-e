@@ -27,11 +27,13 @@ class PasswordResetTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->post('/api/v1/auth/forgot-password', ['email' => $user->email]);
 
@@ -44,11 +46,13 @@ class PasswordResetTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->post('/api/v1/auth/forgot-password', ['email' => $user->email]);
 

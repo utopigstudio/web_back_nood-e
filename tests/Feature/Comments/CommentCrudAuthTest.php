@@ -56,11 +56,13 @@ class CommentCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion($user);
         $topic = $this->createTopic($discussion, $user);
@@ -76,11 +78,13 @@ class CommentCrudAuthTest extends TestCase
     
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
     
         $discussion = $this->createDiscussion();
         $topic = $this->createTopic();
@@ -123,11 +127,13 @@ class CommentCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion($user);
         $topic = $this->createTopic($discussion, $user);;
@@ -154,11 +160,13 @@ class CommentCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
         
         $discussion = $this->createDiscussion($user);
         $topic = $this->createTopic($discussion, $user);;
@@ -188,11 +196,13 @@ class CommentCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion();
         $topic = $this->createTopic();;

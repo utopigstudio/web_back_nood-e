@@ -33,13 +33,17 @@ class RoomCrudAuthTest extends TestCase
 
     public function test_users_can_create_rooms()
     {
+        $this->withoutExceptionHandling();
+
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $data = [
             'name' => 'Room name',
@@ -63,13 +67,17 @@ class RoomCrudAuthTest extends TestCase
 
     public function test_users_can_update_rooms()
     {
+        $this->withoutExceptionHandling();
+
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->createRoom();
 
@@ -91,13 +99,17 @@ class RoomCrudAuthTest extends TestCase
 
     public function test_users_can_delete_rooms()
     {
+        $this->withoutExceptionHandling();
+        
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->createRoom();
 

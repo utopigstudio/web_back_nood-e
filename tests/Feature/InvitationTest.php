@@ -24,11 +24,13 @@ class InvitationTest extends TestCase
     {
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $response = $this->post('/api/v1/users', [
             'name' => 'Laurita',

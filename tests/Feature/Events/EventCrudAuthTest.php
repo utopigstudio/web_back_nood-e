@@ -19,8 +19,8 @@ class EventCrudAuthTest extends TestCase
         return Event::create([
             'title' => 'Event title',
             'description' => 'Event description',
-            'start' => '12:00',
-            'end' => '14:00',
+            'start' => '2024-09-13 12:00:00',
+            'end' => '2024-09-13 14:00:00',
             'meet_link' => 'https://meet.google.com/abc-def-ghi',
             'room_id' => $room->id,
             'user_id' => $user->id,
@@ -55,7 +55,13 @@ class EventCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $this->actingAs($user);
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -81,8 +87,8 @@ class EventCrudAuthTest extends TestCase
             ->assertJsonFragment([
                 'title' => 'Event title',
                 'description' => 'Event description',
-                'start' => '12:00',
-                'end' => '14:00',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
                 'meet_link' => 'https://meet.google.com/abc-def-ghi',
                 'room_id' => $room->id,
                 'user_id' => $user->id
@@ -97,19 +103,21 @@ class EventCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ]);;
-        
+        ]);
+
+        $this->actingAs($user);
+
         $this->createEvent($user, $room);
 
         $response = $this->get('/api/v1/events/1')->assertJson([
             'title' => 'Event title',
             'description' => 'Event description',
-            'start' => '12:00',
-            'end' => '14:00',
+            'start' => '2024-09-13 12:00:00',
+            'end' => '2024-09-13 14:00:00',
             'meet_link' => 'https://meet.google.com/abc-def-ghi',
             'room_id' => $room->id,
             'user_id' => $user->id
@@ -124,24 +132,26 @@ class EventCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ]);;
+        ]);
+
+        $this->actingAs($user);
 
         $response = $this->post('/api/v1/events', [
             'title' => 'Event title',
-            'start' => '12:00',
-            'end' => '14:00',
+            'start' => '2024-09-13 12:00:00',
+            'end' => '2024-09-13 14:00:00',
             'user_id' => $user->id
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
                 'title' => 'Event title',
-                'start' => '12:00',
-                'end' => '14:00',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
         ])->assertCreated();
     }
 
@@ -153,26 +163,28 @@ class EventCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ]);;
+        ]);
+
+        $this->actingAs($user);
 
         $this->createEvent($user, $room);
 
         $response = $this->put('/api/v1/events/1', [
             'title' => 'Updated event title',
-            'start' => '12:00',
-            'end' => '14:00',
+            'start' => '2024-09-13 12:00:00',
+            'end' => '2024-09-13 14:00:00',
             'user_id' => $user->id
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'title' => 'Updated event title',
-                'start' => '12:00',
-                'end' => '14:00',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
             ]);
     }
 
@@ -184,11 +196,13 @@ class EventCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ]);;
+        ]);
+
+        $this->actingAs($user);
 
         $this->createEvent($user, $room);
 

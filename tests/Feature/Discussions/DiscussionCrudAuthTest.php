@@ -48,11 +48,13 @@ class DiscussionCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $response = $this->get('/api/v1/discussions');
 
@@ -65,11 +67,13 @@ class DiscussionCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->createDiscussion();
 
@@ -96,11 +100,13 @@ class DiscussionCrudAuthTest extends TestCase
         
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
         
         $discussion = $this->createDiscussion($user);
 
@@ -123,11 +129,13 @@ class DiscussionCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $response = $this->post('/api/v1/discussions', [
             'title' => 'Discussion title',
@@ -157,11 +165,13 @@ class DiscussionCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion();
         $response = $this->put("/api/v1/discussions/{$discussion->id}", [
@@ -192,11 +202,13 @@ class DiscussionCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion();
 

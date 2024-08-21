@@ -11,6 +11,14 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function createAuthUser (): array
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        return ['user' => $user, 'token' => $token];
+    }
+
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         
@@ -60,21 +68,17 @@ class AuthenticationTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
-
-        $token = JWTAuth::fromUser($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
 
         $this->actingAs($user);
-        $response = $this->post('/api/v1/logout');
 
+        $response = $this->post('/api/v1/logout');
 
         $response->assertStatus(200)
         ->assertJsonFragment([

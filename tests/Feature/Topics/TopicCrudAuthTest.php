@@ -48,11 +48,13 @@ class TopicCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion($user);
 
@@ -67,11 +69,13 @@ class TopicCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion($user);
 
@@ -94,11 +98,13 @@ class TopicCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion();
 
@@ -108,22 +114,20 @@ class TopicCrudAuthTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'topic' => [
-                    'title',
+                'title',
+                'description',
+                'discussion_id',
+                'user_id',
+                'created_at',
+                'updated_at',
+                'comments' => [
+                '*' => [
                     'description',
-                    'discussion_id',
                     'user_id',
+                    'topic_id',
                     'created_at',
                     'updated_at'
-                ],
-                'comments' => [
-                    '*' => [
-                        'description',
-                        'user_id',
-                        'topic_id',
-                        'created_at',
-                        'updated_at'
-                    ]
+                ]
                 ]
             ]);
     }
@@ -134,11 +138,13 @@ class TopicCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion($user);
 
@@ -166,11 +172,13 @@ class TopicCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion();
         $topic = $this->createTopic($discussion);
@@ -207,11 +215,13 @@ class TopicCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $discussion = $this->createDiscussion();
 
@@ -223,7 +233,4 @@ class TopicCrudAuthTest extends TestCase
             ->assertNoContent();
     }
 
-
-
-    
 }

@@ -38,11 +38,13 @@ class OrganizationCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->createOrganization($user);
         $response = $this->get('/api/v1/organizations');
@@ -67,11 +69,13 @@ class OrganizationCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->createOrganization($user);
 
@@ -96,11 +100,13 @@ class OrganizationCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $data = [
             'name' => 'Organization name', 
@@ -124,11 +130,13 @@ class OrganizationCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ]);;
+        ]);
+
+        $this->actingAs($user);
 
         $this->createOrganization($user);
 
@@ -154,11 +162,13 @@ class OrganizationCrudAuthTest extends TestCase
 
         $authData = $this->createAuthUser();
         $user = $authData['user'];
-        $token = $user['token'];
+        $token = $authData['token'];
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ]);
+
+        $this->actingAs($user);
 
         $this->createOrganization($user);
 
