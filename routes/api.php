@@ -19,7 +19,7 @@ Route::group(['prefix' => 'auth',], function($router) {
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
 });
 
-Route::group(['middleware' => 'api'], function () {
+Route::middleware(['api'])->group( function () {
     Route::post('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
