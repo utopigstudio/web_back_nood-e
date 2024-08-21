@@ -27,7 +27,6 @@ class TopicRequest extends FormRequest
             'title' => 'required|string',
             'user_id' => 'required|integer|exists:users,id',
             'description' => 'required|string',
-            'discussion_id' => 'required|integer|exists:discussions,id',
         ];
     }
 }

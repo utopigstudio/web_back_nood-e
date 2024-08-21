@@ -24,7 +24,6 @@ class CommentRequest extends FormRequest
         return [
             'description' => 'required|string',
             'user_id' => 'required|integer|exists:users,id',
-            'topic_id' => 'required|integer|exists:topics,id'
         ];
     }
 }

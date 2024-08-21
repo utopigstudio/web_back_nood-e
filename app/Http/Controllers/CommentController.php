@@ -6,17 +6,11 @@ use App\Http\Requests\CommentRequest;
 use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Topic;
+use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    public function index(Discussion $discussion,Topic $topic)
-    {
-        $comments = Comment::where('topic_id', $topic->id)->get();
-
-        return response()->json($comments, 200);
-    }
-
-    public function store(CommentRequest $request, Discussion $discussion, Topic $topic, Comment $comment)
+    public function store(CommentRequest $request, Discussion $discussion, Topic $topic)
     {
         $validateData = $request->validated();
         $validateData['topic_id'] = $topic->id;
@@ -36,12 +30,12 @@ class CommentController extends Controller
         return response()->json($comment, 200);
     }
 
-    public function update(CommentRequest $request, Discussion $discussion, Topic $topic, Comment $comment)
+    public function update(Request $request, Discussion $discussion, Topic $topic, Comment $comment)
     {
         if ($comment->topic_id !== $topic->id) {
             return response()->json(['error' => 'Comment does not belong to this topic'], 403);
         }
-        $comment->update($request->validated());
+        $comment->update($request->toArray());
         return response()->json($comment, 200);
     }
 

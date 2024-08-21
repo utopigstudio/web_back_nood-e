@@ -28,7 +28,6 @@ class OrganizationRequest extends FormRequest
             'description' => 'required|string',
             'image' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
-            'discussion_id' => 'nullable|exists:discussions,id',
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrganizationRequest;
 use App\Models\Organization;
+use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
@@ -30,15 +31,13 @@ class OrganizationController extends Controller
 
     public function show(string $id)
     {
-        $organization = Organization::find($id);
+        $organization = Organization::find($id)->with('user')->first();
         return response()->json($organization, 200);
     }
 
-    public function update(OrganizationRequest $request, string $id)
+    public function update(Request $request, string $id)
     {
         $organization = Organization::find($id);
-
-        $data = $request->validated();
 
         if ($request->hasFile('image')) {
            if ($organization->image) {
@@ -48,7 +47,7 @@ class OrganizationController extends Controller
            $data['image'] = Organization::store64Image($request->input('image'), 'organizations/images');
         }
 
-        $organization->update($request->validated());
+        $organization->update($request->toArray());
         return response()->json($organization, 200);
     }
 

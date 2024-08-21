@@ -8,18 +8,19 @@ use App\Models\User;
 use App\Notifications\UserInviteNotification;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\Request;
 
 class UserController extends Controller 
 {
     public function index()
     {
-        $users = User::where('role_id', 2)->get();
+        $users = User::all()->sortBy('name');
         return response()->json($users);
     }
     
     public function store(UserRequest $request)
     {
-        $user = User::create($request->validated() + ['role_id' => 0], ['password' => bcrypt('password')]);
+        $user = User::create($request->validated());
 
         $url = URL::signedRoute('invitation', $user);
 
@@ -32,10 +33,8 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function update(UserRequest $request, User $user)
+    public function update(Request $request, User $user)
     {
-        $data = $request->validated();
-
         if ($request->hasFile('image')) {
            if ($user->image) {
                $user->deleteImage($user->image, 'local');
@@ -43,7 +42,8 @@ class UserController extends Controller
 
            $data['image'] = User::store64Image($request->input('image'), 'users/images');
         }
-        $user->update($request->validated());
+
+        $user->update($request->toArray());
         return response()->json(['message' => 'Changes saved successfully'], 200);
     }
 
@@ -52,6 +52,7 @@ class UserController extends Controller
         if ($user->image) {
             $user->deleteImage($user->image, 'local');
         }
+
         $user->delete();
         return response()->json(['message' => 'entity deleted successfully'], 204);
     }
@@ -63,7 +64,6 @@ class UserController extends Controller
         if (!request()->hasValidSignature() || $user->passord != $user->password) {
             abort(401, 'Unauthorized');
         }
-        
         
         $token = JWTAuth::fromUser($user);
 

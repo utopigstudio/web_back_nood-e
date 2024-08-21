@@ -11,7 +11,7 @@ class RoomController extends Controller
 {
     public function index()
     {
-        $rooms = Room::all();
+        $rooms = Room::with('events')->get();
         return response()->json($rooms, 200);
     }
 
@@ -29,15 +29,13 @@ class RoomController extends Controller
 
     public function show($id)
     {
-        $room = Room::find($id);
+        $room = Room::find($id)->with('events')->first();
         return response()->json($room, 200);
     }
 
-    public function update(RoomRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $room = Room::find($id);
-
-        $data = $request->validated();
 
         if ($request->hasFile('image')) {
            if ($room->image) {
@@ -47,7 +45,7 @@ class RoomController extends Controller
            $data['image'] = Room::store64Image($request->input('image'), 'rooms/images');
         }
 
-        $room->update($request->validated());
+        $room->update($request->toArray());
         return response()->json($room, 200);
     }
 

@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DiscussionRequest;
-use App\Models\Comment;
 use App\Models\Discussion;
-use App\Models\Topic;
+use Illuminate\Http\Request;
 
 class DiscussionController extends Controller
 {
@@ -21,18 +20,16 @@ class DiscussionController extends Controller
         return response()->json($discussion, 201);
     }
 
-    public function show(Discussion $discussion, Topic $topic)
+    public function show(Discussion $discussion)
     {
         $discussion = Discussion::with('topics')->findOrFail($discussion->id);
 
-        $topics = Topic::where('discussion_id', $discussion->id)->get();
-        return response()->json(['discussion' => $discussion, 'topics' => $topics], 200);
+        return response()->json($discussion, 200);
     }
 
-    public function update(DiscussionRequest $request, Discussion $discussion)
+    public function update(Request $request, Discussion $discussion)
     {
-        $discussion = Discussion::find($discussion->id);
-        $discussion->update($request->validated());
+        $discussion->update($request->toArray());
         return response()->json($discussion, 200);
     }
 

@@ -6,6 +6,7 @@ use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -21,16 +22,15 @@ class EventController extends Controller
         return response()->json($event, 201);
     }
 
-    public function show($id)
+    public function show(Event $event)
     {
-        $event = Event::find($id);
         return response()->json($event);
     }
 
-    public function update(EventRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $event = Event::find($id);
-        $event->update($request->validated());
+        $event->update($request->toArray());
         return response()->json($event);
     }
     

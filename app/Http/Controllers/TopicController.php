@@ -6,16 +6,10 @@ use App\Http\Requests\TopicRequest;
 use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Topic;
+use Illuminate\Http\Request;
 
 class TopicController extends Controller
 {
-    public function index(Discussion $discussion)
-    {
-        $topics = Topic::where('discussion_id', $discussion->id)->get();
-
-        return response()->json($topics, 200);
-    }
-
     public function store(TopicRequest $request, Discussion $discussion, Topic $topic)
     {
         $validateData = $request->validated();
@@ -26,23 +20,23 @@ class TopicController extends Controller
         return response()->json($topic, 201);
     }
 
-    public function show(Discussion $discussion, Topic $topic, Comment $comment)
+    public function show(Discussion $discussion, Topic $topic)
     {
         if ($topic->discussion_id !== $discussion->id) {
             return response()->json(['error' => 'Topic not found in this discussion'], 404);
         }
-        
-        $comments = Comment::where('topic_id', $topic->id)->get();
 
-        return response()->json(['topic' => $topic, 'comments' => $comments], 200);
+        $topic->load('comments');
+
+        return response()->json($topic, 200);
     }
 
-    public function update(TopicRequest $request, Discussion $discussion, Topic $topic)
+    public function update(Request $request, Discussion $discussion, Topic $topic)
     {
         if ($topic->discussion_id !== $discussion->id) {
             return response()->json(['error' => 'Topic does not belong to this discussion'], 403);
         }
-        $topic->update($request->validated());
+        $topic->update($request->toArray());
         return response()->json($topic, 200);
     }
 
@@ -51,6 +45,8 @@ class TopicController extends Controller
         if ($topic->discussion_id !== $discussion->id) {
             return response()->json(['error' => 'Topic does not belong to this discussion'], 403);
         }
+
+        $topic->delete();
         return response()->json('Topic deleted successfully', 204);
     }
 }
