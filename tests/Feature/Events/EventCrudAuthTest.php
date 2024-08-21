@@ -5,7 +5,6 @@ namespace Tests\Feature\Events;
 use App\Models\Event;
 use App\Models\Room;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -28,20 +27,12 @@ class EventCrudAuthTest extends TestCase
         ]);
     }
 
-    private function createAuthUser (): Authenticatable
+    private function createAuthUser (): array
     {
-        $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
-
+        $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-        return $user;
+        return ['user' => $user, 'token' => $token];
     }
 
     private function createRoom(): Room
@@ -62,8 +53,13 @@ class EventCrudAuthTest extends TestCase
 
         $room = $this->createRoom();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);;
 
         $this->createEvent($room, $user);
         $response = $this->get('/api/v1/events');
@@ -99,13 +95,18 @@ class EventCrudAuthTest extends TestCase
 
         $room = $this->createRoom();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);;
         
         $this->createEvent($user, $room);
 
         $response = $this->get('/api/v1/events/1')->assertJson([
-           'title' => 'Event title',
+            'title' => 'Event title',
             'description' => 'Event description',
             'start' => '12:00',
             'end' => '14:00',
@@ -121,8 +122,13 @@ class EventCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);;
 
         $response = $this->post('/api/v1/events', [
             'title' => 'Event title',
@@ -145,8 +151,13 @@ class EventCrudAuthTest extends TestCase
 
         $room = $this->createRoom();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);;
 
         $this->createEvent($user, $room);
 
@@ -171,8 +182,13 @@ class EventCrudAuthTest extends TestCase
 
         $room = $this->createRoom();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);;
 
         $this->createEvent($user, $room);
 

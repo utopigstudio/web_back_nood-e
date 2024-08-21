@@ -4,7 +4,6 @@ namespace Tests\Feature\Organizations;
 
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -24,19 +23,12 @@ class OrganizationCrudAuthTest extends TestCase
         
     }
 
-    private function createAuthUser (): Authenticatable
+    private function createAuthUser (): array
     {
-        return $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
-
+        $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        return ['user' => $user, 'token' => $token];
     }
 
 
@@ -44,8 +36,13 @@ class OrganizationCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $this->createOrganization($user);
         $response = $this->get('/api/v1/organizations');
@@ -68,8 +65,13 @@ class OrganizationCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $this->createOrganization($user);
 
@@ -92,8 +94,13 @@ class OrganizationCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $data = [
             'name' => 'Organization name', 
@@ -115,8 +122,13 @@ class OrganizationCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);;
 
         $this->createOrganization($user);
 
@@ -140,8 +152,13 @@ class OrganizationCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this-> actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $this->createOrganization($user);
 

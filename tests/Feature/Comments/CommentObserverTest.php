@@ -6,9 +6,7 @@ use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Topic;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -16,19 +14,12 @@ class CommentObserverTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createAuthUser (): Authenticatable
+    private function createAuthUser (): array
     {
-        return $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
-
+        $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        return ['user' => $user, 'token' => $token];
     }
 
     private function createDiscussion(): Discussion
@@ -56,8 +47,13 @@ class CommentObserverTest extends TestCase
 
     public function test_comment_creation_increments_comments_count()
     {
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion();
         $topic = $this->createTopic($discussion);
@@ -75,8 +71,13 @@ class CommentObserverTest extends TestCase
 
     public function test_comment_creation_decrements_comments_count()
     {
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion();
         $topic = $this->createTopic($discussion);

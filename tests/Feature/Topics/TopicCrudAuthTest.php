@@ -5,9 +5,7 @@ namespace Tests\Feature\Topics;
 use App\Models\Discussion;
 use App\Models\Topic;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -15,19 +13,12 @@ class TopicCrudAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createAuthUser (): Authenticatable
+    private function createAuthUser (): array
     {
-        return $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
-
+        $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        return ['user' => $user, 'token' => $token];
     }
 
     private function createTopic(Discussion $discussion): Topic
@@ -55,8 +46,13 @@ class TopicCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion($user);
 
@@ -69,8 +65,13 @@ class TopicCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion($user);
 
@@ -91,8 +92,13 @@ class TopicCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion();
 
@@ -126,8 +132,13 @@ class TopicCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion($user);
 
@@ -153,8 +164,13 @@ class TopicCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion();
         $topic = $this->createTopic($discussion);
@@ -189,8 +205,13 @@ class TopicCrudAuthTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion();
 

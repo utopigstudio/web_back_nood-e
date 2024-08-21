@@ -7,27 +7,31 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PasswordResetTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createAuthUser(): User
+    private function createAuthUser (): array
     {
-        $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
 
-        return $user;
+        return ['user' => $user, 'token' => $token];
     }
 
     public function test_reset_password_link_can_be_requested(): void
     {
         Notification::fake();
 
-        $user = $this->createAuthUser();
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $this->post('/api/v1/auth/forgot-password', ['email' => $user->email]);
 
@@ -38,7 +42,13 @@ class PasswordResetTest extends TestCase
     {
         Notification::fake();
 
-        $user = $this->createAuthUser();
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $this->post('/api/v1/auth/forgot-password', ['email' => $user->email]);
 

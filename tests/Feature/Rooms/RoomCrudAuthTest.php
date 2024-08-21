@@ -4,7 +4,6 @@ namespace Tests\Feature\Rooms;
 
 use App\Models\Room;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -13,19 +12,12 @@ class RoomCrudAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createAuthUser (): Authenticatable
+    private function createAuthUser (): array
     {
-        return $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
-
+        $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        return ['user' => $user, 'token' => $token];
     }
 
     private function createRoom (): Room
@@ -41,8 +33,13 @@ class RoomCrudAuthTest extends TestCase
 
     public function test_users_can_create_rooms()
     {
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $data = [
             'name' => 'Room name',
@@ -66,8 +63,13 @@ class RoomCrudAuthTest extends TestCase
 
     public function test_users_can_update_rooms()
     {
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $this->createRoom();
 
@@ -89,8 +91,13 @@ class RoomCrudAuthTest extends TestCase
 
     public function test_users_can_delete_rooms()
     {
-        $user = $this->createAuthUser();
-        $this->actingAs($user);
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $this->createRoom();
 

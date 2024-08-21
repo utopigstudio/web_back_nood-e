@@ -8,7 +8,6 @@ use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -16,30 +15,21 @@ class LastUpdateObserverTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createAuthUser (): Authenticatable
+    private function createAuthUser (): array
     {
-        return $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@mail.com',
-            'password' => bcrypt('password123')
-        ]);
-
+        $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        return ['user' => $user, 'token' => $token];
     }
 
     private function createDiscussion(): Discussion
     {
-        $discussion = Discussion::create([
+        return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
             'user_id' => 1,
         ]);
-
-        return $discussion;
     }
 
     private function createTopic(Discussion $discussion): Topic
@@ -58,15 +48,22 @@ class LastUpdateObserverTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->createAuthUser();
+        $authData = $this->createAuthUser();
+        $user = $authData['user'];
+        $token = $user['token'];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ]);
 
         $discussion = $this->createDiscussion();
 
         $topic = $this->createTopic($discussion);
 
         $this->assertNull($topic->last_update);
+        $this->assertCount(0, $topic->comments);
 
-        $comment = Comment::factory()->create([
+        Comment::factory()->create([
             'topic_id' => $topic->id,
             'user_id' => $user->id,
         ]);
@@ -75,6 +72,7 @@ class LastUpdateObserverTest extends TestCase
 
         $this->assertNotNull($topic->last_update);
         $this->assertEquals(now(), $topic->last_update);
+        $this->assertCount(1, $topic->comments);
 
     }
 }
