@@ -10,6 +10,7 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'auth',], function($router) {
@@ -19,7 +20,7 @@ Route::group(['prefix' => 'auth',], function($router) {
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
 });
 
-Route::middleware(['api'])->group( function () {
+Route::middleware([JwtMiddleware::class])->group( function () {
     Route::post('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
@@ -29,7 +30,6 @@ Route::middleware(['api'])->group( function () {
     Route::post('/events', [EventController::class, 'store']);
     Route::put('/events/{event}', [EventController::class, 'update']);
     Route::delete('/events/{event}', [EventController::class, 'destroy']);
-    
     
     Route::post('/discussions/{discussion}/{topic}', [CommentController::class, 'store']);
     Route::put('/discussions/{discussion}/{topic}/{comment}', [CommentController::class, 'update']);
@@ -53,7 +53,6 @@ Route::middleware(['api'])->group( function () {
     Route::put('/rooms/{room}', [RoomController::class, 'update']);
     Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
     
-    // Route::get('/discussions/{discussion}', [TopicController::class, 'index']);
     Route::get('/discussions/{discussion}/{topic}', [TopicController::class, 'show']);
     Route::post('/discussions/{discussion}', [TopicController::class, 'store']);
     Route::put('/discussions/{discussion}/{topic}', [TopicController::class, 'update']);
