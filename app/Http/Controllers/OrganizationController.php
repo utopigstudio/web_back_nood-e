@@ -17,12 +17,12 @@ class OrganizationController extends Controller
         return response()->json($organizations, 200);
     }
 
-    public function store(OrganizationRequest $request)
+    public function store(OrganizationRequest $request, Organization $organization)
     {
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $data['image'] = Organization::store64Image($request->input('image'), 'organizations/images');
+            $data['image'] = $organization->uploadImage($request->input('image'), 'organizations/images');
         }
 
         $organization = Organization::create($data);

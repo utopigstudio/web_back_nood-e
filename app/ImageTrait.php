@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Image;
+use Intervention\Image\Laravel\Facades\Image;
 use \Illuminate\Support\Facades\Log;
 
 trait ImageTrait
@@ -75,7 +75,7 @@ trait ImageTrait
             return;
         }
 
-        // set the value directly if we are setting a new image directly ($tree->image = 'something.jpg')
+        // set the value directly if we are setting a new image directly
         if (!Str::startsWith($value, config('app.images_storage_read_path'))) {
             $this->attributes[$attribute_name] = $value;
             return;
@@ -120,7 +120,6 @@ trait ImageTrait
      */
     public function resampleImage($file_contents)
     {
-        // $higher_quality = $this instanceof Update; // old-treenation class which will force less compression
         $higher_quality = false;
 
         $max_res = $higher_quality ? 4000 : 2600;
