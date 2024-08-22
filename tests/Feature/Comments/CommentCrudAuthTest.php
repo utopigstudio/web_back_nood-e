@@ -22,31 +22,31 @@ class CommentCrudAuthTest extends TestCase
         return ['user' => $user, 'token' => $token];
     }
 
-    private function createComment(): Comment
+    private function createComment($user, $topic): Comment
     {
         return Comment::create([
             'description' => 'Comment description',
-            'user_id' => 1,
-            'topic_id' => 1
+            'user_id' => $user->id,
+            'topic_id' => $topic->id
         ]);
     }
 
-    private function createTopic(): Topic
+    private function createTopic($discussion, $user): Topic
     {
         return Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
-            'discussion_id' => 1,
-            'user_id' => 1
+            'discussion_id' => $discussion->id,
+            'user_id' => $user->id
         ]);
     }
 
-    private function createDiscussion(): Discussion
+    private function createDiscussion($user): Discussion
     {
         return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => 1,
+            'user_id' => $user->id
         ]);
     }
 
@@ -86,13 +86,13 @@ class CommentCrudAuthTest extends TestCase
 
         $this->actingAs($user);
     
-        $discussion = $this->createDiscussion();
-        $topic = $this->createTopic();
+        $discussion = $this->createDiscussion($user);
+        $topic = $this->createTopic($discussion, $user);
 
         Comment::create([
             'description' => 'Comment description',
-            'user_id' => 1,
-            'topic_id' => 1
+            'user_id' => $user->id,
+            'topic_id' => $topic->id
         ]);
 
 
@@ -204,10 +204,10 @@ class CommentCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $discussion = $this->createDiscussion();
-        $topic = $this->createTopic();;
+        $discussion = $this->createDiscussion($user);
+        $topic = $this->createTopic($discussion, $user);
 
-        $comment = $this->createComment();
+        $comment = $this->createComment($user, $topic);
 
         $response = $this->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}");
 
