@@ -21,25 +21,23 @@ class TopicCrudAuthTest extends TestCase
         return ['user' => $user, 'token' => $token];
     }
 
-    private function createTopic(Discussion $discussion): Topic
+    private function createTopic(Discussion $discussion, User $user): Topic
     {
         return Topic::create([
             'title' => 'Topic title',
             'description' => 'Topic description',
-            'discussion_id' => 1,
-            'user_id' => 1
+            'discussion_id' => $discussion->id,
+            'user_id' => $user->id
         ]);
     }
 
     private function createDiscussion(): Discussion
     {
-        $discussion = Discussion::create([
+        return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => 1,
+            'user_id' => $this->createAuthUser()['user']->id,
         ]);
-
-        return $discussion;
     }
 
     public function test_route_auth_topics_retrieves_ok_status(): void
@@ -79,7 +77,7 @@ class TopicCrudAuthTest extends TestCase
 
         $discussion = $this->createDiscussion($user);
 
-        $this->createTopic($discussion);
+        $this->createTopic($discussion, $user);
 
         $response = $this->get("/api/v1/discussions/{$discussion->id}");
 
@@ -108,7 +106,7 @@ class TopicCrudAuthTest extends TestCase
 
         $discussion = $this->createDiscussion();
 
-        $topic = $this->createTopic($discussion);
+        $topic = $this->createTopic($discussion, $user);
 
         $response = $this->get("/api/v1/discussions/{$discussion->id}/{$topic->id}");
 
@@ -181,7 +179,7 @@ class TopicCrudAuthTest extends TestCase
         $this->actingAs($user);
 
         $discussion = $this->createDiscussion();
-        $topic = $this->createTopic($discussion);
+        $topic = $this->createTopic($discussion, $user);
 
         $data = [
             'title' => 'Updated topic title',
@@ -225,7 +223,7 @@ class TopicCrudAuthTest extends TestCase
 
         $discussion = $this->createDiscussion();
 
-        $topic = $this->createTopic($discussion);
+        $topic = $this->createTopic($discussion, $user);
 
         $response = $this->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}");
 

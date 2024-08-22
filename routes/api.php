@@ -22,7 +22,6 @@ Route::middleware('api')->group(function () {
         Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
         Route::post('/refresh', [AuthController::class, 'refresh']);
     });
-
     // authenticated routes
     Route::middleware('auth:api')->group(function() {
         Route::post('/me', [AuthController::class, 'me']);

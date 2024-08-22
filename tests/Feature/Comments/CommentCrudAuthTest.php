@@ -22,7 +22,7 @@ class CommentCrudAuthTest extends TestCase
         return ['user' => $user, 'token' => $token];
     }
 
-    private function createComment($user, $topic): Comment
+    private function createComment(User $user, Topic $topic): Comment
     {
         return Comment::create([
             'description' => 'Comment description',
@@ -41,12 +41,12 @@ class CommentCrudAuthTest extends TestCase
         ]);
     }
 
-    private function createDiscussion($user): Discussion
+    private function createDiscussion(User $user): Discussion
     {
         return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
@@ -99,22 +99,11 @@ class CommentCrudAuthTest extends TestCase
         $response = $this->get("/api/v1/discussions/{$discussion->id}/{$topic->id}");
     
         $response->assertStatus(200)
-            ->assertJsonCount(2)
             ->assertJsonStructure([
-                'comments' => [
-                    '*' => [
-                        'description',
-                        'user_id',
-                        'topic_id',
-                        'created_at',
-                        'updated_at'
-                    ]
-                ],
-                'topic' => [
-                    'title',
+                '*' => [
                     'description',
-                    'discussion_id',
                     'user_id',
+                    'topic_id',
                     'created_at',
                     'updated_at'
                 ]

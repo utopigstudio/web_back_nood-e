@@ -21,15 +21,13 @@ class DiscussionCrudAuthTest extends TestCase
         return ['user' => $user, 'token' => $token];
     }
 
-    private function createDiscussion(): Discussion
+    private function createDiscussion(User $user): Discussion
     {
-        $discussion = Discussion::create([
+        return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => 1,
+            'user_id' => $user->id,
         ]);
-
-        return $discussion;
     }
 
     private function createTopic(Discussion $discussion): Topic
@@ -75,7 +73,7 @@ class DiscussionCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->createDiscussion();
+        $this->createDiscussion($user);
 
         $response = $this->get("/api/v1/discussions");
 
@@ -173,7 +171,7 @@ class DiscussionCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $discussion = $this->createDiscussion();
+        $discussion = $this->createDiscussion($user);
         $response = $this->put("/api/v1/discussions/{$discussion->id}", [
             'title' => 'Discussion title updated',
             'description' => 'Discussion description updated',
@@ -210,7 +208,7 @@ class DiscussionCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $discussion = $this->createDiscussion();
+        $discussion = $this->createDiscussion($user);
 
         $response = $this->delete("/api/v1/discussions/{$discussion->id}");
 
