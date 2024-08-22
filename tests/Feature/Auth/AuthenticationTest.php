@@ -30,7 +30,6 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response = $this->post('/api/v1/auth/login', [
-            'name' => 'test',
             'email' => 'test@test.com',
             'password' => 'password',
         ]);
@@ -55,7 +54,6 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response = $this->post('/api/v1/auth/login', [
-            'name' => 'test',
             'email' => 'test@test.com',
             'password' => '123456678',
         ]);
