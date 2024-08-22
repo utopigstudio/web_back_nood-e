@@ -53,14 +53,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmailContrac
 
     public function getJWTIdentifier(): mixed
     {
-        return $this->primaryKey;
+        return $this->getKey();
     }
 
     public function getJWTCustomClaims(): array
     {
-        if ($this->role) {
-            return [];
-        }
         return [];
     }
 

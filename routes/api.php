@@ -10,20 +10,21 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
-use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'auth',], function($router) {
+// not authenticated routes
+Route::prefix('auth')->middleware('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/set-password/{user}', [AuthController::class, 'setPassword'])->name('set-password');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('forgot-password');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
+    Route::post('/refresh', [AuthController::class, 'refresh']);
 });
 
-Route::middleware([JwtMiddleware::class])->group( function () {
+// authenticated routes
+Route::middleware(['api', 'auth:api'])->group(function () {
     Route::post('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
 
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/events/{event}', [EventController::class, 'show']);
