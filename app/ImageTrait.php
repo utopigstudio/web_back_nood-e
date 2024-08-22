@@ -42,7 +42,7 @@ trait ImageTrait
 
         if (in_array($key, $this->image_fields) && $this->getAttributeValue($key)) {
             if (array_key_exists($key, $this->attributes) || $this->hasGetMutator($key)) {
-                return Storage::disk($this->stored)->url($this->getAttributeValue($key));
+                return Storage::disk($this->stored);
             }
         }
         return parent::getAttribute($key);
@@ -124,7 +124,7 @@ trait ImageTrait
 
         $max_res = $higher_quality ? 4000 : 2600;
         $quality = $higher_quality ? 90 : 80;
-        $image = Image::make($file_contents);
+        $image = Image::read($file_contents);
 
         // only resize if width larger than max_res
         $w = $image->width();
