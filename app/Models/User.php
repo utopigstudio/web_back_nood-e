@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\ImageTrait;
-use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject, MustVerifyEmailContract
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, ImageTrait, SoftDeletes;
 
@@ -46,7 +45,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmailContrac
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

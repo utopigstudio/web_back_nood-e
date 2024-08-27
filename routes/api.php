@@ -21,6 +21,7 @@ Route::middleware('api')->group(function () {
         Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('forgot-password');
         Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
         Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/invitation/{user}', [AuthController::class, 'acceptInvitation'])->name('invitation');
     });
     // authenticated routes
     Route::middleware('auth:api')->group(function() {
@@ -60,8 +61,6 @@ Route::middleware('api')->group(function () {
         Route::put('/discussions/{discussion}/{topic}', [TopicController::class, 'update']);
         Route::delete('/discussions/{discussion}/{topic}', [TopicController::class, 'destroy']);
         
-        Route::get('/invitation', [UserController::class, 'invitation'])->name('invitation');
-        Route::get('/invitation/{user}', [UserController::class, 'acceptedInvitation'])->name('invitation-accepted');
         Route::get('/users', [UserController::class, 'index'])->middleware('auth');
         Route::get('/users/{user}', [UserController::class, 'show']);
         Route::post('/users', [UserController::class, 'store']);

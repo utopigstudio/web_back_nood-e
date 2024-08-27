@@ -58,6 +58,19 @@ class AuthController extends Controller
         return $this->respondWithToken($this->auth->refresh());
     }
 
+    public function acceptInvitation(User $user)
+    {
+        $user = User::findOrFail($user->id);
+
+        if (!request()->hasValidSignature()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        $token = $this->auth->fromUser($user);
+        
+        return $this->respondWithToken($token);
+    }
+
     protected function respondWithToken($token)
     {
         return response()->json([

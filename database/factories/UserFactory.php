@@ -2,9 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Organization;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
@@ -18,19 +16,10 @@ class UserFactory extends Factory
             'surname' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'description' => fake()->sentence(),
-            'email_verified_at' => now(),
-            // 'password' => static::$password ??= Hash::make('password'),
             'password' => 'password',
             'organization_id' => rand(1, 10),
             'image' => fake()->imageUrl(),
             'remember_token' => Str::random(10),
         ];
-    }
-
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
     }
 }
