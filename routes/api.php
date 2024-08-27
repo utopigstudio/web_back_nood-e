@@ -61,7 +61,7 @@ Route::middleware('api')->group(function () {
         Route::put('/discussions/{discussion}/{topic}', [TopicController::class, 'update']);
         Route::delete('/discussions/{discussion}/{topic}', [TopicController::class, 'destroy']);
         
-        Route::get('/users', [UserController::class, 'index'])->middleware('auth');
+        Route::get('/users', [UserController::class, 'index']);
         Route::get('/users/{user}', [UserController::class, 'show']);
         Route::post('/users', [UserController::class, 'store']);
         Route::put('/users/{user}', [UserController::class, 'update']);
