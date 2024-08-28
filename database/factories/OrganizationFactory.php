@@ -14,7 +14,7 @@ class OrganizationFactory extends Factory
             'name' => fake()->company(),
             'description' => fake()->paragraph(),
             'image' => fake()->imageUrl(),
-            'user_id' => rand(1, 10),
+            'owner_id' => rand(1, 10),
         ];
     }
 }

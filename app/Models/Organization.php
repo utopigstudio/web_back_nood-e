@@ -25,8 +25,13 @@ class Organization extends Model
         'image' => 'organization-'
     ];
 
-    public function user(): BelongsTo
+    public function user(): HasMany
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(User::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

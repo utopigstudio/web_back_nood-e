@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('user_id')->constrained()->onDelete('restrict');
+            $table->foreignId('owner_id')->constrained('users')->onDelete('restrict');
             $table->timestamps();
         });
     }
