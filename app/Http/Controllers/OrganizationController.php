@@ -31,21 +31,13 @@ class OrganizationController extends Controller
 
     public function show(string $id)
     {
-        $organization = Organization::with('user')->where('id', $id)->first();
+        $organization = Organization::with('owner')->where('id', $id)->first();
         return response()->json($organization, 200);
     }
 
     public function update(Request $request, string $id)
     {
         $organization = Organization::find($id);
-
-        if ($request->hasFile('image')) {
-            if ($organization->image) {
-                $organization->deleteImage($organization->image);
-            }
-
-            $data['image'] = Organization::store64Image($request->input('image'), 'organizations/images');
-        }
 
         $organization->update($request->all());
         return response()->json($organization, 200);

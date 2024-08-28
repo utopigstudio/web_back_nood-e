@@ -16,7 +16,7 @@ class Organization extends Model
         'name', 
         'description',
         'image',
-        'user_id'
+        'owner_id'
     ];
 
     protected $image_fields = ['image'];
@@ -25,13 +25,13 @@ class Organization extends Model
         'image' => 'organization-'
     ];
 
-    public function user(): HasMany
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }
