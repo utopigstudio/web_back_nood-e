@@ -104,8 +104,7 @@ trait ImageTrait
             $data = substr($value, strpos($value, ',') + 1);
             $processed_contents = base64_decode($data);
         } else {
-            $im = $this->resampleImage($value);
-            $processed_contents = $im->__toString();
+            $processed_contents = $this->resampleImage($value);
         }
 
         $filename = $prefix . md5($value.time()).'.'.last(explode('.', self::$MIME_TYPE_EXTENSION[$mime_type]));
@@ -124,7 +123,7 @@ trait ImageTrait
 
         $max_res = $higher_quality ? 4000 : 2600;
         $quality = $higher_quality ? 90 : 80;
-        $image = Image::make($file_contents);
+        $image = Image::read($file_contents);
 
         // only resize if width larger than max_res
         $w = $image->width();
@@ -138,7 +137,7 @@ trait ImageTrait
                 $constraint->aspectRatio();
             });
         }
-        return $image->stream(null, $quality);  // use format to reconvert the image.
+        return $image->toJpeg()->toFilePointer(null, $quality);  // use format to reconvert the image.
     }
     public function storeBase64Image($base64Image, $directory = 'images')
     {
