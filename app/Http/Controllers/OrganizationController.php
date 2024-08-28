@@ -31,7 +31,7 @@ class OrganizationController extends Controller
 
     public function show(string $id)
     {
-        $organization = Organization::find($id)->with('user')->first();
+        $organization = Organization::with('user')->where('id', $id)->first();
         return response()->json($organization, 200);
     }
 
