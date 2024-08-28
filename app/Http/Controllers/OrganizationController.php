@@ -40,14 +40,14 @@ class OrganizationController extends Controller
         $organization = Organization::find($id);
 
         if ($request->hasFile('image')) {
-           if ($organization->image) {
-               $organization->deleteImage($organization->image, 'local');
-           }
+            if ($organization->image) {
+                $organization->deleteImage($organization->image);
+            }
 
-           $data['image'] = Organization::store64Image($request->input('image'), 'organizations/images');
+            $data['image'] = Organization::store64Image($request->input('image'), 'organizations/images');
         }
 
-        $organization->update($request->toArray());
+        $organization->update($request->all());
         return response()->json($organization, 200);
     }
 
@@ -56,7 +56,7 @@ class OrganizationController extends Controller
         $organization = Organization::find($id);
 
         if ($organization->image) {
-            $organization->deleteImage($organization->image, 'local');
+            $organization->deleteImage($organization->image);
         }
         
         $organization->delete();

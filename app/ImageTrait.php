@@ -20,7 +20,7 @@ trait ImageTrait
         'image/webp' => 'webp',
     ];
 
-    public $stored = 'local';
+    public $stored = 'public';
 
     public function setAttribute($key, $value)
     {
@@ -42,7 +42,7 @@ trait ImageTrait
 
         if (in_array($key, $this->image_fields) && $this->getAttributeValue($key)) {
             if (array_key_exists($key, $this->attributes) || $this->hasGetMutator($key)) {
-                return Storage::disk($this->stored)->url($this->getAttributeValue($key));
+                return Storage::disk($this->stored);
             }
         }
         return parent::getAttribute($key);
@@ -167,12 +167,23 @@ trait ImageTrait
         throw new HttpResponseException(response()->json(['error' => 'Invalid base64 image format'], 400));
     }
 
-    public function deleteImage($image, $disk = 'local')
+    public function deleteImage($image)
     {
-        if (Storage::disk($disk)->exists($image)) {
-            return Storage::disk($disk)->delete($image);
+        if (Storage::disk($this->stored)->exists($image)) {
+            return Storage::disk($this->stored)->delete($image);
         }
 
         return false;
     }
+
+    public function updateImage($image, $newImage, $prefix)
+    {
+        if ($newImage) {
+            $this->deleteImage($image);
+            return $this->uploadImage($newImage, $prefix);
+        }
+
+        return $image;
+    }
+    
 }

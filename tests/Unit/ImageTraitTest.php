@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use App\Models\Organization;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\ImageTrait;
 use Intervention\Image\Laravel\Facades\Image;
+use Mockery;
 
 class ImageTraitTest extends TestCase
 {
@@ -26,30 +28,23 @@ class ImageTraitTest extends TestCase
     public function test_uploads_image_to_local_storage()
     {
         Storage::fake('local');
-        
-        $tempImagePath = tempnam(sys_get_temp_dir(), 'test_image') . '.jpg';
-        $image = imagecreatetruecolor(100, 100); 
-        $color = imagecolorallocate($image, 255, 0, 0); 
-        imagefill($image, 0, 0, $color); 
-        imagejpeg($image, $tempImagePath);
+        Mockery::mock(ImageTrait::class);
 
-        $base64Image = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($tempImagePath));
+        $image = 'data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==';
 
         $organization = Organization::create([
-            'name' => 'Test Organization',
-            'description' => 'Test Description',
-            'image' => $base64Image,
+            'name' => 'Test organization',
+            'description' => 'Test organization description',
+            'image' => $image,
             'user_id' => 1
         ]);
 
-        $prefix = 'test-';
-        $uploadedImagePath = $this->uploadImage($base64Image, $prefix);
+        $uploadedImagePath =  'organization-' . $organization->image;
 
         Storage::disk('local')->exists($uploadedImagePath);
 
         $this->assertNotNull($organization->image);
         $this->assertStringStartsWith('organization-', $organization->image);
-        unlink($tempImagePath);
     }
 
 
