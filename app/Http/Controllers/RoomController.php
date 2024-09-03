@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RoomRequest;
-use Illuminate\Http\Request;
 use App\Models\Room;
 
 
@@ -18,46 +17,34 @@ class RoomController extends Controller
     public function store(RoomRequest $request)
     {
         $data = $request->validated();
-
-        if ($request->hasFile('image')) {
-            $data['image'] = Room::store64Image($request->input('image'), 'rooms/images');
-        }
-
         $room = Room::create($data);
         return response()->json($room, 201);
     }
 
-    public function show($id)
+    public function show(Room $room)
     {
-        $room = Room::find($id)->with('events')->first();
+        $room->load('events');
         return response()->json($room, 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(RoomRequest $request, Room $room)
     {
-        $room = Room::find($id);
-
-        if ($request->hasFile('image')) {
-           if ($room->image) {
-               $room->deleteImage($room->image, 'local');
-           }
-
-           $data['image'] = Room::store64Image($request->input('image'), 'rooms/images');
-        }
-
-        $room->update($request->toArray());
+        $data = $request->validated();
+        $room->update($data);
         return response()->json($room, 200);
     }
 
     public function destroy(Room $room)
     {
-        Room::destroy($room);
+        // TODO: validate if the user can delete the room
+        // TODO: validate if the room can be deleted
 
+        // TODO: move to observer (deleted event)
         if ($room->image) {
             $room->deleteImage($room->image, 'local');
         }
 
         $room->delete();
-        return response()->json('Room deleted successfully', 204);
+        return response()->json(['message' => 'Room deleted successfully'], 200);
     }
 }
