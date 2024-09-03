@@ -82,7 +82,7 @@ trait ImageTrait
             $processed_contents = $this->resampleImage($value);
         }
 
-        $filename = $prefix . md5($value.time()).'.'.last(explode('.', self::$MIME_TYPE_EXTENSION[$mime_type]));
+        $filename = $prefix . Str::random(32).'.'.last(explode('.', self::$MIME_TYPE_EXTENSION[$mime_type]));
         Storage::disk($this->disk)->put($destination_path . $filename, $processed_contents);
 
         return $destination_path . $filename;
