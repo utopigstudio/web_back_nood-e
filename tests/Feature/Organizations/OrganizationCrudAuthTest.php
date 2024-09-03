@@ -3,14 +3,15 @@
 namespace Tests\Feature\Organizations;
 
 use App\Models\Organization;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\Fluent\AssertableJson;
+use Tests\Support\Authentication;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class OrganizationCrudAuthTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, Authentication;
 
     private function createOrganization($user): Organization
     {
@@ -19,36 +20,33 @@ class OrganizationCrudAuthTest extends TestCase
             'description' => 'Organization description',                                 
             'owner_id' => $user->id
         ]);
-        
     }
 
-    private function createAuthUser (): array
+    private function createOrganizationWithImage($user): Organization
     {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        return ['user' => $user, 'token' => $token];
+        return Organization::create([
+            'name' => 'Organization name',
+            'description' => 'Organization description',
+            'image' => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
+            'owner_id' => $user->id
+        ]);
     }
 
+    public function test_not_auth_user_cannot_get_all_organizations(): void
+    {
+        $this->authenticated('invalid-token')
+            ->get('/api/v1/organizations')
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }
 
     public function test_auth_user_can_get_all_organizations(): void
     {
-        $this->withoutExceptionHandling();
+        $this->createOrganization($this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $this->createOrganization($user);
-        $response = $this->get('/api/v1/organizations');
-
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->get('/api/v1/organizations')
+            ->assertStatus(200)
             ->assertJsonIsArray()
             ->assertJsonCount(1)
             ->assertJsonStructure([
@@ -59,119 +57,157 @@ class OrganizationCrudAuthTest extends TestCase
                     'owner_id',
                     'updated_at',
                     'created_at',
-                    ]]);
+            ]]);
     }
 
     public function test_auth_user_can_get_organization_by_id(): void
     {
-        $this->withoutExceptionHandling();
+        $organization = $this->createOrganization($this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $organization = $this->createOrganization($user);
-
-        $this->get('/api/v1/organizations/'.$organization->id)
+        $this->authenticated()
+            ->get('/api/v1/organizations/'.$organization->id)
             ->assertJson([
                 'name' => 'Organization name', 
                 'description' => 'Organization description',
-                'owner_id' => $user->id
-                ])
+                'owner_id' => $this->user->id
+            ])
             ->assertJsonStructure([
-                    'name', 
-                    'description',             
-                    'owner_id',])
+                'name', 
+                'description',             
+                'owner_id',
+            ])
             ->assertStatus(200);
     }
 
     public function test_auth_user_can_create_organization_only_required_fields(): void
     {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
         $data = [
             'name' => 'Organization name', 
             'description' => 'Organization description',
-            'owner_id' => $user->id
+            'owner_id' => $this->user->id
         ];
 
-        $response = $this->post('/api/v1/organizations', $data);
-
-        $response->assertStatus(201)
+        $this->authenticated()
+            ->post('/api/v1/organizations', $data)
+            ->assertCreated(201)
             ->assertJsonFragment([
                 'name' => 'Organization name', 
                 'description' => 'Organization description',
-                'owner_id' => $user->id
-        ])->assertCreated();
+                'owner_id' => $this->user->id
+        ]);
     }
 
     public function test_auth_user_can_update_organization_only_required_fields(): void
     {
-        $this->withoutExceptionHandling();
+        $organization = $this->createOrganization($this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $organization = $this->createOrganization($user);
-
-        $response = $this->put('/api/v1/organizations/'.$organization->id, [
+        $this->authenticated()
+            ->put('/api/v1/organizations/'.$organization->id, [
             'name' => 'Updated organization name', 
             'description' => 'Updated organization description',
-            'owner_id' => $user->id
-            ]);
-
-        $response->assertStatus(200)
+            'owner_id' => $this->user->id
+            ])
+            ->assertStatus(200)
             ->assertJsonFragment([
                 'name' => 'Updated organization name', 
                 'description' => 'Updated organization description',
-                'owner_id' => $user->id
+                'owner_id' => $this->user->id
             ]);
     }
 
     public function test_auth_user_can_delete_organization(): void
     {
-        $this->withoutExceptionHandling();
+        $organization = $this->createOrganization($this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $organization = $this->createOrganization($user);
-
-        $response = $this->delete('/api/v1/organizations/'.$organization->id);
-
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->delete('/api/v1/organizations/'.$organization->id)
+            ->assertStatus(200)
             ->assertJson(
                 ['message' => 'Organization deleted successfully']
             );
+    }
+
+    public function test_auth_user_can_create_organization_with_image(): void
+    {
+        Storage::fake('public');
+
+        $data = [
+            'name' => 'Organization name', 
+            'description' => 'Organization description',
+            "image" => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
+            'owner_id' => $this->user->id
+        ];
+
+        $this->authenticated()
+            ->post('/api/v1/organizations', $data)
+            ->assertCreated(201)
+            ->assertJsonFragment([
+                'name' => 'Organization name', 
+                'description' => 'Organization description',
+                'owner_id' => $this->user->id
+            ])
+            ->assertJson(fn (AssertableJson $json) =>
+                $json->where('image', fn ($image) => str($image)->contains('organization-'))
+                    ->etc()
+            );
+
+        $image = Organization::first()->image;
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertExists($image);
+    }
+
+    public function test_auth_user_can_update_organization_with_image(): void
+    {
+        Storage::fake('public');
+
+        $organization = $this->createOrganizationWithImage($this->user);
+        $oldImage = $organization->image;
+
+        $data = [
+            'name' => 'Updated organization name', 
+            'description' => 'Updated organization description',
+            "image" => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
+            'owner_id' => $this->user->id
+        ];
+
+        $this->authenticated()
+            ->put('/api/v1/organizations/'.$organization->id, $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'Updated organization name', 
+                'description' => 'Updated organization description',
+                'owner_id' => $this->user->id
+            ])
+            ->assertJson(fn (AssertableJson $json) =>
+                $json->where('image', fn ($image) => str($image)->contains('organization-'))
+                    ->etc()
+            );
+
+        $newImage = Organization::first()->image;
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertExists($newImage);
+        $storage->assertMissing($oldImage);
+    }
+
+    public function test_auth_user_can_delete_organization_with_image(): void
+    {
+        Storage::fake('public');
+
+        $organization = $this->createOrganizationWithImage($this->user);
+
+        $this->authenticated()
+            ->delete('/api/v1/organizations/'.$organization->id)
+            ->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Organization deleted successfully']
+            );
+
+        $image = $organization->image;
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertMissing($image);
     }
 }
