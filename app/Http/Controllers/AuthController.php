@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\SetPasswordRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\JWTGuard;
 
 class AuthController extends Controller
@@ -31,12 +32,13 @@ class AuthController extends Controller
 
     public function setPassword(SetPasswordRequest $request)
     {
-        $data = $request->validated();
+        $request->validated();
 
+        /** @var User */
         $user = $this->auth->user();
 
         $user->update([
-            'password' => bcrypt(request('password')),
+            'password' => Hash::make($request->string('password')),
         ]);
 
         return response()->json(['message' => 'Password set successfully']);

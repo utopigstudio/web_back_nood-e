@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
@@ -18,7 +18,7 @@ Route::middleware('api')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/login', [AuthController::class, 'login'])->name('login');
         Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('forgot-password');
-        Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
+        Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('reset-password');
         Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::get('/invitation/{user}', [AuthController::class, 'acceptInvitation'])->name('invitation');
     });
