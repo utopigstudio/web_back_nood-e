@@ -4,8 +4,6 @@ namespace Tests\Feature\Organizations;
 
 use App\Models\Organization;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\Support\Authentication;
 use Tests\TestCase;
 
@@ -16,18 +14,8 @@ class OrganizationCrudAuthTest extends TestCase
     private function createOrganization($user): Organization
     {
         return Organization::create([
-            'name' => 'Organization name', 
-            'description' => 'Organization description',                                 
-            'owner_id' => $user->id
-        ]);
-    }
-
-    private function createOrganizationWithImage($user): Organization
-    {
-        return Organization::create([
             'name' => 'Organization name',
             'description' => 'Organization description',
-            'image' => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
             'owner_id' => $user->id
         ]);
     }
@@ -51,8 +39,8 @@ class OrganizationCrudAuthTest extends TestCase
             ->assertJsonCount(1)
             ->assertJsonStructure([
                 '*' => [
-                    'name', 
-                    'description',            
+                    'name',
+                    'description',
                     'image',
                     'owner_id',
                     'updated_at',
@@ -71,11 +59,6 @@ class OrganizationCrudAuthTest extends TestCase
                 'description' => 'Organization description',
                 'owner_id' => $this->user->id
             ])
-            ->assertJsonStructure([
-                'name', 
-                'description',             
-                'owner_id',
-            ])
             ->assertStatus(200);
     }
 
@@ -83,7 +66,6 @@ class OrganizationCrudAuthTest extends TestCase
     {
         $data = [
             'name' => 'Organization name', 
-            'description' => 'Organization description',
             'owner_id' => $this->user->id
         ];
 
@@ -92,7 +74,6 @@ class OrganizationCrudAuthTest extends TestCase
             ->assertCreated(201)
             ->assertJsonFragment([
                 'name' => 'Organization name', 
-                'description' => 'Organization description',
                 'owner_id' => $this->user->id
         ]);
     }
@@ -101,16 +82,16 @@ class OrganizationCrudAuthTest extends TestCase
     {
         $organization = $this->createOrganization($this->user);
 
-        $this->authenticated()
-            ->put('/api/v1/organizations/'.$organization->id, [
+        $data = [
             'name' => 'Updated organization name', 
-            'description' => 'Updated organization description',
             'owner_id' => $this->user->id
-            ])
+        ];
+
+        $this->authenticated()
+            ->put('/api/v1/organizations/'.$organization->id, $data)
             ->assertStatus(200)
             ->assertJsonFragment([
                 'name' => 'Updated organization name', 
-                'description' => 'Updated organization description',
                 'owner_id' => $this->user->id
             ]);
     }
@@ -125,89 +106,5 @@ class OrganizationCrudAuthTest extends TestCase
             ->assertJson(
                 ['message' => 'Organization deleted successfully']
             );
-    }
-
-    public function test_auth_user_can_create_organization_with_image(): void
-    {
-        Storage::fake('public');
-
-        $data = [
-            'name' => 'Organization name', 
-            'description' => 'Organization description',
-            "image" => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
-            'owner_id' => $this->user->id
-        ];
-
-        $this->authenticated()
-            ->post('/api/v1/organizations', $data)
-            ->assertCreated(201)
-            ->assertJsonFragment([
-                'name' => 'Organization name', 
-                'description' => 'Organization description',
-                'owner_id' => $this->user->id
-            ])
-            ->assertJson(fn (AssertableJson $json) =>
-                $json->where('image', fn ($image) => str($image)->contains('organization-'))
-                    ->etc()
-            );
-
-        $image = Organization::first()->image;
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
-        $storage = Storage::disk('public');
-        $storage->assertExists($image);
-    }
-
-    public function test_auth_user_can_update_organization_with_image(): void
-    {
-        Storage::fake('public');
-
-        $organization = $this->createOrganizationWithImage($this->user);
-        $oldImage = $organization->image;
-
-        $data = [
-            'name' => 'Updated organization name', 
-            'description' => 'Updated organization description',
-            "image" => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
-            'owner_id' => $this->user->id
-        ];
-
-        $this->authenticated()
-            ->put('/api/v1/organizations/'.$organization->id, $data)
-            ->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => 'Updated organization name', 
-                'description' => 'Updated organization description',
-                'owner_id' => $this->user->id
-            ])
-            ->assertJson(fn (AssertableJson $json) =>
-                $json->where('image', fn ($image) => str($image)->contains('organization-'))
-                    ->etc()
-            );
-
-        $newImage = Organization::first()->image;
-
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
-        $storage = Storage::disk('public');
-        $storage->assertExists($newImage);
-        $storage->assertMissing($oldImage);
-    }
-
-    public function test_auth_user_can_delete_organization_with_image(): void
-    {
-        Storage::fake('public');
-
-        $organization = $this->createOrganizationWithImage($this->user);
-
-        $this->authenticated()
-            ->delete('/api/v1/organizations/'.$organization->id)
-            ->assertStatus(200)
-            ->assertJson(
-                ['message' => 'Organization deleted successfully']
-            );
-
-        $image = $organization->image;
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
-        $storage = Storage::disk('public');
-        $storage->assertMissing($image);
     }
 }

@@ -3,22 +3,13 @@
 namespace Tests\Feature\Rooms;
 
 use App\Models\Room;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Authentication;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RoomCrudAuthTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private function createAuthUser (): array
-    {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        return ['user' => $user, 'token' => $token];
-    }
+    use RefreshDatabase, Authentication;
 
     private function createRoom (): Room
     {
@@ -27,90 +18,87 @@ class RoomCrudAuthTest extends TestCase
             'description' => 'Room description',
             'is_available' => true,
         ]);
-
     }
 
-    public function test_users_can_create_rooms()
+    public function test_not_auth_user_cannot_get_all_rooms(): void
     {
-        $this->withoutExceptionHandling();
+        $this->authenticated('invalid-token')
+            ->get('/api/v1/rooms')
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
+    public function test_auth_user_can_get_all_rooms(): void
+    {
+        $this->createRoom($this->user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $this->authenticated()
+            ->get('/api/v1/rooms')
+            ->assertStatus(200)
+            ->assertJsonIsArray()
+            ->assertJsonCount(1)
+            ->assertJsonStructure([
+                '*' => [
+                    'name',
+                    'description',
+                    'image',
+                    'is_available',
+                    'updated_at',
+                    'created_at',
+            ]]);
+    }
 
-        $this->actingAs($user);
+    public function test_auth_user_can_get_room_by_id(): void
+    {
+        $room = $this->createRoom($this->user);
 
+        $this->authenticated()
+            ->get('/api/v1/rooms/'.$room->id)
+            ->assertJson([
+                'name' => 'Room name', 
+                'description' => 'Room description',
+                'is_available' => true,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function test_auth_user_can_create_room_only_required_fields()
+    {
         $data = [
             'name' => 'Room name',
-            'description' => 'Room description',
-            'is_available' => true,
         ];
         
-        $response = $this->post('/api/v1/rooms', $data);
- 
-
-        $response->assertCreated()
-            ->assertJsonStructure([
-                'name',
-                'description',
-                'is_available',
+        $this->authenticated()
+            ->post('/api/v1/rooms', $data)
+            ->assertCreated()
+            ->assertJsonFragment([
+                'name' => 'Room name',
             ]);
-
     }
 
-    public function test_users_can_update_rooms()
+    public function test_auth_user_can_update_room_only_required_fields()
     {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
         $room = $this->createRoom();
 
-        $response = $this->put('/api/v1/rooms/'.$room->id, [
-            'name' => 'Update room name',
-            'description' => 'Update room description',
-            'is_available' => true,
-            ]);
+        $data = [
+            'name' => 'Updated room name',
+        ];
 
-        $response->assertStatus(200)
-                ->assertJsonFragment([
-                    'name' => 'Update room name',
-                    'description' => 'Update room description',
-                    'is_available' => true,
-                ]);
+        $this->authenticated()
+            ->put('/api/v1/rooms/'.$room->id, $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'Updated room name',
+            ]);
     }
 
-    public function test_users_can_delete_rooms()
+    public function test_auth_user_can_delete_room()
     {
-        $this->withoutExceptionHandling();
-        
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
         $room = $this->createRoom();
 
-        $response = $this->actingAs($user)->delete('/api/v1/rooms/'.$room->id);
-
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->delete('/api/v1/rooms/'.$room->id)
+            ->assertStatus(200)
             ->assertJson(
                 ['message' => 'Room deleted successfully']
             );

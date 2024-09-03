@@ -25,7 +25,7 @@ class OrganizationRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'image' => 'nullable|string',
             'owner_id' => 'required|exists:users,id',
         ];
