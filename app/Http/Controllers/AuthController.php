@@ -55,7 +55,13 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        return $this->respondWithToken($this->auth->refresh());
+        try {
+            $token = $this->auth->refresh();
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json(['message' => 'Invalid token'], 401);
+        }
+
+        return $this->respondWithToken($token);
     }
 
     public function acceptInvitation(User $user)
