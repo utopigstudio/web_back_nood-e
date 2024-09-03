@@ -17,8 +17,7 @@ class OrganizationCrudAuthTest extends TestCase
         return Organization::create([
             'name' => 'Organization name', 
             'description' => 'Organization description',                                 
-            'image' => 'image.jpg',
-            'user_id' => $user->id
+            'owner_id' => $user->id
         ]);
         
     }
@@ -57,7 +56,7 @@ class OrganizationCrudAuthTest extends TestCase
                     'name', 
                     'description',            
                     'image',
-                    'user_id',
+                    'owner_id',
                     'updated_at',
                     'created_at',
                     ]]);
@@ -77,20 +76,18 @@ class OrganizationCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->createOrganization($user);
+        $organization = $this->createOrganization($user);
 
-        $response = $this->get('/api/v1/organizations/1')
+        $this->get('/api/v1/organizations/'.$organization->id)
             ->assertJson([
                 'name' => 'Organization name', 
                 'description' => 'Organization description',
-                'image' => 'image.jpg',
-                'user_id' => $user->id
+                'owner_id' => $user->id
                 ])
             ->assertJsonStructure([
                     'name', 
                     'description',             
-                    'image',
-                    'user_id',])
+                    'owner_id',])
             ->assertStatus(200);
     }
 
@@ -111,7 +108,7 @@ class OrganizationCrudAuthTest extends TestCase
         $data = [
             'name' => 'Organization name', 
             'description' => 'Organization description',
-            'user_id' => $user->id
+            'owner_id' => $user->id
         ];
 
         $response = $this->post('/api/v1/organizations', $data);
@@ -120,7 +117,7 @@ class OrganizationCrudAuthTest extends TestCase
             ->assertJsonFragment([
                 'name' => 'Organization name', 
                 'description' => 'Organization description',
-                'user_id' => $user->id
+                'owner_id' => $user->id
         ])->assertCreated();
     }
 
@@ -138,21 +135,19 @@ class OrganizationCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->createOrganization($user);
+        $organization = $this->createOrganization($user);
 
-        $response = $this->put('/api/v1/organizations/1', [
+        $response = $this->put('/api/v1/organizations/'.$organization->id, [
             'name' => 'Updated organization name', 
             'description' => 'Updated organization description',
-            'image' => 'image.jpg',
-            'user_id' => $user->id
+            'owner_id' => $user->id
             ]);
 
         $response->assertStatus(200)
             ->assertJsonFragment([
                 'name' => 'Updated organization name', 
                 'description' => 'Updated organization description',
-                'image' => 'image.jpg',
-                'user_id' => $user->id
+                'owner_id' => $user->id
             ]);
     }
 
@@ -170,11 +165,13 @@ class OrganizationCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->createOrganization($user);
+        $organization = $this->createOrganization($user);
 
-        $response = $this->delete('/api/v1/organizations/1');
+        $response = $this->delete('/api/v1/organizations/'.$organization->id);
 
-        $response->assertStatus(204)
-            ->assertNoContent();
+        $response->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Organization deleted successfully']
+            );
     }
 }

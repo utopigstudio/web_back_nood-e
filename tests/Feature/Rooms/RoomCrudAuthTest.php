@@ -25,7 +25,6 @@ class RoomCrudAuthTest extends TestCase
         return Room::create([
             'name' => 'Room name',
             'description' => 'Room description',
-            'image' => 'image.jpg',
             'is_available' => true,
         ]);
 
@@ -48,7 +47,6 @@ class RoomCrudAuthTest extends TestCase
         $data = [
             'name' => 'Room name',
             'description' => 'Room description',
-            'image' => 'image.jpg',
             'is_available' => true,
         ];
         
@@ -59,7 +57,6 @@ class RoomCrudAuthTest extends TestCase
             ->assertJsonStructure([
                 'name',
                 'description',
-                'image',
                 'is_available',
             ]);
 
@@ -79,12 +76,11 @@ class RoomCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->createRoom();
+        $room = $this->createRoom();
 
-        $response = $this->put('/api/v1/rooms/1', [
+        $response = $this->put('/api/v1/rooms/'.$room->id, [
             'name' => 'Update room name',
             'description' => 'Update room description',
-            'image' => 'image.jpg',
             'is_available' => true,
             ]);
 
@@ -92,7 +88,6 @@ class RoomCrudAuthTest extends TestCase
                 ->assertJsonFragment([
                     'name' => 'Update room name',
                     'description' => 'Update room description',
-                    'image' => 'image.jpg',
                     'is_available' => true,
                 ]);
     }
@@ -111,10 +106,13 @@ class RoomCrudAuthTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->createRoom();
+        $room = $this->createRoom();
 
-        $response = $this->actingAs($user)->delete('/api/v1/rooms/1');
+        $response = $this->actingAs($user)->delete('/api/v1/rooms/'.$room->id);
 
-        $response->assertStatus(204);
+        $response->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Room deleted successfully']
+            );
     }
 }
