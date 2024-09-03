@@ -36,7 +36,7 @@ class InvitationTest extends TestCase
             UserInviteNotification::class,
             function ($notification, $channels) use ($user) {
                 $mailData = $notification->toMail($user);
-                $url = URL::signedRoute('invitation', $user);
+                $url = $user->getInviteUrl();
                 $this->assertStringContainsString($url, $mailData->actionUrl);
                 return true;
             }
@@ -57,4 +57,15 @@ class InvitationTest extends TestCase
                 'expires_in'
             ]);
     }
+
+    public function test_email_invitation_accept_with_expired_signature(): void
+    {
+        $user = $this->createUser();
+
+        $url = URL::signedRoute('invitation', $user, -1);
+
+        $this->get($url)
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Expired URL']);
+    } 
 }

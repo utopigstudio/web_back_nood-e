@@ -103,8 +103,22 @@ class User extends Authenticatable implements JWTSubject
 
     public function sendInviteNotification()
     {
-        $url = URL::signedRoute('invitation', $this);
+        $frontUrl = $this->getInviteUrl();
 
-        $this->notify(new UserInviteNotification($url));
+        $this->notify(new UserInviteNotification($frontUrl));
+    }
+
+    public function getInviteUrl(): string
+    {
+        $expirationInSeconds = null;
+        // 7 days
+        // $expirationInSeconds = 60 * 60 * 24 * 7;
+
+        $url = URL::signedRoute('invitation', $this, $expirationInSeconds, false);
+
+        $userId = $this->id;
+        $signature = substr($url, strpos($url, '?signature=') + 11);
+        
+        return config('app.frontend_url') . '/invitation?user_id=' . $userId . '&signature=' . $signature;
     }
 }

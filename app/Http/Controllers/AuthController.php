@@ -73,7 +73,7 @@ class AuthController extends Controller
         $user = User::findOrFail($user->id);
 
         if (!request()->hasValidSignature()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Expired invitation'], 401);
         }
         
         $token = $this->auth->fromUser($user);
