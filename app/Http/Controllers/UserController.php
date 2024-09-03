@@ -44,5 +44,4 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Method not implemented'], 501);
     }
-   
 }

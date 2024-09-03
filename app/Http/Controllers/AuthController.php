@@ -31,14 +31,16 @@ class AuthController extends Controller
 
     public function setPassword(SetPasswordRequest $request)
     {
-        $user = User::where('email', $request->email)->firstOrFail();
-        $user->password = bcrypt($request->password);
-        $user->save();
-        
-        $token = $this->auth->fromUser($user); 
-        return $this->respondWithToken($token);
+        $data = $request->validated();
 
-    }   
+        $user = $this->auth->user();
+
+        $user->update([
+            'password' => bcrypt(request('password')),
+        ]);
+
+        return response()->json(['message' => 'Password set successfully']);
+    }
 
     public function me()
     {

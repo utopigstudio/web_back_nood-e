@@ -17,7 +17,6 @@ Route::middleware('api')->group(function () {
     // not authenticated routes
     Route::prefix('auth')->group(function () {
         Route::post('/login', [AuthController::class, 'login'])->name('login');
-        Route::post('/set-password/{user}', [AuthController::class, 'setPassword'])->name('set-password');
         Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('forgot-password');
         Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('reset-password');
         Route::post('/refresh', [AuthController::class, 'refresh']);
@@ -25,8 +24,9 @@ Route::middleware('api')->group(function () {
     });
     // authenticated routes
     Route::middleware('auth:api')->group(function() {
-        Route::post('/me', [AuthController::class, 'me']);
+        Route::get('/me', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/set-password', [AuthController::class, 'setPassword']);
 
         Route::get('/events', [EventController::class, 'index']);
         Route::get('/events/{event}', [EventController::class, 'show']);
