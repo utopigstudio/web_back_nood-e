@@ -7,16 +7,13 @@ use App\Models\Organization;
 
 class OrganizationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $organizations = Organization::all();
         return response()->json($organizations, 200);
     }
 
-    public function store(OrganizationRequest $request, Organization $organization)
+    public function store(OrganizationRequest $request)
     {
         $data = $request->validated();
         $organization = Organization::create($data);

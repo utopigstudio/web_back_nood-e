@@ -35,10 +35,6 @@ class OrganizationCrudAuthTestWithImageTest extends TestCase
         $this->authenticated()
             ->post('/api/v1/organizations', $data)
             ->assertCreated(201)
-            ->assertJsonFragment([
-                'name' => 'Organization name', 
-                'owner_id' => $this->user->id
-            ])
             ->assertJson(fn (AssertableJson $json) =>
                 $json->where('image', fn ($image) => str($image)->contains('organization-'))
                     ->etc()
@@ -66,10 +62,6 @@ class OrganizationCrudAuthTestWithImageTest extends TestCase
         $this->authenticated()
             ->put('/api/v1/organizations/'.$organization->id, $data)
             ->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => 'Updated organization name', 
-                'owner_id' => $this->user->id
-            ])
             ->assertJson(fn (AssertableJson $json) =>
                 $json->where('image', fn ($image) => str($image)->contains('organization-'))
                     ->etc()

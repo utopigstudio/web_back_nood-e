@@ -39,7 +39,7 @@ class User extends Authenticatable implements JWTSubject
     protected $image_fields = ['image'];
 
     protected $image_prefixes = [
-        'image' => 'users-'
+        'image' => 'user-'
     ];
 
     protected function casts(): array

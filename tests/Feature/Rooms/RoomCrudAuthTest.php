@@ -55,7 +55,7 @@ class RoomCrudAuthTest extends TestCase
         $this->authenticated()
             ->get('/api/v1/rooms/'.$room->id)
             ->assertJson([
-                'name' => 'Room name', 
+                'name' => 'Room name',
                 'description' => 'Room description',
                 'is_available' => true,
             ])

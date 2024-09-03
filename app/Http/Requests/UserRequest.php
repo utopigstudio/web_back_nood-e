@@ -17,9 +17,9 @@ class UserRequest extends FormRequest
             'name' => 'required|string',
             'surname' => 'nullable|string',
             'email' => 'required|email|max:255|unique:users',
-            'password' => 'nullable|string|min:8',
             'organization_id' => 'nullable|integer|exists:organizations,id',
             'description' => 'nullable|string',
+            'image' => 'nullable|string',
         ];
     }
 }

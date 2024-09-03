@@ -55,7 +55,7 @@ class OrganizationCrudAuthTest extends TestCase
         $this->authenticated()
             ->get('/api/v1/organizations/'.$organization->id)
             ->assertJson([
-                'name' => 'Organization name', 
+                'name' => 'Organization name',
                 'description' => 'Organization description',
                 'owner_id' => $this->user->id
             ])

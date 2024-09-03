@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname')->nullable();
             $table->string('email')->unique();
-            $table->string('password')->default('password');
+            $table->string('password')->nullable();
             $table->string('description')->nullable();
             $table->foreignId('organization_id')->nullable()->onDelete('set null');
             $table->string('image')->nullable();
