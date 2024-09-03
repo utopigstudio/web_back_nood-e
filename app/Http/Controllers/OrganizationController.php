@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrganizationRequest;
 use App\Models\Organization;
-use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
@@ -20,38 +19,34 @@ class OrganizationController extends Controller
     public function store(OrganizationRequest $request, Organization $organization)
     {
         $data = $request->validated();
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $organization->uploadImage($request->input('image'), 'organizations/images');
-        }
-
         $organization = Organization::create($data);
         return response()->json($organization, 201);
     }
 
-    public function show(string $id)
+    public function show(Organization $organization)
     {
-        $organization = Organization::with('owner')->where('id', $id)->first();
+        $organization->load('owner');
         return response()->json($organization, 200);
     }
 
-    public function update(Request $request, string $id)
+    public function update(OrganizationRequest $request, Organization $organization)
     {
-        $organization = Organization::find($id);
-
-        $organization->update($request->all());
+        $data = $request->validated();
+        $organization->update($data);
         return response()->json($organization, 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(Organization $organization)
     {
-        $organization = Organization::find($id);
+        // TODO: validate if the user can delete the organization
+        // TODO: validate if the organization can be deleted
 
+        // TODO: move to observer (deleted event)
         if ($organization->image) {
             $organization->deleteImage($organization->image);
         }
         
         $organization->delete();
-        return response()->json('Organization deleted successfully', 204);
+        return response()->json(['message' => 'Organization deleted successfully'], 200);
     }
 }
