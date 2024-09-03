@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -25,10 +24,11 @@ class UserInviteNotification extends Notification
 
     public function toMail($notifiable)
     {
+        // TODO: translate
         return (new MailMessage)
-                    ->line('You have been invited as a collaborator.')
-                    ->action('Accept invitation', $this->url)
-                    ->line('Thank you for using our application!');
+            ->line('You have been invited as a collaborator.')
+            ->action('Accept invitation', $this->url)
+            ->line('Thank you for using our application!');
     }
 
     public function toArray($notifiable)

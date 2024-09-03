@@ -3,40 +3,58 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Notifications\UserInviteNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class InvitationTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createAuthUser (): array
+    private function createUser(): User
     {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        return ['user' => $user, 'token' => $token];
+        return User::create([
+            'name' => 'User name',
+            'surname' => 'User surname',
+            'description' => 'User description',
+            'email' => 'test@test.com',
+        ]);
     }
 
-    public function test_email_invitation(): void
+    public function test_email_invitation_send(): void
     {
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
+        Notification::fake();
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $user = $this->createUser();
 
-        $this->actingAs($user);
+        $user->sendInviteNotification();
 
-        $response = $this->post('/api/v1/users', [
-            'name' => 'Laurita',
-            'email' => 'laurita@test.com'
-        ]);
+        Notification::assertSentTo(
+            $user,
+            UserInviteNotification::class,
+            function ($notification, $channels) use ($user) {
+                $mailData = $notification->toMail($user);
+                $url = URL::signedRoute('invitation', $user);
+                $this->assertStringContainsString($url, $mailData->actionUrl);
+                return true;
+            }
+        );
+    }
 
-        $response->assertStatus(201);
+    public function test_email_invitation_accept(): void
+    {
+        $user = $this->createUser();
+
+        $url = URL::signedRoute('invitation', $user);
+
+        $this->get($url)
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'access_token',
+                'token_type',
+                'expires_in'
+            ]);
     }
 }

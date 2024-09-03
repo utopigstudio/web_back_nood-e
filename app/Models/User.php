@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\ImageTrait;
+use App\Notifications\UserInviteNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -97,5 +99,12 @@ class User extends Authenticatable implements JWTSubject
     public function organizations(): HasMany
     {
         return $this->hasMany(Organization::class, 'owner_id');
+    }
+
+    public function sendInviteNotification()
+    {
+        $url = URL::signedRoute('invitation', $this);
+
+        $this->notify(new UserInviteNotification($url));
     }
 }

@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Notifications\UserInviteNotification;
-use Illuminate\Support\Facades\URL;
 
 class UserController extends Controller 
 {
@@ -20,9 +18,8 @@ class UserController extends Controller
         $data = $request->validated();
         $user = User::create($data);
 
-        $url = URL::signedRoute('invitation', $user);
+        $user->sendInviteNotification();
 
-        $user->notify(new UserInviteNotification($url));
         return response()->json([
             'user' => $user,
             'message' => 'Invitation sent successfully'
