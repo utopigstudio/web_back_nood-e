@@ -108,9 +108,9 @@ class UserCrudAuthTest extends TestCase
 
         $this->authenticated()
             ->delete('/api/v1/users/'.$user->id)
-            ->assertStatus(501)
+            ->assertStatus(200)
             ->assertJson(
-                ['message' => 'Method not implemented']
+                ['message' => 'User deactivated successfully']
             );
     }
 }

@@ -24,7 +24,7 @@ class TopicController extends Controller
             return response()->json(['error' => 'Topic not found in this discussion'], 404);
         }
 
-        $topic->load('comments');
+        $topic->load(['author', 'comments.author']);
 
         return response()->json($topic, 200);
     }

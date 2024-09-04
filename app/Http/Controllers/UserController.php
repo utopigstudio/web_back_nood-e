@@ -40,8 +40,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // TODO: users are soft deleted
+        $user->delete();
 
-        return response()->json(['message' => 'Method not implemented'], 501);
+        return response()->json(['message' => 'User deactivated successfully'], 200);
     }
 }
