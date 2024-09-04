@@ -7,37 +7,20 @@ use App\Models\Discussion;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Authentication;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CommentCrudAuthTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, Authentication;
 
-    private function createAuthUser (): array
-    {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        return ['user' => $user, 'token' => $token];
-    }
-
-    private function createComment(User $user, Topic $topic): Comment
-    {
-        return Comment::create([
-            'description' => 'Comment description',
-            'user_id' => $user->id,
-            'topic_id' => $topic->id
-        ]);
-    }
-
-    private function createTopic($discussion, $user): Topic
+    private function createTopic(Discussion $discussion, User $user): Topic
     {
         return Topic::create([
             'title' => 'Topic title',
-            'description' => 'Topic description',
+            'content' => 'Topic content',
             'discussion_id' => $discussion->id,
-            'user_id' => $user->id
+            'author_id' => $user->id
         ]);
     }
 
@@ -46,160 +29,102 @@ class CommentCrudAuthTest extends TestCase
         return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => $user->id,
+            'author_id' => $user->id,
         ]);
     }
 
-    public function test_route_auth_comments_retrieves_ok_status(): void
+    private function createComment(Topic $topic, User $user): Comment
     {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+        return Comment::create([
+            'content' => 'Comment content',
+            'topic_id' => $topic->id,
+            'author_id' => $user->id,
         ]);
+    }
 
-        $this->actingAs($user);
+    public function test_auth_user_can_get_all_topic_comments(): void
+    {        
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+        $comment = $this->createComment($topic, $this->user);
 
-        $discussion = $this->createDiscussion($user);
-        $topic = $this->createTopic($discussion, $user);
-
-        $response = $this->get("api/v1/discussions/{$discussion->id}/{$topic->id}");
-
-        $response->assertStatus(200);
-    }   
-
-    public function test_get_comments_in_topic(): void
-    {
-        $this->withoutExceptionHandling();
-    
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-    
-        $discussion = $this->createDiscussion($user);
-        $topic = $this->createTopic($discussion, $user);
-
-        Comment::create([
-            'description' => 'Comment description',
-            'user_id' => $user->id,
-            'topic_id' => $topic->id
-        ]);
-
-
-        $response = $this->get("/api/v1/discussions/{$discussion->id}/{$topic->id}");
-    
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->get("/api/v1/discussions/{$discussion->id}/{$topic->id}")
+            ->assertStatus(200)
             ->assertJsonStructure([
-                '*' => [
-                    'description',
-                    'user_id',
-                    'topic_id',
-                    'created_at',
-                    'updated_at'
+                'id',
+                'title',
+                'content',
+                'author_id',
+                'created_at',
+                'updated_at',
+                'comments' => [
+                    '*' => [
+                        'id',
+                        'content',
+                        'topic_id',
+                        'author_id',
+                        'created_at',
+                        'updated_at',
+                    ]
                 ]
             ]);
     }
 
     public function test_create_comment_only_required_fields(): void
     {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion($user);
-        $topic = $this->createTopic($discussion, $user);;
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
 
         $data = [
-            'description' => 'Comment description',
-            'user_id' => $user->id,
+            'content' => 'Comment content',
+            'author_id' => $this->user->id,
             'topic_id' => $topic->id
         ];
 
-        $response = $this->post("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data);
-
-        $response->assertStatus(201)
+        $this->authenticated()
+            ->post("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data)
+            ->assertStatus(201)
             ->assertJsonFragment([
-                'description' => 'Comment description',
-                'user_id' => $user->id,
+                'content' => 'Comment content',
+                'author_id' => $this->user->id,
                 'topic_id' => $topic->id
             ]);
     }
 
     public function test_update_comment_only_required_fields(): void
-    {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-        
-        $discussion = $this->createDiscussion($user);
-        $topic = $this->createTopic($discussion, $user);;
-
-        $comment = $this->createComment($user, $topic);
+    {        
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+        $comment = $this->createComment($topic, $this->user);
 
         $data = [
-            'description' => 'Update comment description',
-            'user_id' => $user->id,
+            'content' => 'Update comment content',
+            'author_id' => $this->user->id,
             'topic_id' => $topic->id
         ];
 
-        $response = $this->put("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}", $data);
-        
-
-        $response->assertStatus(200)
-        ->assertJsonFragment([
-            'description' => 'Update comment description',
-            'user_id' => $user->id,
-            'topic_id' => $topic->id
-        ]);
+        $this->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}", $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'content' => 'Update comment content',
+                'author_id' => $this->user->id,
+                'topic_id' => $topic->id
+            ]);
     }
 
     public function test_delete_comment(): void
     {
-        $this->withoutExceptionHandling();
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+        $comment = $this->createComment($topic, $this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion($user);
-        $topic = $this->createTopic($discussion, $user);
-
-        $comment = $this->createComment($user, $topic);
-
-        $response = $this->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}");
-
-        $response->assertNoContent();
+        $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}")
+            ->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Comment deleted successfully']
+            );
     }
 }

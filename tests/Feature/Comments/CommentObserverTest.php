@@ -7,91 +7,73 @@ use App\Models\Discussion;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Authentication;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CommentObserverTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, Authentication;
 
-    private function createAuthUser (): array
+    private function createTopic(Discussion $discussion, User $user): Topic
     {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        return ['user' => $user, 'token' => $token];
+        return Topic::create([
+            'title' => 'Topic title',
+            'content' => 'Topic content',
+            'discussion_id' => $discussion->id,
+            'author_id' => $user->id
+        ]);
     }
 
-    private function createDiscussion(): Discussion
+    private function createDiscussion(User $user): Discussion
     {
-        $discussion = Discussion::create([
+        return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => 1,
+            'author_id' => $user->id,
         ]);
-
-        return $discussion;
     }
 
-    private function createTopic(Discussion $discussion): Topic
+    private function createComment(Topic $topic, User $user): Comment
     {
-        $topic = Topic::create([
-            'title' => 'Topic title',
-            'description' => 'Topic description',
-            'discussion_id' => $discussion->id,
-            'user_id' => 1
+        return Comment::create([
+            'content' => 'Comment content',
+            'topic_id' => $topic->id,
+            'author_id' => $user->id,
         ]);
-
-        return $topic;
     }
 
-    public function test_comment_creation_increments_comments_count()
+    public function test_topic_is_updated_when_comment_is_created()
     {
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $user['token'];
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $discussion = $this->createDiscussion();
-        $topic = $this->createTopic($discussion);
-
+        $this->assertNull($topic->last_update);
         $this->assertEquals(0, $topic->comments_counter);
 
-        Comment::factory()->create([
-            'topic_id' => $topic->id,
-            'user_id' => $user->id,
-        ]);
-
+        $this->createComment($topic, $this->user);
+        
         $topic->refresh();
+
+        $this->assertNotNull($topic->last_update);
+        $this->assertEquals(now(), $topic->last_update);
         $this->assertEquals(1, $topic->comments_counter);
     }
 
-    public function test_comment_creation_decrements_comments_count()
+    public function test_comment_deletion_decrements_comments_count()
     {
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $user['token'];
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $this->assertNull($topic->last_update);
+        $this->assertEquals(0, $topic->comments_counter);
 
-        $discussion = $this->createDiscussion();
-        $topic = $this->createTopic($discussion);
-
-        $comment = Comment::factory()->create([
-            'topic_id' => $topic->id,
-            'user_id' => $user->id,
-        ]);
-
+        $comment = $this->createComment($topic, $this->user);
+        
         $topic->refresh();
+
         $this->assertEquals(1, $topic->comments_counter);
 
         $comment->delete();
-
 
         $topic->refresh();
         $this->assertEquals(null, $topic->comments_counter);

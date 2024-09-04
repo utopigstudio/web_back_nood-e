@@ -65,7 +65,6 @@ class TopicCrudAuthTest extends TestCase
     public function test_auth_user_can_get_topic_by_id(): void
     {
         $discussion = $this->createDiscussion($this->user);
-
         $topic = $this->createTopic($discussion, $this->user);
 
         $this->authenticated()
