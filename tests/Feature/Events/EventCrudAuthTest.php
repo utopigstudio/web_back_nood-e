@@ -6,13 +6,12 @@ use App\Models\Event;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Authentication;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class EventCrudAuthTest extends TestCase
-
 {
-    use RefreshDatabase;
+    use RefreshDatabase, Authentication;
 
     private function createEvent($room, $user): Event
     {
@@ -23,54 +22,35 @@ class EventCrudAuthTest extends TestCase
             'end' => '2024-09-13 14:00:00',
             'meet_link' => 'https://meet.google.com/abc-def-ghi',
             'room_id' => $room->id,
-            'user_id' => $user->id,
+            'author_id' => $user->id,
         ]);
-    }
-
-    private function createAuthUser (): array
-    {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        return ['user' => $user, 'token' => $token];
     }
 
     private function createRoom(): Room
     {
         return Room::create([
             'name' => 'Room 1',
-            'image' => 'room1.jpg', 
             'description' => 'Room 1 description',
             'is_available' => true
         ]);
-
     }
 
-
-    public function test_get_all_events_as_json(): void
+    public function test_not_auth_user_cannot_get_all_events(): void
     {
-        $this->withoutExceptionHandling();
+        $this->authenticated('invalid-token')
+            ->get('/api/v1/events')
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }
 
+    public function test_auth_user_can_get_all_events(): void
+    {
         $room = $this->createRoom();
+        $this->createEvent($room, $this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);;
-
-        $this->createEvent($room, $user);
-        $response = $this->get('/api/v1/events');
-
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->get('/api/v1/events')
+            ->assertStatus(200)
             ->assertJsonIsArray()
             ->assertJsonCount(1)
             ->assertJsonStructure([
@@ -81,134 +61,76 @@ class EventCrudAuthTest extends TestCase
                     'end',
                     'meet_link',
                     'room_id',
-                    'user_id'
+                    'author_id'
                 ]
-            ])
-            ->assertJsonFragment([
+            ]);
+    }
+
+    public function test_auth_user_can_get_event_by_id(): void
+    {
+        $room = $this->createRoom();
+        $event = $this->createEvent($room, $this->user);
+
+        $this->authenticated()
+            ->get("/api/v1/events/{$event->id}")
+            ->assertStatus(200)
+            ->assertJson([
                 'title' => 'Event title',
                 'description' => 'Event description',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
                 'meet_link' => 'https://meet.google.com/abc-def-ghi',
                 'room_id' => $room->id,
-                'user_id' => $user->id
+                'author_id' => $this->user->id
             ]);
-    }
-
-    public function test_get_event_by_id(): void
-    {
-        $this->withoutExceptionHandling();
-
-        $room = $this->createRoom();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $this->createEvent($user, $room);
-
-        $response = $this->get('/api/v1/events/1')->assertJson([
-            'title' => 'Event title',
-            'description' => 'Event description',
-            'start' => '2024-09-13 12:00:00',
-            'end' => '2024-09-13 14:00:00',
-            'meet_link' => 'https://meet.google.com/abc-def-ghi',
-            'room_id' => $room->id,
-            'user_id' => $user->id
-        ]);
-
-        $response->assertStatus(200);
     }
 
     public function test_create_event_only_required_fields(): void
     {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $response = $this->post('/api/v1/events', [
-            'title' => 'Event title',
-            'start' => '2024-09-13 12:00:00',
-            'end' => '2024-09-13 14:00:00',
-            'user_id' => $user->id
-        ]);
-
-        $response->assertStatus(201)
+        $this->authenticated()
+            ->post('/api/v1/events', [
+                'title' => 'Event title',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+                'author_id' => $this->user->id
+            ])
+            ->assertCreated()
             ->assertJson([
                 'title' => 'Event title',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
-        ])->assertCreated();
+                'author_id' => $this->user->id
+            ]);
     }
 
     public function test_update_event_only_required_fields(): void
     {
-        $this->withoutExceptionHandling();
-
         $room = $this->createRoom();
+        $event = $this->createEvent($room, $this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $this->createEvent($user, $room);
-
-        $response = $this->put('/api/v1/events/1', [
-            'title' => 'Updated event title',
-            'start' => '2024-09-13 12:00:00',
-            'end' => '2024-09-13 14:00:00',
-            'user_id' => $user->id
-        ]);
-
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->put("/api/v1/events/{$event->id}", [
+                'title' => 'Updated event title',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+                'author_id' => $this->user->id
+            ])->assertStatus(200)
             ->assertJson([
                 'title' => 'Updated event title',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
+                'author_id' => $this->user->id
             ]);
     }
 
     public function test_delete_event(): void
     {
-        $this->withoutExceptionHandling();
-
         $room = $this->createRoom();
+        $event = $this->createEvent($room, $this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $this->createEvent($user, $room);
-
-        $response = $this->delete('/api/v1/events/1');
-
-        $response->assertStatus(204)
-            ->assertNoContent();
+        $this->authenticated()
+            ->delete("/api/v1/events/{$event->id}")
+            ->assertStatus(200)
+            ->assertJson(['message' => 'Event deleted successfully']);
     }
 }
