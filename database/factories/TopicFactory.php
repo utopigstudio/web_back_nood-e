@@ -22,8 +22,8 @@ class TopicFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'user_id' => rand(1, 10),
-            'description' => fake()->paragraph(),
+            'author_id' => rand(1, 10),
+            'content' => fake()->paragraph(),
             'discussion_id' => rand(1, 10),
             'comments_counter' => fake()->randomDigit(),
             'last_update' => fake()->date(),

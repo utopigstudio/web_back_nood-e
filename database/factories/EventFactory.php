@@ -21,8 +21,8 @@ class EventFactory extends Factory
             'start' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '1 days', $timezone = null),
             'end' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '7 days', $timezone = null),
             'meet_link' => fake()->url(),
-            'room_id' => Room::factory(),
-            'user_id' => rand(1, 10), 
+            'room_id' => rand(1, 10),
+            'author_id' => rand(1, 10), 
         ];
     }
 }

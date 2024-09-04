@@ -28,4 +28,6 @@ class Discussion extends Model
     {
         return $this->belongsTo(User::class, 'author_id');
     }
+
+    // TODO: members (belongsToMany)
 }
