@@ -12,7 +12,11 @@ class CommentObserver
     public function created(Comment $comment): void
     {
         $topic = $comment->topic;
-        $topic->increment('comments_counter');
+        $comments_counter = $topic->comments_counter;
+        $topic->update([
+            'comments_counter' => $comments_counter + 1,
+            'last_update' => now(),
+        ]);
     }
 
     /**

@@ -48,7 +48,6 @@ class CommentObserverTest extends TestCase
         $topic = $this->createTopic($discussion, $this->user);
 
         $this->assertNull($topic->last_update);
-        $this->assertEquals(0, $topic->comments_counter);
 
         $this->createComment($topic, $this->user);
         
@@ -56,6 +55,19 @@ class CommentObserverTest extends TestCase
 
         $this->assertNotNull($topic->last_update);
         $this->assertEquals(now(), $topic->last_update);
+    }
+
+    public function test_comment_creation_increments_comments_count()
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+
+        $this->assertEquals(0, $topic->comments_counter);
+
+        $this->createComment($topic, $this->user);
+        
+        $topic->refresh();
+
         $this->assertEquals(1, $topic->comments_counter);
     }
 
