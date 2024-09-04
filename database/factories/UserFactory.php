@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class UserFactory extends Factory
 {
@@ -19,7 +18,6 @@ class UserFactory extends Factory
             'password' => 'password',
             'organization_id' => rand(1, 10),
             'image' => fake()->imageUrl(),
-            'remember_token' => Str::random(10),
         ];
     }
 }
