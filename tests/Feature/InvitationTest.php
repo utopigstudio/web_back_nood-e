@@ -66,6 +66,6 @@ class InvitationTest extends TestCase
 
         $this->get($url)
             ->assertStatus(401)
-            ->assertJson(['message' => 'Expired URL']);
+            ->assertJson(['message' => 'Expired invitation']);
     } 
 }

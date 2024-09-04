@@ -5,16 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TopicRequest;
 use App\Models\Discussion;
 use App\Models\Topic;
-use Illuminate\Http\Request;
 
 class TopicController extends Controller
 {
     public function store(TopicRequest $request, Discussion $discussion, Topic $topic)
     {
-        $validateData = $request->validated();
-        $validateData['discussion_id'] = $discussion->id;
+        $data = $request->validated();
+        $data['discussion_id'] = $discussion->id;
 
-        $topic = Topic::create($validateData);
+        $topic = Topic::create($data);
 
         return response()->json($topic, 201);
     }
@@ -30,19 +29,20 @@ class TopicController extends Controller
         return response()->json($topic, 200);
     }
 
-    public function update(Request $request, Discussion $discussion, Topic $topic)
+    public function update(TopicRequest $request, Discussion $discussion, Topic $topic)
     {
+        $data = $request->validated();
         if ($topic->discussion_id !== $discussion->id) {
-            return response()->json(['error' => 'Topic does not belong to this discussion'], 403);
+            return response()->json(['error' => 'Topic not found in this discussion'], 404);
         }
-        $topic->update($request->toArray());
+        $topic->update($data);
         return response()->json($topic, 200);
     }
 
     public function destroy(Discussion $discussion, Topic $topic)
     {
         if ($topic->discussion_id !== $discussion->id) {
-            return response()->json(['error' => 'Topic does not belong to this discussion'], 403);
+            return response()->json(['error' => 'Topic not found in this discussion'], 404);
         }
 
         $topic->delete();

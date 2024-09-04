@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
-use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -18,7 +16,8 @@ class EventController extends Controller
 
     public function store(EventRequest $request): JsonResponse
     {
-        $event = Event::create($request->validated());
+        $data = $request->validated();
+        $event = Event::create($data);
         return response()->json($event, 201);
     }
 
@@ -27,16 +26,15 @@ class EventController extends Controller
         return response()->json($event);
     }
 
-    public function update(Request $request, $id)
+    public function update(EventRequest $request, Event $event)
     {
-        $event = Event::find($id);
-        $event->update($request->toArray());
+        $data = $request->validated();
+        $event->update($data);
         return response()->json($event);
     }
     
-    public function destroy($id)
+    public function destroy(Event $event)
     {
-        $event = Event::find($id);
         $event->delete();
         return response()->json(['message' => 'Event deleted successfully'], 200);
     }

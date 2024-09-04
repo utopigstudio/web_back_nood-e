@@ -79,7 +79,6 @@ class CommentCrudAuthTest extends TestCase
         $data = [
             'content' => 'Comment content',
             'author_id' => $this->user->id,
-            'topic_id' => $topic->id
         ];
 
         $this->authenticated()
@@ -101,7 +100,6 @@ class CommentCrudAuthTest extends TestCase
         $data = [
             'content' => 'Update comment content',
             'author_id' => $this->user->id,
-            'topic_id' => $topic->id
         ];
 
         $this->authenticated()

@@ -87,7 +87,6 @@ class TopicCrudAuthTest extends TestCase
         $data = [
             'title' => 'Topic title',
             'content' => 'Topic content',
-            'discussion_id' => $discussion->id,
             'author_id' => $this->user->id
         ];
 
@@ -110,7 +109,6 @@ class TopicCrudAuthTest extends TestCase
         $data = [
             'title' => 'Updated topic title',
             'content' => 'Updated topic content',
-            'discussion_id' => $discussion->id,
             'author_id' => $this->user->id
         ];
 
