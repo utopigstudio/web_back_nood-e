@@ -20,7 +20,7 @@ class DiscussionFactory extends Factory
         return [
             'title' => fake()->name(),
             'description' => fake()->paragraph(),
-            'user_id' => rand(1, 10),
+            'author_id' => rand(1, 10),
         ];
     }
 }

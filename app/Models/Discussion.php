@@ -15,7 +15,7 @@ class Discussion extends Model
     protected $fillable = [
         'title',
         'description',
-        'user_id',
+        'author_id',
         'topic_id'
     ];  
 
@@ -24,8 +24,8 @@ class Discussion extends Model
         return $this->hasMany(Topic::class);
     }
 
-    public function user(): BelongsTo
+    public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'author_id');
     }
 }

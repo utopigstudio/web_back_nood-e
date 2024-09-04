@@ -25,8 +25,8 @@ class DiscussionRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'user_id' => 'required|integer|exists:users,id'
+            'description' => 'nullable|string',
+            'author_id' => 'required|integer|exists:users,id'
         ];
     }
 }

@@ -35,11 +35,7 @@ class DiscussionController extends Controller
 
     public function destroy(Discussion $discussion)
     {
-        if (!$discussion) {
-            return response()->json(['error' => 'Discussion not found'], 404);
-        }
-
         $discussion->delete();
-        return response()->json('Discussion deleted successfully', 204);
+        return response()->json(['message' => 'Discussion deleted successfully'], 200);
     }
 }
