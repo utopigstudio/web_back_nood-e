@@ -25,8 +25,8 @@ class TopicRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'user_id' => 'required|integer|exists:users,id',
-            'description' => 'required|string',
+            'author_id' => 'required|integer|exists:users,id',
+            'content' => 'required|string',
         ];
     }
 }

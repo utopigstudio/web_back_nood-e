@@ -27,7 +27,7 @@ class EventRequest extends FormRequest
             'title' => 'required|string|max:255',
             'start' => 'required|date_format:Y-m-d H:i:s',
             'end' => 'required|date_format:Y-m-d H:i:s',
-            'user_id' => 'required|exists:users,id',
+            'author_id' => 'required|exists:users,id',
         ];
     }
 }

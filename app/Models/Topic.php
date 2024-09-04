@@ -13,8 +13,8 @@ class Topic extends Model
 
     protected $fillable = [
         'title',
-        'user_id',
-        'description',
+        'author_id',
+        'content',
         'discussion_id',
         'comments_counter',
         'last_update',
@@ -30,7 +30,7 @@ class Topic extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function user(): BelongsTo
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
     }

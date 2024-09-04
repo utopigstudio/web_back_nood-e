@@ -6,202 +6,129 @@ use App\Models\Discussion;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Authentication;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TopicCrudAuthTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private function createAuthUser (): array
-    {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        return ['user' => $user, 'token' => $token];
-    }
+    use RefreshDatabase, Authentication;
 
     private function createTopic(Discussion $discussion, User $user): Topic
     {
         return Topic::create([
             'title' => 'Topic title',
-            'description' => 'Topic description',
+            'content' => 'Topic content',
             'discussion_id' => $discussion->id,
-            'user_id' => $user->id
+            'author_id' => $user->id
         ]);
     }
 
-    private function createDiscussion(): Discussion
+    private function createDiscussion(User $user): Discussion
     {
         return Discussion::create([
             'title' => 'Discussion title',
             'description' => 'Discussion description',
-            'user_id' => $this->createAuthUser()['user']->id,
+            'author_id' => $user->id,
         ]);
     }
 
-    public function test_route_auth_topics_retrieves_ok_status(): void
-    {
-        $this->withoutExceptionHandling();
+    public function test_auth_user_can_get_all_discussion_topics(): void
+    {        
+        $discussion = $this->createDiscussion($this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
+        $topic = $this->createTopic($discussion, $this->user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion($user);
-
-        $response = $this->get("/api/v1/discussions/{$discussion->id}");
-
-        $response->assertStatus(200);
-    }
-
-    public function test_get_all_topics_from_discussion_as_json(): void
-    {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion($user);
-
-        $this->createTopic($discussion, $user);
-
-        $response = $this->get("/api/v1/discussions/{$discussion->id}");
-
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'title' => 'Topic title',
-                'description' => 'Topic description',
-                'discussion_id' => 1,
-                'user_id' => 1
+        $this->authenticated()
+            ->get("/api/v1/discussions/{$discussion->id}")
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'title',
+                'description',
+                'author_id',
+                'created_at',
+                'updated_at',
+                'topics' => [
+                    '*' => [
+                        'id',
+                        'title',
+                        'content',
+                        'discussion_id',
+                        'author_id',
+                        'created_at',
+                        'updated_at',
+                    ]
+                ]
             ]);
     }
 
-    public function test_get_single_topic_as_json(): void
+    public function test_auth_user_can_get_topic_by_id(): void
     {
-        $this->withoutExceptionHandling();
+        $discussion = $this->createDiscussion($this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
+        $topic = $this->createTopic($discussion, $this->user);
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion();
-
-        $topic = $this->createTopic($discussion, $user);
-
-        $response = $this->get("/api/v1/discussions/{$discussion->id}/{$topic->id}");
-
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->get("/api/v1/discussions/{$discussion->id}/{$topic->id}")
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'title',
-                'description',
+                'content',
                 'discussion_id',
-                'user_id',
+                'author_id',
                 'created_at',
                 'updated_at',
-                'comments' => [
-                '*' => [
-                    'description',
-                    'user_id',
-                    'topic_id',
-                    'created_at',
-                    'updated_at'
-                ]
-                ]
             ]);
     }
 
     public function test_auth_user_can_create_topic_only_required_fields(): void
     {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion($user);
+        $discussion = $this->createDiscussion($this->user);
 
         $data = [
             'title' => 'Topic title',
-            'description' => 'Topic description',
+            'content' => 'Topic content',
             'discussion_id' => $discussion->id,
-            'user_id' => $user->id
+            'author_id' => $this->user->id
         ];
 
-        $response = $this->post("/api/v1/discussions/{$discussion->id}", $data);
-
-        $response->assertStatus(201)
+        $this->authenticated()
+            ->post("/api/v1/discussions/{$discussion->id}", $data)
+            ->assertStatus(201)
             ->assertJsonFragment([
                 'title' => 'Topic title',
-                'description' => 'Topic description',
+                'content' => 'Topic content',
                 'discussion_id' => $discussion->id,
-                'user_id' => $user->id
+                'author_id' => $this->user->id
             ]);
     }
 
     public function test_auth_user_can_update_topic_only_required_fields(): void
     {
-        $this->withoutExceptionHandling();
-
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion();
-        $topic = $this->createTopic($discussion, $user);
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
 
         $data = [
             'title' => 'Updated topic title',
-            'description' => 'Updated topic description',
+            'content' => 'Updated topic content',
             'discussion_id' => $discussion->id,
-            'user_id' => $user->id
+            'author_id' => $this->user->id
         ];
 
-        $response = $this->put("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data);
-
-        $response->assertStatus(200)
+        $this->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data)
+            ->assertStatus(200)
             ->assertJson([
                 'title' => 'Updated topic title',
-                'description' => 'Updated topic description',
+                'content' => 'Updated topic content',
                 'discussion_id' => $discussion->id,
-                'user_id' => $user->id
+                'author_id' => $this->user->id
             ])
             ->assertJsonStructure([
                 'title',
-                'description',
+                'content',
                 'discussion_id',
-                'user_id',
+                'author_id',
                 'created_at',
                 'updated_at'
             ]);
@@ -209,26 +136,15 @@ class TopicCrudAuthTest extends TestCase
 
     public function test_auth_user_can_delete_topic(): void
     {
-        $this->withoutExceptionHandling();
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
 
-        $authData = $this->createAuthUser();
-        $user = $authData['user'];
-        $token = $authData['token'];
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ]);
-
-        $this->actingAs($user);
-
-        $discussion = $this->createDiscussion();
-
-        $topic = $this->createTopic($discussion, $user);
-
-        $response = $this->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}");
-
-        $response->assertStatus(204)
-            ->assertNoContent();
+        $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}")
+            ->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Topic deleted successfully']
+            );
     }
 
 }

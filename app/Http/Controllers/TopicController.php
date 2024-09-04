@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TopicRequest;
-use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Topic;
 use Illuminate\Http\Request;
@@ -47,6 +46,6 @@ class TopicController extends Controller
         }
 
         $topic->delete();
-        return response()->json('Topic deleted successfully', 204);
+        return response()->json(['message' => 'Topic deleted successfully'], 200);
     }
 }
