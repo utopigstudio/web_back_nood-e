@@ -86,11 +86,7 @@ class DiscussionController extends Controller
 
     private function attachMembers(Discussion $discussion, array $members): Discussion
     {
-        if (!$members) {
-            return $discussion;
-        }
-
-        $discussion->members()->attach($members);
+        $discussion->members()->sync($members);
         $discussion->load('members');
 
         return $discussion;

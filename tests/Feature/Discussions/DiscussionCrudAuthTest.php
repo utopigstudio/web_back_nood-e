@@ -5,6 +5,7 @@ namespace Tests\Feature\Discussions;
 use App\Models\Discussion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\Support\Authentication;
 use Tests\TestCase;
 
@@ -186,15 +187,12 @@ class DiscussionCrudAuthTest extends TestCase
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertCreated(201)
-            ->assertJsonStructure([
-                'id',
-                'title',
-                'author_id',
+            ->assertJson([
+                'title' => 'Discussion title',
+                'author_id' => $this->user->id,
                 'members' => [
-                    '*' => [
-                        'id',
-                        'name',
-                    ]
+                    ['id' => $user1->id, 'name' => $user1->name],
+                    ['id' => $user2->id, 'name' => $user2->name]
                 ]
             ]);
     }
@@ -212,17 +210,26 @@ class DiscussionCrudAuthTest extends TestCase
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertStatus(200)
-            ->assertJsonStructure([
-                'id',
-                'title',
-                'author_id',
+            ->assertJson([
+                'title' => 'Discussion title updated',
                 'members' => [
-                    '*' => [
-                        'id',
-                        'name',
-                    ]
+                    ['id' => $user1->id, 'name' => $user1->name],
+                    ['id' => $user2->id, 'name' => $user2->name]
                 ]
             ]);
+
+        $this->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}", [
+                'title' => 'Discussion title updated 2',
+                'author_id' => $this->user->id,
+                'members' => [$user1->id]
+            ])
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) => $json
+                ->count('members', 1)
+                ->missing($user2->name)
+                ->etc()
+            );
     }
 
     public function test_auth_user_can_delete_discussion(): void
