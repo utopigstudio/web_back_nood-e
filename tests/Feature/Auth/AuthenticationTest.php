@@ -17,6 +17,7 @@ class AuthenticationTest extends TestCase
             'name' => 'test',
             'email' => 'test@test.com',
             'password' => 'password',
+            'invite_accepted_at' => now(),
         ]);
 
         $this->post('/api/v1/auth/login', [
@@ -37,6 +38,7 @@ class AuthenticationTest extends TestCase
             'name' => 'test',
             'email' => 'test@test.com',
             'password' => 'password',
+            'invite_accepted_at' => now(),
         ]);
 
         $response = $this->post('/api/v1/auth/login', [

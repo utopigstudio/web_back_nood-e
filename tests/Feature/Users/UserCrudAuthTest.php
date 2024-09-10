@@ -18,6 +18,7 @@ class UserCrudAuthTest extends TestCase
             'surname' => 'User surname',
             'description' => 'User description',
             'email' => 'test@test.com',
+            'invite_accepted_at' => now(),
         ]);
     }
 
@@ -31,7 +32,7 @@ class UserCrudAuthTest extends TestCase
 
     public function test_auth_user_can_get_all_users(): void
     {
-        $this->createUser();
+        $user = $this->createUser();
 
         $this->authenticated()
             ->get('/api/v1/users')

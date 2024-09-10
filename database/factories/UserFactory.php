@@ -18,6 +18,7 @@ class UserFactory extends Factory
             'password' => 'password',
             'organization_id' => rand(1, 10),
             'image' => fake()->imageUrl(),
+            'invite_accepted_at' => fake()->dateTime(),
         ];
     }
 }

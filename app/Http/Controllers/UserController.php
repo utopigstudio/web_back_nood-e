@@ -5,12 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MassInviteRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller 
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('organization', 'roles')->orderBy('name')->get()->values();
+        $params = $request->all();
+
+        $users = User::query();
+
+        if (isset($params['show_deleted']) && $params['show_deleted'] == 1) {
+            $users = $users->withTrashed();
+        }
+
+        $users = $users->whereNotNull('invite_accepted_at')
+            ->with('organization', 'roles')->orderBy('name')->get()->values();
         return response()->json($users);
     }
     

@@ -87,6 +87,12 @@ class UserSoftDeletionTest extends TestCase
                 ->missing($user1->email)
                 ->etc()
             );
+
+        $this->authenticated()
+            ->get('/api/v1/users?show_deleted=1')
+            ->assertStatus(200)
+            ->assertJsonIsArray()
+            ->assertJsonCount(3);
     }
 
     public function test_show_topics_of_user_soft_deleted_are_shown_with_user_data(): void
