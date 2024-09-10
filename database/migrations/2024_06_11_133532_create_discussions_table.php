@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable()->default(null);
             $table->foreignId('author_id')->constrained('users')->onDelete('restrict');
+            $table->boolean('is_public')->default(false);
             $table->timestamps();
         });
     }

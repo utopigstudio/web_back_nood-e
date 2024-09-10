@@ -21,6 +21,7 @@ class DiscussionFactory extends Factory
             'title' => fake()->name(),
             'description' => fake()->paragraph(),
             'author_id' => rand(1, 10),
+            'is_public' => rand(0, 1),
         ];
     }
 }

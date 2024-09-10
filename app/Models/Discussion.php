@@ -17,7 +17,8 @@ class Discussion extends Model
         'title',
         'description',
         'author_id',
-        'topic_id'
+        'topic_id',
+        'is_public',
     ];  
 
     public function topics(): HasMany
