@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MassInviteRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 
@@ -13,6 +14,29 @@ class UserController extends Controller
         return response()->json($users);
     }
     
+    public function massInvite(MassInviteRequest $request)
+    {
+        $data = $request->validated();
+
+        $emails = $data['emails'];
+
+        foreach ($emails as $email) {
+            $user = User::where('email', $email)->first();
+
+            $name = explode('@', $email)[0];
+
+            if (!$user) {
+                $user = User::create([
+                    'name' => $name,
+                    'email' => $email
+                ]);
+                $user->sendInviteNotification();
+            }
+        }
+
+        return response()->json(['message' => 'Invitations sent successfully'], 201);
+    }
+
     public function store(UserRequest $request)
     {
         $data = $request->validated();

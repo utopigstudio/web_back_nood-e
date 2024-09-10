@@ -76,6 +76,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Expired invitation'], 401);
         }
         
+        $user->update([
+            'invite_accepted_at' => now()
+        ]);
+
         $token = $this->auth->fromUser($user);
         
         return $this->respondWithToken($token);

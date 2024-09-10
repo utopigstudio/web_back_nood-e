@@ -83,14 +83,14 @@ class UserCrudAuthTestWithImageTest extends TestCase
 
         $this->authenticated()
             ->delete('/api/v1/users/'.$user->id)
-            ->assertStatus(501)
+            ->assertStatus(200)
             ->assertJson(
-                ['message' => 'Method not implemented']
+                ['message' => 'User deactivated successfully']
             );
 
-        // $image = $user->image;
-        // /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
-        // $storage = Storage::disk('public');
-        // $storage->assertMissing($image);
+        $image = $user->image;
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertExists($image);
     }
 }

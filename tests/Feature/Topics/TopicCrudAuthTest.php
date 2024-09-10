@@ -150,7 +150,7 @@ class TopicCrudAuthTest extends TestCase
         $topic = $this->createTopic($discussion, $this->user);
 
         // expect exception
-        // $this->expectException(\Exception::class);
+        $this->expectException(\Exception::class);
 
         $discussion->delete();
 

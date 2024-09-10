@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('organization_id')->nullable()->onDelete('set null');
             $table->string('image')->nullable();
             $table->string('reset_password')->nullable();
+            $table->timestamp('invite_accepted_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

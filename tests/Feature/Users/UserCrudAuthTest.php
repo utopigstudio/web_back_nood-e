@@ -84,6 +84,18 @@ class UserCrudAuthTest extends TestCase
         ]);
     }
 
+    public function test_auth_user_can_mass_invite_users(): void
+    {
+        $emails = ['testinvite1@test.com', 'testinvite2@test.com'];
+
+        $this->authenticated()
+            ->post('/api/v1/users/mass-invite', ['emails' => $emails])
+            ->assertCreated(201)
+            ->assertJson([
+                'message' => 'Invitations sent successfully',
+        ]);
+    }
+
     public function test_auth_user_can_update_user_only_required_fields(): void
     {
         $user = $this->createUser();
