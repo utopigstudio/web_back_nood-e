@@ -144,4 +144,21 @@ class TopicCrudAuthTest extends TestCase
             );
     }
 
+    public function test_discussion_cannot_be_deleted_if_it_has_topics(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+
+        // expect exception
+        // $this->expectException(\Exception::class);
+
+        $discussion->delete();
+
+        $this->assertDatabaseHas('discussions', [
+            'id' => $discussion->id
+        ]);
+
+    }
+
+
 }
