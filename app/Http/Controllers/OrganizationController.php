@@ -22,7 +22,7 @@ class OrganizationController extends Controller
 
     public function show(Organization $organization)
     {
-        $organization->load('owner');
+        $organization->load('owner', 'users');
         return response()->json($organization, 200);
     }
 

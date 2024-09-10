@@ -123,6 +123,63 @@ class EventCrudAuthTest extends TestCase
             ]);
     }
 
+
+    public function test_auth_user_can_create_event_with_members(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $this->authenticated()
+            ->post('/api/v1/events', [
+                'title' => 'Event title',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+                'author_id' => $this->user->id,
+                'members' => [$user1->id, $user2->id]
+            ])
+            ->assertCreated(201)
+            ->assertJsonStructure([
+                'id',
+                'title',
+                'author_id',
+                'members' => [
+                    '*' => [
+                        'id',
+                        'name',
+                    ]
+                ]
+            ]);
+    }
+
+    public function test_auth_user_can_update_event_with_members(): void
+    {
+        $room = $this->createRoom();
+        $event = $this->createEvent($room, $this->user);
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $this->authenticated()
+            ->put("/api/v1/events/{$event->id}", [
+                'title' => 'Event title updated',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+                'author_id' => $this->user->id,
+                'members' => [$user1->id, $user2->id]
+            ])
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'title',
+                'author_id',
+                'members' => [
+                    '*' => [
+                        'id',
+                        'name',
+                    ]
+                ]
+            ]);
+    }
+
     public function test_delete_event(): void
     {
         $room = $this->createRoom();

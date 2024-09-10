@@ -72,14 +72,20 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Event::class, 'author_id');
     }
 
-    // TODO: events as member (belongsToMany)    
+    public function eventsMember(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'event_user', 'user_id', 'event_id');
+    }
 
     public function discussionsAuthored(): HasMany
     {
         return $this->hasMany(Discussion::class, 'author_id');
     }
 
-    // TODO: discussions as member (belongsToMany)
+    public function discussionsMember(): BelongsToMany
+    {
+        return $this->belongsToMany(Discussion::class, 'discussion_user', 'user_id', 'discussion_id');
+    }
 
     public function topics(): HasMany
     {

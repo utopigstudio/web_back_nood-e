@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Topic;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Discussion extends Model
@@ -29,5 +30,8 @@ class Discussion extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
-    // TODO: members (belongsToMany)
+    public function members(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'discussion_user', 'discussion_id', 'user_id');
+    }
 }

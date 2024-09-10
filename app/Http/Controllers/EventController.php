@@ -17,7 +17,13 @@ class EventController extends Controller
     public function store(EventRequest $request): JsonResponse
     {
         $data = $request->validated();
+
+        $members = $this->getMembersFromData($data);
+
         $event = Event::create($data);
+
+        $event = $this->attachMembers($event, $members);
+
         return response()->json($event, 201);
     }
 
@@ -29,7 +35,13 @@ class EventController extends Controller
     public function update(EventRequest $request, Event $event)
     {
         $data = $request->validated();
+
+        $members = $this->getMembersFromData($data);
+
         $event->update($data);
+
+        $event = $this->attachMembers($event, $members);
+
         return response()->json($event);
     }
     
@@ -37,5 +49,25 @@ class EventController extends Controller
     {
         $event->delete();
         return response()->json(['message' => 'Event deleted successfully'], 200);
+    }
+
+    private function getMembersFromData(array &$data): array
+    {
+        $members = $data['members'] ?? [];
+        unset($data['members']);
+
+        return $members;
+    }
+
+    private function attachMembers(Event $event, array $members): Event
+    {
+        if (!$members) {
+            return $event;
+        }
+
+        $event->members()->attach($members);
+        $event->load('members');
+
+        return $event;
     }
 }

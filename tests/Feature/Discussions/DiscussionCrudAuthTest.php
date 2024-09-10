@@ -95,6 +95,57 @@ class DiscussionCrudAuthTest extends TestCase
             ]);
     }
 
+    public function test_auth_user_can_create_discussion_with_members(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $this->authenticated()
+            ->post('/api/v1/discussions', [
+                'title' => 'Discussion title',
+                'author_id' => $this->user->id,
+                'members' => [$user1->id, $user2->id]
+            ])
+            ->assertCreated(201)
+            ->assertJsonStructure([
+                'id',
+                'title',
+                'author_id',
+                'members' => [
+                    '*' => [
+                        'id',
+                        'name',
+                    ]
+                ]
+            ]);
+    }
+
+    public function test_auth_user_can_update_discussion_with_members(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $this->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}", [
+                'title' => 'Discussion title updated',
+                'author_id' => $this->user->id,
+                'members' => [$user1->id, $user2->id]
+            ])
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'title',
+                'author_id',
+                'members' => [
+                    '*' => [
+                        'id',
+                        'name',
+                    ]
+                ]
+            ]);
+    }
+
     public function test_auth_user_can_delete_discussion(): void
     {
         $discussion = $this->createDiscussion($this->user);
