@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\Support\Authentication;
 use Tests\TestCase;
 
@@ -138,15 +139,12 @@ class EventCrudAuthTest extends TestCase
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertCreated(201)
-            ->assertJsonStructure([
-                'id',
-                'title',
-                'author_id',
+            ->assertJson([
+                'title' => 'Event title',
+                'author_id' => $this->user->id,
                 'members' => [
-                    '*' => [
-                        'id',
-                        'name',
-                    ]
+                    ['id' => $user1->id, 'name' => $user1->name],
+                    ['id' => $user2->id, 'name' => $user2->name]
                 ]
             ]);
     }
@@ -167,17 +165,29 @@ class EventCrudAuthTest extends TestCase
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertStatus(200)
-            ->assertJsonStructure([
-                'id',
-                'title',
-                'author_id',
+            ->assertJson([
+                'title' => 'Event title updated',
+                'author_id' => $this->user->id,
                 'members' => [
-                    '*' => [
-                        'id',
-                        'name',
-                    ]
+                    ['id' => $user1->id, 'name' => $user1->name],
+                    ['id' => $user2->id, 'name' => $user2->name]
                 ]
             ]);
+
+        $this->authenticated()
+            ->put("/api/v1/events/{$event->id}", [
+                'title' => 'Event title updated',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+                'author_id' => $this->user->id,
+                'members' => [$user1->id]
+            ])
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) => $json
+                ->count('members', 1)
+                ->missing($user2->name)
+                ->etc()
+            );
     }
 
     public function test_delete_event(): void

@@ -61,11 +61,7 @@ class EventController extends Controller
 
     private function attachMembers(Event $event, array $members): Event
     {
-        if (!$members) {
-            return $event;
-        }
-
-        $event->members()->attach($members);
+        $event->members()->sync($members);
         $event->load('members');
 
         return $event;
