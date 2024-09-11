@@ -12,6 +12,7 @@ class TopicController extends Controller
     {
         $data = $request->validated();
         $data['discussion_id'] = $discussion->id;
+        $data['last_update'] = now();
 
         $topic = Topic::create($data);
 
