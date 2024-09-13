@@ -86,14 +86,13 @@ class EventCrudAuthTest extends TestCase
             ]);
     }
 
-    public function test_create_event_only_required_fields(): void
+    public function test_auth_user_can_create_event_only_required_fields(): void
     {
         $this->authenticated()
             ->post('/api/v1/events', [
                 'title' => 'Event title',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
-                'author_id' => $this->user->id
             ])
             ->assertCreated()
             ->assertJson([
@@ -114,13 +113,51 @@ class EventCrudAuthTest extends TestCase
                 'title' => 'Updated event title',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
-                'author_id' => $this->user->id
             ])->assertStatus(200)
             ->assertJson([
                 'title' => 'Updated event title',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
                 'author_id' => $this->user->id
+            ]);
+    }
+
+    public function test_auth_user_cannot_update_event_not_authored(): void
+    {
+        $room = $this->createRoom();
+        
+        $user = User::factory()->create();
+        $event = $this->createEvent($room, $user);
+
+        $this->authenticated()
+            ->put("/api/v1/events/{$event->id}", [
+                'title' => 'Updated event title',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+            ])
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_update_event_not_authored(): void
+    {
+        $room = $this->createRoom();
+        
+        $user = User::factory()->create();
+        $event = $this->createEvent($room, $user);
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put("/api/v1/events/{$event->id}", [
+                'title' => 'Updated event title',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+            ])
+            ->assertStatus(200)
+            ->assertJson([
+                'title' => 'Updated event title',
+                'start' => '2024-09-13 12:00:00',
+                'end' => '2024-09-13 14:00:00',
+                'author_id' => $user->id
             ]);
     }
 
@@ -135,7 +172,6 @@ class EventCrudAuthTest extends TestCase
                 'title' => 'Event title',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
-                'author_id' => $this->user->id,
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertCreated(201)
@@ -161,7 +197,6 @@ class EventCrudAuthTest extends TestCase
                 'title' => 'Event title updated',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
-                'author_id' => $this->user->id,
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertStatus(200)
@@ -179,7 +214,6 @@ class EventCrudAuthTest extends TestCase
                 'title' => 'Event title updated',
                 'start' => '2024-09-13 12:00:00',
                 'end' => '2024-09-13 14:00:00',
-                'author_id' => $this->user->id,
                 'members' => [$user1->id]
             ])
             ->assertStatus(200)
@@ -190,12 +224,36 @@ class EventCrudAuthTest extends TestCase
             );
     }
 
-    public function test_delete_event(): void
+    public function test_auth_user_can_delete_event(): void
     {
         $room = $this->createRoom();
         $event = $this->createEvent($room, $this->user);
 
         $this->authenticated()
+            ->delete("/api/v1/events/{$event->id}")
+            ->assertStatus(200)
+            ->assertJson(['message' => 'Event deleted successfully']);
+    }
+
+    public function test_auth_user_cannot_delete_event_not_authored(): void
+    {
+        $room = $this->createRoom();
+        $user = User::factory()->create();
+        $event = $this->createEvent($room, $user);
+
+        $this->authenticated()
+            ->delete("/api/v1/events/{$event->id}")
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_delete_event_not_authored(): void
+    {
+        $room = $this->createRoom();
+        $user = User::factory()->create();
+        $event = $this->createEvent($room, $user);
+
+        $this->userRoleAdmin()
+            ->authenticated()
             ->delete("/api/v1/events/{$event->id}")
             ->assertStatus(200)
             ->assertJson(['message' => 'Event deleted successfully']);

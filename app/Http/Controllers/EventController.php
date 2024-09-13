@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class EventController extends Controller
 {
@@ -36,6 +37,8 @@ class EventController extends Controller
 
     public function update(EventRequest $request, Event $event)
     {
+        Gate::authorize('update', $event);
+
         $data = $request->validated();
 
         $members = $this->getMembersFromData($data);
@@ -49,7 +52,10 @@ class EventController extends Controller
     
     public function destroy(Event $event)
     {
+        Gate::authorize('delete', $event);
+
         $event->delete();
+
         return response()->json(['message' => 'Event deleted successfully'], 200);
     }
 
