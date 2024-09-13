@@ -11,6 +11,11 @@ class UserPolicy extends Policy
         return $authUser->role->name === 'admin';
     }
 
+    public function create(User $authUser)
+    {
+        return $authUser->role->name === 'admin';
+    }
+
     public function update(User $authUser, User $user)
     {
         return $authUser->id === $user->id;

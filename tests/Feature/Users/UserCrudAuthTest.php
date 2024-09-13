@@ -66,14 +66,15 @@ class UserCrudAuthTest extends TestCase
             ->assertStatus(200);
     }
 
-    public function test_auth_user_can_create_user_only_required_fields(): void
+    public function test_auth_admin_can_create_user_only_required_fields(): void
     {
         $data = [
             'name' => 'User name', 
             'email' => 'test@test.com',
         ];
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->post('/api/v1/users', $data)
             ->assertCreated(201)
             ->assertJson([

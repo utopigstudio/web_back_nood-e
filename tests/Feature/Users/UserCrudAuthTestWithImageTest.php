@@ -32,7 +32,8 @@ class UserCrudAuthTestWithImageTest extends TestCase
             'email' => 'test@test.com',
         ];
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->post('/api/v1/users', $data)
             ->assertCreated(201)
             ->assertJson(fn (AssertableJson $json) =>
