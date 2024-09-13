@@ -3,6 +3,7 @@
 namespace Tests\Feature\Organizations;
 
 use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Authentication;
 use Tests\TestCase;
@@ -62,7 +63,7 @@ class OrganizationCrudAuthTest extends TestCase
             ->assertStatus(200);
     }
 
-    public function test_auth_user_can_create_organization_only_required_fields(): void
+    public function test_auth_user_cannot_create_organization(): void
     {
         $data = [
             'name' => 'Organization name', 
@@ -70,6 +71,19 @@ class OrganizationCrudAuthTest extends TestCase
         ];
 
         $this->authenticated()
+            ->post('/api/v1/organizations', $data)
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_create_organization_only_required_fields(): void
+    {
+        $data = [
+            'name' => 'Organization name', 
+            'owner_id' => $this->user->id
+        ];
+
+        $this->userRoleAdmin()
+            ->authenticated()
             ->post('/api/v1/organizations', $data)
             ->assertCreated(201)
             ->assertJsonFragment([
@@ -96,11 +110,56 @@ class OrganizationCrudAuthTest extends TestCase
             ]);
     }
 
-    public function test_auth_user_can_delete_organization(): void
+    public function test_auth_user_cannot_update_not_owned_organization(): void
+    {
+        $user = User::factory()->create();
+        $organization = $this->createOrganization($user);
+
+        $data = [
+            'name' => 'Updated organization name', 
+            'owner_id' => $user->id
+        ];
+
+        $this->authenticated()
+            ->put('/api/v1/organizations/'.$organization->id, $data)
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_update_not_owned_organization(): void
+    {
+        $user = User::factory()->create();
+        $organization = $this->createOrganization($user);
+
+        $data = [
+            'name' => 'Updated organization name', 
+            'owner_id' => $user->id
+        ];
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put('/api/v1/organizations/'.$organization->id, $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'Updated organization name', 
+                'owner_id' => $user->id
+            ]);
+    }
+
+    public function test_auth_user_cannot_delete_organization(): void
     {
         $organization = $this->createOrganization($this->user);
 
         $this->authenticated()
+            ->delete('/api/v1/organizations/'.$organization->id)
+            ->assertStatus(403);
+    }
+
+    public function test_auth_user_can_delete_organization(): void
+    {
+        $organization = $this->createOrganization($this->user);
+
+        $this->userRoleSuperAdmin()
+            ->authenticated()
             ->delete('/api/v1/organizations/'.$organization->id)
             ->assertStatus(200)
             ->assertJson(

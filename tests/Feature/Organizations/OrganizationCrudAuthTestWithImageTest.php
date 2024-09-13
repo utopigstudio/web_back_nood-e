@@ -22,7 +22,7 @@ class OrganizationCrudAuthTestWithImageTest extends TestCase
         ]);
     }
 
-    public function test_auth_user_can_create_organization_with_image(): void
+    public function test_auth_admin_can_create_organization_with_image(): void
     {
         Storage::fake('public');
 
@@ -32,7 +32,8 @@ class OrganizationCrudAuthTestWithImageTest extends TestCase
             'owner_id' => $this->user->id
         ];
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->post('/api/v1/organizations', $data)
             ->assertCreated(201)
             ->assertJson(fn (AssertableJson $json) =>
@@ -81,7 +82,8 @@ class OrganizationCrudAuthTestWithImageTest extends TestCase
 
         $organization = $this->createOrganizationWithImage($this->user);
 
-        $this->authenticated()
+        $this->userRoleSuperAdmin()
+            ->authenticated()
             ->delete('/api/v1/organizations/'.$organization->id)
             ->assertStatus(200)
             ->assertJson(

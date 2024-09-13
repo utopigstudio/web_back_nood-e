@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrganizationRequest;
 use App\Models\Organization;
+use Illuminate\Support\Facades\Gate;
 
 class OrganizationController extends Controller
 {
@@ -15,6 +16,8 @@ class OrganizationController extends Controller
 
     public function store(OrganizationRequest $request)
     {
+        Gate::authorize('create', Organization::class);
+
         $data = $request->validated();
         $organization = Organization::create($data);
         return response()->json($organization, 201);
@@ -28,6 +31,8 @@ class OrganizationController extends Controller
 
     public function update(OrganizationRequest $request, Organization $organization)
     {
+        Gate::authorize('update', $organization);
+
         $data = $request->validated();
         $organization->update($data);
         return response()->json($organization, 200);
@@ -35,8 +40,7 @@ class OrganizationController extends Controller
 
     public function destroy(Organization $organization)
     {
-        // TODO: validate if the user can delete the organization
-        // TODO: validate if the organization can be deleted
+        Gate::authorize('delete', $organization);
 
         // TODO: move to observer (deleted event)
         if ($organization->image) {
