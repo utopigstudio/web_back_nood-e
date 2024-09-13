@@ -21,7 +21,7 @@ class RoomCrudAuthTestWithImageTest extends TestCase
         ]);
     }
 
-    public function test_auth_user_can_create_room_with_image(): void
+    public function test_auth_admin_can_create_room_with_image(): void
     {
         Storage::fake('public');
 
@@ -30,7 +30,8 @@ class RoomCrudAuthTestWithImageTest extends TestCase
             "image" => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
         ];
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->post('/api/v1/rooms', $data)
             ->assertCreated(201)
             ->assertJson(fn (AssertableJson $json) =>
@@ -44,7 +45,7 @@ class RoomCrudAuthTestWithImageTest extends TestCase
         $storage->assertExists($image);
     }
 
-    public function test_auth_user_can_update_room_with_image(): void
+    public function test_auth_admin_can_update_room_with_image(): void
     {
         Storage::fake('public');
 
@@ -56,7 +57,8 @@ class RoomCrudAuthTestWithImageTest extends TestCase
             "image" => "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==",
         ];
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->put('/api/v1/rooms/'.$room->id, $data)
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) =>
@@ -72,13 +74,14 @@ class RoomCrudAuthTestWithImageTest extends TestCase
         $storage->assertMissing($oldImage);
     }
 
-    public function test_auth_user_can_delete_room_with_image(): void
+    public function test_auth_admin_can_delete_room_with_image(): void
     {
         Storage::fake('public');
 
         $room = $this->createRoomWithImage($this->user);
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->delete('/api/v1/rooms/'.$room->id)
             ->assertStatus(200)
             ->assertJson(

@@ -62,13 +62,14 @@ class RoomCrudAuthTest extends TestCase
             ->assertStatus(200);
     }
 
-    public function test_auth_user_can_create_room_only_required_fields()
+    public function test_auth_admin_can_create_room_only_required_fields()
     {
         $data = [
             'name' => 'Room name',
         ];
         
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->post('/api/v1/rooms', $data)
             ->assertCreated()
             ->assertJsonFragment([
@@ -76,7 +77,35 @@ class RoomCrudAuthTest extends TestCase
             ]);
     }
 
-    public function test_auth_user_can_update_room_only_required_fields()
+    public function test_auth_user_cannot_create_room()
+    {
+        $data = [
+            'name' => 'Room name',
+        ];
+
+        $this->authenticated()
+            ->post('/api/v1/rooms', $data)
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_update_room_only_required_fields()
+    {
+        $room = $this->createRoom();
+
+        $data = [
+            'name' => 'Updated room name',
+        ];
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put('/api/v1/rooms/'.$room->id, $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'Updated room name',
+            ]);
+    }
+
+    public function test_auth_user_cannot_update_room()
     {
         $room = $this->createRoom();
 
@@ -86,21 +115,28 @@ class RoomCrudAuthTest extends TestCase
 
         $this->authenticated()
             ->put('/api/v1/rooms/'.$room->id, $data)
-            ->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => 'Updated room name',
-            ]);
+            ->assertStatus(403);
     }
 
-    public function test_auth_user_can_delete_room()
+    public function test_auth_admin_can_delete_room()
     {
         $room = $this->createRoom();
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->delete('/api/v1/rooms/'.$room->id)
             ->assertStatus(200)
             ->assertJson(
                 ['message' => 'Room deleted successfully']
             );
+    }
+
+    public function test_auth_user_cannot_delete_room()
+    {
+        $room = $this->createRoom();
+
+        $this->authenticated()
+            ->delete('/api/v1/rooms/'.$room->id)
+            ->assertStatus(403);
     }
 }

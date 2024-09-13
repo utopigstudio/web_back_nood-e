@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RoomRequest;
 use App\Models\Room;
-
+use Illuminate\Support\Facades\Gate;
 
 class RoomController extends Controller
 {
@@ -16,6 +16,8 @@ class RoomController extends Controller
 
     public function store(RoomRequest $request)
     {
+        Gate::authorize('create', Room::class);
+
         $data = $request->validated();
         $room = Room::create($data);
         return response()->json($room, 201);
@@ -29,6 +31,8 @@ class RoomController extends Controller
 
     public function update(RoomRequest $request, Room $room)
     {
+        Gate::authorize('update', $room);
+
         $data = $request->validated();
         $room->update($data);
         return response()->json($room, 200);
@@ -36,7 +40,7 @@ class RoomController extends Controller
 
     public function destroy(Room $room)
     {
-        // TODO: validate if the user can delete the room
+        Gate::authorize('delete', $room);
         // TODO: validate if the room can be deleted
 
         // TODO: move to observer (deleted event)
