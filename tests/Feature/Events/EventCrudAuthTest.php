@@ -258,4 +258,35 @@ class EventCrudAuthTest extends TestCase
             ->assertStatus(200)
             ->assertJson(['message' => 'Event deleted successfully']);
     }
+
+    public function test_room_can_be_deleted_if_it_has_past_events(): void
+    {
+        $room = $this->createRoom();
+        $event = $this->createEvent($room, $this->user);
+        $event->update(['start' => now()->subDay()]);
+        $event->update(['end' => now()->subDay()->addHour()]);
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->delete("/api/v1/rooms/{$room->id}")
+            ->assertStatus(200)
+            ->assertJson(['message' => 'Room deleted successfully']);
+    }
+
+    public function test_room_cannot_be_deleted_if_it_has_future_events(): void
+    {
+        $room = $this->createRoom();
+        $event = $this->createEvent($room, $this->user);
+        $event->update(['start' => now()->addDay()]);
+        $event->update(['end' => now()->addDay()->addHour()]);
+
+        // expect exception
+        $this->expectException(\Exception::class);
+
+        $room->delete();
+
+        $this->assertDatabaseHas('rooms', [
+            'id' => $room->id
+        ]);
+    }
 }

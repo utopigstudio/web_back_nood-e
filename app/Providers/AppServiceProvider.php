@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Comment;
+use App\Models\Room;
 use App\Observers\CommentObserver;
+use App\Observers\RoomObserver;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,5 +28,6 @@ class AppServiceProvider extends ServiceProvider
             return config('app.frontend_url')."/password-reset?token=$token&email={$notifiable->getEmailForPasswordReset()}";
         });
         Comment::observe(CommentObserver::class);
+        Room::observe(RoomObserver::class);
     }
 }
