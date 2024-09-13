@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DiscussionRequest;
 use App\Models\Discussion;
+use Illuminate\Support\Facades\Gate;
 
 class DiscussionController extends Controller
 {    
@@ -37,7 +38,7 @@ class DiscussionController extends Controller
 
     public function show(Discussion $discussion)
     {
-        $this->authorize('view', $discussion);
+        Gate::authorize('view', $discussion);
 
         $discussion->load('topics', 'members');
 
@@ -46,7 +47,7 @@ class DiscussionController extends Controller
 
     public function update(DiscussionRequest $request, Discussion $discussion)
     {
-        $this->authorize('update', $discussion);
+        Gate::authorize('update', $discussion);
 
         $data = $request->validated();
 
@@ -61,7 +62,7 @@ class DiscussionController extends Controller
 
     public function destroy(Discussion $discussion)
     {
-        $this->authorize('delete', $discussion);
+        Gate::authorize('delete', $discussion);
 
         $discussion->delete();
         return response()->json(['message' => 'Discussion deleted successfully'], 200);
@@ -81,26 +82,5 @@ class DiscussionController extends Controller
         $discussion->load('members');
 
         return $discussion;
-    }
-
-    private function authorize(string $ability, Discussion $discussion): void
-    {
-        if ($discussion->is_public) {
-            return;
-        }
-
-        if ($discussion->author_id === $this->user->id) {
-            return;
-        }
-
-        if ($ability === 'view' && $discussion->members->contains($this->user)) {
-            return;
-        }
-
-        if ($ability === 'view') {
-            abort(404, 'Not found');
-        }
-
-        abort(403, 'Unauthorized');
     }
 }
