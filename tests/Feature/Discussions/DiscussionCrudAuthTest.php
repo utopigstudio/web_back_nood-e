@@ -139,7 +139,6 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->post('/api/v1/discussions', [
                 'title' => 'Discussion title',
-                'author_id' => $this->user->id
             ])
             ->assertCreated(201)
             ->assertJsonFragment([
@@ -155,7 +154,6 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/discussions/{$discussion->id}", [
                 'title' => 'Discussion title updated',
-                'author_id' => $this->user->id
             ])
             ->assertStatus(200)
             ->assertJsonFragment([
@@ -172,7 +170,6 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/discussions/{$discussion->id}", [
                 'title' => 'Discussion title updated',
-                'author_id' => $this->user->id
             ])
             ->assertStatus(403);
 
@@ -181,7 +178,6 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/discussions/{$discussion->id}", [
                 'title' => 'Discussion title updated',
-                'author_id' => $this->user->id
             ])
             ->assertStatus(403);
     }
@@ -195,7 +191,6 @@ class DiscussionCrudAuthTest extends TestCase
             ->authenticated()
             ->put("/api/v1/discussions/{$discussion->id}", [
                 'title' => 'Discussion title updated',
-                'author_id' => $this->user->id
             ])
             ->assertStatus(200);
     }
@@ -208,7 +203,6 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->post('/api/v1/discussions', [
                 'title' => 'Discussion title',
-                'author_id' => $this->user->id,
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertCreated(201)
@@ -231,7 +225,6 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/discussions/{$discussion->id}", [
                 'title' => 'Discussion title updated',
-                'author_id' => $this->user->id,
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertStatus(200)
@@ -246,7 +239,6 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/discussions/{$discussion->id}", [
                 'title' => 'Discussion title updated 2',
-                'author_id' => $this->user->id,
                 'members' => [$user1->id]
             ])
             ->assertStatus(200)
