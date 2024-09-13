@@ -193,4 +193,23 @@ class CommentCrudAuthTest extends TestCase
                 ['message' => 'Comment deleted successfully']
             );
     }
+
+    public function test_topic_cannot_be_deleted_if_it_has_comments(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+        $comment = $this->createComment($topic, $this->user);
+
+        // expect exception
+        $this->expectException(\Exception::class);
+
+        $topic->delete();
+
+        $this->assertDatabaseHas('topics', [
+            'id' => $topic->id
+        ]);
+
+    }
+
+
 }
