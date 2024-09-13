@@ -8,7 +8,7 @@ abstract class Policy
 {
     public function before(User $user)
     {
-        if ($user->role->name === 'superadmin') {
+        if ($user->isSuperAdmin()) {
             return true;
         }
     }

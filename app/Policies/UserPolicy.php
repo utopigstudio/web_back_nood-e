@@ -8,22 +8,22 @@ class UserPolicy extends Policy
 {
     public function massInvite(User $authUser)
     {
-        return $authUser->role->name === 'admin';
+        return $authUser->isAdmin();
     }
 
     public function create(User $authUser)
     {
-        return $authUser->role->name === 'admin';
+        return $authUser->isAdmin();
     }
 
     public function update(User $authUser, User $user)
     {
-        return $authUser->id === $user->id;
+        return $user->id === $authUser->id;
     }
 
     public function delete(User $authUser, User $user)
     {
-        return $authUser->role->name === 'admin';
+        return $authUser->isAdmin();
     }
 
 }

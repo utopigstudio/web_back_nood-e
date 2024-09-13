@@ -128,4 +128,14 @@ class User extends Authenticatable implements JWTSubject
         
         return config('app.frontend_url') . '/invitation?user_id=' . $userId . '&signature=' . $signature;
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role_id === Role::ADMIN;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role_id === Role::SUPERADMIN;
+    }
 }

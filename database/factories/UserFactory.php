@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserFactory extends Factory
@@ -19,7 +20,7 @@ class UserFactory extends Factory
             'organization_id' => rand(1, 10),
             'image' => fake()->imageUrl(),
             'invite_accepted_at' => fake()->dateTime(),
-            'role_id' => 1,
+            'role_id' => Role::USER,
         ];
     }
 }

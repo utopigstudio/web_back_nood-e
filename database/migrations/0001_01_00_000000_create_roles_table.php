@@ -19,15 +19,15 @@ return new class extends Migration
         });
 
         Role::create([
-            'name' => 'user',
+            'name' => 'Usuari',
         ]);
 
         Role::create([
-            'name' => 'admin',
+            'name' => 'Administrador',
         ]);
 
         Role::create([
-            'name' => 'superadmin',
+            'name' => 'Superadmin',
         ]);
     }
 
