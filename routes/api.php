@@ -7,6 +7,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
@@ -67,5 +68,7 @@ Route::middleware('api')->group(function () {
         Route::post('/users/mass-invite', [UserController::class, 'massInvite']);
         Route::put('/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+        Route::get('/roles', [RoleController::class, 'index']);
     });
 });
