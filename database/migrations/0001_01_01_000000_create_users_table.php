@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->text('description')->nullable();
             $table->foreignId('organization_id')->nullable()->onDelete('set null');
+            $table->foreignId('role_id')->default(1)->onDelete('restrict');
             $table->string('image')->nullable();
             $table->string('reset_password')->nullable();
             $table->timestamp('invite_accepted_at')->nullable();

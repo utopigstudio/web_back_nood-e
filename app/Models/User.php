@@ -28,6 +28,7 @@ class User extends Authenticatable implements JWTSubject
         'permissions',
         'role_id',
         'organization_id',
+        'role_id',
         'image',
         'invite_accepted_at',
     ];
@@ -62,9 +63,9 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function roles(): BelongsToMany
+    public function role(): BelongsTo
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsTo(Role::class);
     }
 
     public function eventsAuthored(): HasMany

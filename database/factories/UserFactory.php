@@ -19,6 +19,7 @@ class UserFactory extends Factory
             'organization_id' => rand(1, 10),
             'image' => fake()->imageUrl(),
             'invite_accepted_at' => fake()->dateTime(),
+            'role_id' => 1,
         ];
     }
 }

@@ -21,6 +21,7 @@ class AdminUserSeeder extends Seeder
             'email' => 'admin@test.com',
             'password' => bcrypt('password'),
             'invite_accepted_at' => now(),
+            'role_id' => 2,
         ]);
 
         User::create([
@@ -28,10 +29,7 @@ class AdminUserSeeder extends Seeder
             'email' => 'superadmin@test.com',
             'password' => bcrypt('password'),
             'invite_accepted_at' => now(),
+            'role_id' => 3,
         ]);
-
-        //Add roles to admin and superadmin users
-        User::find(11)->roles()->attach(2);
-        User::find(12)->roles()->attach(3);
     }
 }
