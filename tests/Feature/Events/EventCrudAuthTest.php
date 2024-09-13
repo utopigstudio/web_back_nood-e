@@ -19,8 +19,8 @@ class EventCrudAuthTest extends TestCase
         return Event::create([
             'title' => 'Event title',
             'description' => 'Event description',
-            'start' => '2024-09-13 12:00:00',
-            'end' => '2024-09-13 14:00:00',
+            'start' => now()->setHour(12)->setMinute(0)->setSecond(0),
+            'end' => now()->setHour(14)->setMinute(0)->setSecond(0),
             'meet_link' => 'https://meet.google.com/abc-def-ghi',
             'room_id' => $room->id,
             'author_id' => $user->id,
@@ -67,6 +67,64 @@ class EventCrudAuthTest extends TestCase
             ]);
     }
 
+    public function test_auth_user_can_list_owned_and_member_events(): void
+    {
+        $room = $this->createRoom();
+        $event1 = $this->createEvent($room, $this->user);
+
+        $user1 = User::factory()->create();
+        $event2 = $this->createEvent($room, $user1);
+
+        $event5 = $this->createEvent($room, $user1);
+        $event5->members()->attach($this->user);
+
+        $this->authenticated()
+            ->get('/api/v1/events')
+            ->assertStatus(200)
+            ->assertJsonCount(2);
+    }
+
+    public function test_list_events_date_filter(): void
+    {
+        $room = $this->createRoom();
+        $event1 = $this->createEvent($room, $this->user);
+        $event1->update(['start' => now()->subMonth()]);
+        $event1->update(['end' => now()->subMonth()->addHour()]);
+
+        $event2 = $this->createEvent($room, $this->user);
+
+        $event3 = $this->createEvent($room, $this->user);
+        $event3->update(['start' => now()->addMonth()]);
+        $event3->update(['end' => now()->addMonth()->addHour()]);
+
+        $this->authenticated()
+            ->get('/api/v1/events')
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJson(fn (AssertableJson $json) => $json
+                ->where('0.id', $event2->id)
+                ->etc()
+            );
+
+        $this->authenticated()
+            ->get('/api/v1/events?start=' . now()->subMonth()->startOfMonth()->format('Y-m-d'))
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJson(fn (AssertableJson $json) => $json
+                ->where('0.id', $event1->id)
+                ->etc()
+            );
+
+        $this->authenticated()
+            ->get('/api/v1/events?start=' . now()->addMonth()->startOfMonth()->format('Y-m-d') . '&end=' . now()->addMonth()->endofMonth()->format('Y-m-d'))
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJson(fn (AssertableJson $json) => $json
+                ->where('0.id', $event3->id)
+                ->etc()
+            );
+    }
+
     public function test_auth_user_can_get_event_by_id(): void
     {
         $room = $this->createRoom();
@@ -78,8 +136,8 @@ class EventCrudAuthTest extends TestCase
             ->assertJson([
                 'title' => 'Event title',
                 'description' => 'Event description',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'meet_link' => 'https://meet.google.com/abc-def-ghi',
                 'room_id' => $room->id,
                 'author_id' => $this->user->id
@@ -91,14 +149,14 @@ class EventCrudAuthTest extends TestCase
         $this->authenticated()
             ->post('/api/v1/events', [
                 'title' => 'Event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
             ])
             ->assertCreated()
             ->assertJson([
                 'title' => 'Event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'author_id' => $this->user->id
             ]);
     }
@@ -111,13 +169,13 @@ class EventCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/events/{$event->id}", [
                 'title' => 'Updated event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
             ])->assertStatus(200)
             ->assertJson([
                 'title' => 'Updated event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'author_id' => $this->user->id
             ]);
     }
@@ -132,8 +190,8 @@ class EventCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/events/{$event->id}", [
                 'title' => 'Updated event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
             ])
             ->assertStatus(403);
     }
@@ -149,14 +207,14 @@ class EventCrudAuthTest extends TestCase
             ->authenticated()
             ->put("/api/v1/events/{$event->id}", [
                 'title' => 'Updated event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
             ])
             ->assertStatus(200)
             ->assertJson([
                 'title' => 'Updated event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'author_id' => $user->id
             ]);
     }
@@ -170,8 +228,8 @@ class EventCrudAuthTest extends TestCase
         $this->authenticated()
             ->post('/api/v1/events', [
                 'title' => 'Event title',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertCreated(201)
@@ -195,8 +253,8 @@ class EventCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/events/{$event->id}", [
                 'title' => 'Event title updated',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'members' => [$user1->id, $user2->id]
             ])
             ->assertStatus(200)
@@ -212,8 +270,8 @@ class EventCrudAuthTest extends TestCase
         $this->authenticated()
             ->put("/api/v1/events/{$event->id}", [
                 'title' => 'Event title updated',
-                'start' => '2024-09-13 12:00:00',
-                'end' => '2024-09-13 14:00:00',
+                'start' => now()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
+                'end' => now()->setHour(14)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'members' => [$user1->id]
             ])
             ->assertStatus(200)
