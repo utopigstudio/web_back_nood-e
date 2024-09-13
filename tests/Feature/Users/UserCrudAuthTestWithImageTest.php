@@ -50,8 +50,10 @@ class UserCrudAuthTestWithImageTest extends TestCase
     {
         Storage::fake('public');
 
-        $user = $this->createUserWithImage($this->user);
-        $oldImage = $user->image;
+        $this->user->image = "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==";
+        $this->user->save();
+
+        $oldImage = $this->user->image;
 
         $data = [
             'name' => 'Updated user name', 
@@ -60,7 +62,7 @@ class UserCrudAuthTestWithImageTest extends TestCase
         ];
 
         $this->authenticated()
-            ->put('/api/v1/users/'.$user->id, $data)
+            ->put('/api/v1/users/'.$this->user->id, $data)
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) =>
                 $json->where('image', fn ($image) => str($image)->contains('user-'))
@@ -75,13 +77,14 @@ class UserCrudAuthTestWithImageTest extends TestCase
         $storage->assertMissing($oldImage);
     }
 
-    public function test_auth_user_can_delete_user_with_image(): void
+    public function test_auth_admin_can_delete_user_with_image(): void
     {
         Storage::fake('public');
 
         $user = $this->createUserWithImage($this->user);
 
-        $this->authenticated()
+        $this->userRoleAdmin()
+            ->authenticated()
             ->delete('/api/v1/users/'.$user->id)
             ->assertStatus(200)
             ->assertJson(

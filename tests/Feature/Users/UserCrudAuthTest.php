@@ -85,11 +85,21 @@ class UserCrudAuthTest extends TestCase
         ]);
     }
 
-    public function test_auth_user_can_mass_invite_users(): void
+    public function test_auth_user_cannot_mass_invite_users(): void
     {
         $emails = ['testinvite1@test.com', 'testinvite2@test.com'];
 
         $this->authenticated()
+            ->post('/api/v1/users/mass-invite', ['emails' => $emails])
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_mass_invite_users(): void
+    {
+        $emails = ['testinvite1@test.com', 'testinvite2@test.com'];
+
+        $this->userRoleAdmin()
+            ->authenticated()
             ->post('/api/v1/users/mass-invite', ['emails' => $emails])
             ->assertCreated(201)
             ->assertJson([
@@ -97,7 +107,65 @@ class UserCrudAuthTest extends TestCase
         ]);
     }
 
-    public function test_auth_user_can_update_user_only_required_fields(): void
+    public function test_auth_superadmin_can_mass_invite_users(): void
+    {
+        $emails = ['testinvite1@test.com', 'testinvite2@test.com'];
+
+        $this->userRoleSuperAdmin()
+            ->authenticated()
+            ->post('/api/v1/users/mass-invite', ['emails' => $emails])
+            ->assertCreated(201)
+            ->assertJson([
+                'message' => 'Invitations sent successfully',
+        ]);
+    }
+
+    public function test_auth_user_can_update_own_account_only_required_fields(): void
+    {
+        $data = [
+            'name' => 'Updated user name', 
+            'email' => 'updated@test.com',
+        ];
+
+        $this->authenticated()
+            ->put('/api/v1/users/'.$this->user->id, $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'Updated user name', 
+                'email' => 'updated@test.com',
+            ]);
+    }
+
+    public function test_auth_user_cannot_update_other_users(): void
+    {
+        $user = $this->createUser();
+
+        $data = [
+            'name' => 'Updated user name', 
+            'email' => 'update@test.com',
+        ];
+
+        $this->authenticated()
+            ->put('/api/v1/users/'.$user->id, $data)
+            ->assertStatus(403);
+    }
+
+    public function test_admin_cannot_update_other_users(): void
+    {
+        $user = $this->createUser();
+
+        $data = [
+            'name' => 'Updated user name', 
+            'email' => 'update@test.com',
+        ];
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put('/api/v1/users/'.$user->id, $data)
+            ->assertStatus(403);
+    }
+
+    public function test_superadmin_can_update_any_user(): void
     {
         $user = $this->createUser();
 
@@ -105,8 +173,9 @@ class UserCrudAuthTest extends TestCase
             'name' => 'Updated user name', 
             'email' => 'updated@test.com',
         ];
-
-        $this->authenticated()
+        
+        $this->userRoleSuperAdmin()
+            ->authenticated()
             ->put('/api/v1/users/'.$user->id, $data)
             ->assertStatus(200)
             ->assertJsonFragment([
@@ -115,15 +184,30 @@ class UserCrudAuthTest extends TestCase
             ]);
     }
 
-    public function test_auth_user_can_delete_user(): void
+    public function test_auth_user_cannot_delete_users(): void
     {
         $user = $this->createUser();
 
         $this->authenticated()
+            ->delete('/api/v1/users/'.$user->id)
+            ->assertStatus(403);
+
+        $this->authenticated()
+            ->delete('/api/v1/users/'.$this->user->id)
+            ->assertStatus(403);
+    }
+
+    public function test_admin_can_delete_user(): void
+    {
+        $user = $this->createUser();
+
+        $this->userRoleAdmin()
+            ->authenticated()
             ->delete('/api/v1/users/'.$user->id)
             ->assertStatus(200)
             ->assertJson(
                 ['message' => 'User deactivated successfully']
             );
     }
+
 }

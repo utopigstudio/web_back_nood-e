@@ -5,22 +5,15 @@ namespace App\Policies;
 use App\Models\Discussion;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-class DiscussionPolicy
-{
-    /**
-     * Create a new policy instance.
-     */
-    public function __construct()
-    {
-        //
-    }
 
-    public function view(User $user, Discussion $discussion)
+class DiscussionPolicy extends Policy
+{
+    public function view(User $authUser, Discussion $discussion)
     {
         if (
                 $discussion->is_public ||
-                $discussion->author_id === $user->id ||
-                $discussion->members->contains($user)
+                $discussion->author_id === $authUser->id ||
+                $discussion->members->contains($authUser)
         ) {
             return Response::allow();
         } else {
@@ -28,13 +21,13 @@ class DiscussionPolicy
         }
     }
 
-    public function update(User $user, Discussion $discussion)
+    public function update(User $authUser, Discussion $discussion)
     {
-        return $discussion->author_id === $user->id;
+        return $discussion->author_id === $authUser->id;
     }
 
-    public function delete(User $user, Discussion $discussion)
+    public function delete(User $authUser, Discussion $discussion)
     {
-        return $discussion->author_id === $user->id;
+        return $discussion->author_id === $authUser->id;
     }
 }

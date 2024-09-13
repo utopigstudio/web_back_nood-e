@@ -7,6 +7,7 @@ use App\Http\Requests\UserRequestCreate;
 use App\Http\Requests\UserRequestUpdate;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller 
 {
@@ -27,6 +28,8 @@ class UserController extends Controller
     
     public function massInvite(MassInviteRequest $request)
     {
+        Gate::authorize('massInvite', User::class);
+
         $data = $request->validated();
 
         $emails = $data['emails'];
@@ -68,6 +71,10 @@ class UserController extends Controller
 
     public function update(UserRequestUpdate $request, User $user)
     {
+        Gate::authorize('update', $user);
+
+        // TODO: cannot update user role if not superadmin
+
         $data = $request->validated();
         $user->update($data);
         return response()->json($user, 200);
@@ -75,6 +82,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        Gate::authorize('delete', $user);
+
         $user->delete();
 
         return response()->json(['message' => 'User deactivated successfully'], 200);

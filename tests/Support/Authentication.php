@@ -28,4 +28,20 @@ trait Authentication
             ]
         );
     }
+
+    public function userRoleAdmin()
+    {
+        $this->user->role_id = 2;
+        $this->user->save();
+
+        return $this;
+    }
+
+    public function userRoleSuperAdmin()
+    {
+        $this->user->role_id = 3;
+        $this->user->save();
+
+        return $this;
+    }
 }
