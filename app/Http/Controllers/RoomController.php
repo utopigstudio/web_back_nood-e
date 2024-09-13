@@ -4,13 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RoomRequest;
 use App\Models\Room;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rooms = Room::with('events')->get();
+        $dateStart = $request->get('start') ? new Carbon($request->get('start')) : now()->startOfMonth();
+        $dateEnd = $request->get('end') ? new Carbon($request->get('end')) : now()->addMonth()->startOfMonth();
+
+        //if dateEnd > dateStart + 1 month, set dateEnd to dateStart + 1 month
+        if ($dateEnd->diffInMonths($dateStart, true) > 1) {
+            $dateEnd = $dateStart->copy()->addMonth();
+        }
+
+        $rooms = Room::with(['events' => function($query) use ($dateStart, $dateEnd) {
+            $query->where('start', '>=', $dateStart)
+                ->where('end', '<', $dateEnd);
+        }])->get();
+
         return response()->json($rooms, 200);
     }
 
@@ -23,9 +37,21 @@ class RoomController extends Controller
         return response()->json($room, 201);
     }
 
-    public function show(Room $room)
+    public function show(Request $request, Room $room)
     {
-        $room->load('events');
+        $dateStart = $request->get('start') ? new Carbon($request->get('start')) : now()->startOfMonth();
+        $dateEnd = $request->get('end') ? new Carbon($request->get('end')) : now()->addMonth()->startOfMonth();
+
+        //if dateEnd > dateStart + 1 month, set dateEnd to dateStart + 1 month
+        if ($dateEnd->diffInMonths($dateStart, true) > 1) {
+            $dateEnd = $dateStart->copy()->addMonth();
+        }
+
+        $room->load(['events' => function($query) use ($dateStart, $dateEnd) {
+            $query->where('start', '>=', $dateStart)
+                ->where('end', '<', $dateEnd);
+        }]);
+
         return response()->json($room, 200);
     }
 
