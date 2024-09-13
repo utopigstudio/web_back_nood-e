@@ -6,6 +6,7 @@ use App\Http\Requests\CommentRequest;
 use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Topic;
+use Illuminate\Support\Facades\Gate;
 
 class CommentController extends Controller
 {
@@ -34,6 +35,8 @@ class CommentController extends Controller
             return response()->json(['error' => 'Comment not found in this topic'], 404);
         }
 
+        Gate::authorize('update', $comment);
+
         $data = $request->validated();
 
         $comment->update($data);
@@ -49,6 +52,8 @@ class CommentController extends Controller
         if ($comment->topic_id !== $topic->id) {
             return response()->json(['error' => 'Comment not found in this topic'], 404);
         }
+
+        Gate::authorize('delete', $comment);
 
         $comment->delete();
         return response()->json(['message' => 'Comment deleted successfully'], 200);

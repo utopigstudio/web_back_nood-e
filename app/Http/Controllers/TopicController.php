@@ -34,23 +34,24 @@ class TopicController extends Controller
 
     public function update(TopicRequest $request, Discussion $discussion, Topic $topic)
     {
-        Gate::authorize('update', $topic);
-
-        $data = $request->validated();
         if ($topic->discussion_id !== $discussion->id) {
             return response()->json(['error' => 'Topic not found in this discussion'], 404);
         }
+
+        Gate::authorize('update', $topic);
+
+        $data = $request->validated();
         $topic->update($data);
         return response()->json($topic, 200);
     }
 
     public function destroy(Discussion $discussion, Topic $topic)
     {
-        Gate::authorize('delete', $topic);
-
         if ($topic->discussion_id !== $discussion->id) {
             return response()->json(['error' => 'Topic not found in this discussion'], 404);
         }
+
+        Gate::authorize('delete', $topic);
 
         $topic->delete();
         return response()->json(['message' => 'Topic deleted successfully'], 200);

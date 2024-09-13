@@ -71,14 +71,13 @@ class CommentCrudAuthTest extends TestCase
             ]);
     }
 
-    public function test_create_comment_only_required_fields(): void
+    public function test_auth_user_can_create_comment_only_required_fields(): void
     {
         $discussion = $this->createDiscussion($this->user);
         $topic = $this->createTopic($discussion, $this->user);
 
         $data = [
             'content' => 'Comment content',
-            'author_id' => $this->user->id,
         ];
 
         $this->authenticated()
@@ -91,7 +90,7 @@ class CommentCrudAuthTest extends TestCase
             ]);
     }
 
-    public function test_update_comment_only_required_fields(): void
+    public function test_auth_user_can_update_comment_only_required_fields(): void
     {        
         $discussion = $this->createDiscussion($this->user);
         $topic = $this->createTopic($discussion, $this->user);
@@ -99,7 +98,6 @@ class CommentCrudAuthTest extends TestCase
 
         $data = [
             'content' => 'Update comment content',
-            'author_id' => $this->user->id,
         ];
 
         $this->authenticated()
@@ -112,13 +110,83 @@ class CommentCrudAuthTest extends TestCase
             ]);
     }
 
-    public function test_delete_comment(): void
+    public function test_auth_user_cannot_update_comment_not_authored(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+
+        $user = User::factory()->create();
+        $comment = $this->createComment($topic, $user);
+
+        $data = [
+            'content' => 'Update comment content',
+        ];
+
+        $this->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}", $data)
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_update_comment_not_authored(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+
+        $user = User::factory()->create();
+        $comment = $this->createComment($topic, $user);
+
+        $data = [
+            'content' => 'Update comment content',
+        ];
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}", $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'content' => 'Update comment content',
+                'author_id' => $user->id,
+                'topic_id' => $topic->id
+            ]);
+    }
+
+    public function test_auth_user_can_delete_comment(): void
     {
         $discussion = $this->createDiscussion($this->user);
         $topic = $this->createTopic($discussion, $this->user);
         $comment = $this->createComment($topic, $this->user);
 
         $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}")
+            ->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Comment deleted successfully']
+            );
+    }
+
+    public function test_auth_user_cannot_delete_comment_not_authored()
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+
+        $user = User::factory()->create();
+        $comment = $this->createComment($topic, $user);
+
+        $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}")
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_delete_comment_not_authored()
+    {
+        $discussion = $this->createDiscussion($this->user);
+        $topic = $this->createTopic($discussion, $this->user);
+
+        $user = User::factory()->create();
+        $comment = $this->createComment($topic, $user);
+
+        $this->userRoleAdmin()
+            ->authenticated()
             ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}/{$comment->id}")
             ->assertStatus(200)
             ->assertJson(
