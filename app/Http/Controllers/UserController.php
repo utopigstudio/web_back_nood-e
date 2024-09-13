@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MassInviteRequest;
-use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserRequestCreate;
+use App\Http\Requests\UserRequestUpdate;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,7 @@ class UserController extends Controller
         }
 
         $users = $users->whereNotNull('invite_accepted_at')
-            ->with('organization', 'roles')->orderBy('name')->get()->values();
+            ->with('organization')->orderBy('name')->get()->values();
         return response()->json($users);
     }
     
@@ -47,7 +48,7 @@ class UserController extends Controller
         return response()->json(['message' => 'Invitations sent successfully'], 201);
     }
 
-    public function store(UserRequest $request)
+    public function store(UserRequestCreate $request)
     {
         $data = $request->validated();
         $user = User::create($data);
@@ -65,7 +66,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function update(UserRequest $request, User $user)
+    public function update(UserRequestUpdate $request, User $user)
     {
         $data = $request->validated();
         $user->update($data);
