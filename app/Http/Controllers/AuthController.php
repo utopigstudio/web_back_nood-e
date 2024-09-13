@@ -7,18 +7,9 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\SetPasswordRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\JWTGuard;
 
 class AuthController extends Controller
 {
-    /** @var JWTGuard */
-    private $auth;
-
-    public function __construct()
-    {
-        $this->auth = auth();
-    }
-
     public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');

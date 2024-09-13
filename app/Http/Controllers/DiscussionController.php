@@ -6,18 +6,7 @@ use App\Http\Requests\DiscussionRequest;
 use App\Models\Discussion;
 
 class DiscussionController extends Controller
-{
-    /** @var JWTGuard */
-    private $auth;
-    /** @var User */
-    private $user;
-
-    public function __construct()
-    {
-        $this->auth = auth();
-        $this->user = $this->auth->user();
-    }
-    
+{    
     public function index()
     {
         $discussions = Discussion::where('is_public', true)->orWhere(
