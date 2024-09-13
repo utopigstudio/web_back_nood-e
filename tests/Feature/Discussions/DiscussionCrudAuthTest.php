@@ -123,6 +123,17 @@ class DiscussionCrudAuthTest extends TestCase
             ->assertStatus(200);
     }
 
+    public function test_auth_admin_can_get_discussion_not_owned(): void
+    {
+        $user = User::factory()->create();
+        $discussion = $this->createDiscussion($user);
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->get("/api/v1/discussions/{$discussion->id}")
+            ->assertStatus(200);
+    }
+
     public function test_auth_user_can_create_discussion_only_required_fields(): void
     {
         $this->authenticated()
@@ -173,6 +184,20 @@ class DiscussionCrudAuthTest extends TestCase
                 'author_id' => $this->user->id
             ])
             ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_update_discussion_not_owned(): void
+    {
+        $user = User::factory()->create();
+        $discussion = $this->createDiscussion($user);
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}", [
+                'title' => 'Discussion title updated',
+                'author_id' => $this->user->id
+            ])
+            ->assertStatus(200);
     }
 
     public function test_auth_user_can_create_discussion_with_members(): void
@@ -258,5 +283,16 @@ class DiscussionCrudAuthTest extends TestCase
         $this->authenticated()
             ->delete("/api/v1/discussions/{$discussion->id}")
             ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_delete_discussion_not_owned(): void
+    {
+        $user = User::factory()->create();
+        $discussion = $this->createDiscussion($user);
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}")
+            ->assertStatus(200);
     }
 }

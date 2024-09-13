@@ -12,6 +12,7 @@ class DiscussionPolicy extends Policy
     {
         if (
                 $discussion->is_public ||
+                $authUser->isAdmin() ||
                 $discussion->author_id === $authUser->id ||
                 $discussion->members->contains($authUser)
         ) {
@@ -23,11 +24,11 @@ class DiscussionPolicy extends Policy
 
     public function update(User $authUser, Discussion $discussion)
     {
-        return $discussion->author_id === $authUser->id;
+        return $discussion->author_id === $authUser->id || $authUser->isAdmin();
     }
 
     public function delete(User $authUser, Discussion $discussion)
     {
-        return $discussion->author_id === $authUser->id;
+        return $discussion->author_id === $authUser->id || $authUser->isAdmin();
     }
 }
