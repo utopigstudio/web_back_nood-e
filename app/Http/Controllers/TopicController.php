@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TopicRequest;
 use App\Models\Discussion;
 use App\Models\Topic;
+use Illuminate\Support\Facades\Gate;
 
 class TopicController extends Controller
 {
@@ -33,6 +34,8 @@ class TopicController extends Controller
 
     public function update(TopicRequest $request, Discussion $discussion, Topic $topic)
     {
+        Gate::authorize('update', $topic);
+
         $data = $request->validated();
         if ($topic->discussion_id !== $discussion->id) {
             return response()->json(['error' => 'Topic not found in this discussion'], 404);
@@ -43,6 +46,8 @@ class TopicController extends Controller
 
     public function destroy(Discussion $discussion, Topic $topic)
     {
+        Gate::authorize('delete', $topic);
+
         if ($topic->discussion_id !== $discussion->id) {
             return response()->json(['error' => 'Topic not found in this discussion'], 404);
         }

@@ -87,7 +87,6 @@ class TopicCrudAuthTest extends TestCase
         $data = [
             'title' => 'Topic title',
             'content' => 'Topic content',
-            'author_id' => $this->user->id
         ];
 
         $this->authenticated()
@@ -109,7 +108,6 @@ class TopicCrudAuthTest extends TestCase
         $data = [
             'title' => 'Updated topic title',
             'content' => 'Updated topic content',
-            'author_id' => $this->user->id
         ];
 
         $this->authenticated()
@@ -131,12 +129,85 @@ class TopicCrudAuthTest extends TestCase
             ]);
     }
 
+    public function test_auth_user_cannot_update_topic_not_authored(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+
+        $user = User::factory()->create();
+
+        $topic = $this->createTopic($discussion, $user);
+
+        $data = [
+            'title' => 'Updated topic title',
+            'content' => 'Updated topic content',
+        ];
+
+        $this->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data)
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_update_topic_not_authored(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+
+        $user = User::factory()->create();
+
+        $topic = $this->createTopic($discussion, $user);
+
+        $data = [
+            'title' => 'Updated topic title',
+            'content' => 'Updated topic content',
+        ];
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put("/api/v1/discussions/{$discussion->id}/{$topic->id}", $data)
+            ->assertStatus(200)
+            ->assertJson([
+                'title' => 'Updated topic title',
+                'content' => 'Updated topic content',
+                'discussion_id' => $discussion->id,
+                'author_id' => $user->id
+            ]);
+    }
+
     public function test_auth_user_can_delete_topic(): void
     {
         $discussion = $this->createDiscussion($this->user);
         $topic = $this->createTopic($discussion, $this->user);
 
         $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}")
+            ->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Topic deleted successfully']
+            );
+    }
+
+    public function test_auth_user_cannot_delete_topic_not_authored(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+
+        $user = User::factory()->create();
+
+        $topic = $this->createTopic($discussion, $user);
+
+        $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}")
+            ->assertStatus(403);
+    }
+
+    public function test_auth_admin_can_delete_topic_not_authored(): void
+    {
+        $discussion = $this->createDiscussion($this->user);
+
+        $user = User::factory()->create();
+
+        $topic = $this->createTopic($discussion, $user);
+
+        $this->userRoleAdmin()
+            ->authenticated()
             ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}")
             ->assertStatus(200)
             ->assertJson(
