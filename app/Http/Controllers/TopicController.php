@@ -11,6 +11,7 @@ class TopicController extends Controller
     public function store(TopicRequest $request, Discussion $discussion, Topic $topic)
     {
         $data = $request->validated();
+        $data['author_id'] = $this->user->id;
         $data['discussion_id'] = $discussion->id;
         $data['last_update'] = now();
 

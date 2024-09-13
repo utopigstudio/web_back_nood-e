@@ -16,6 +16,7 @@ class CommentController extends Controller
         }
 
         $data = $request->validated();
+        $data['author_id'] = $this->user->id;
         $data['topic_id'] = $topic->id;
 
         $comment = Comment::create($data);

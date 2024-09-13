@@ -18,6 +18,8 @@ class EventController extends Controller
     {
         $data = $request->validated();
 
+        $data['author_id'] = $this->user->id;
+
         $members = $this->getMembersFromData($data);
 
         $event = Event::create($data);

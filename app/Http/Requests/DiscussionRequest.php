@@ -26,7 +26,6 @@ class DiscussionRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'author_id' => 'required|integer|exists:users,id',
             'is_public' => 'boolean',
             'members' => 'nullable|array', // TODO: Add validation for members
         ];

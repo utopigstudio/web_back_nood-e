@@ -27,7 +27,6 @@ class EventRequest extends FormRequest
             'title' => 'required|string|max:255',
             'start' => 'required|date_format:Y-m-d H:i:s',
             'end' => 'required|date_format:Y-m-d H:i:s',
-            'author_id' => 'required|exists:users,id',
             'description' => 'nullable|string',
             'room_id' => 'nullable|exists:rooms,id',
             'meet_link' => 'nullable|string',

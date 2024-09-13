@@ -24,6 +24,8 @@ class DiscussionController extends Controller
     {
         $data = $request->validated();
 
+        $data['author_id'] = $this->user->id;
+
         $members = $this->getMembersFromData($data);
 
         $discussion = Discussion::create($data);
