@@ -47,9 +47,10 @@ class InvitationTest extends TestCase
     {
         $user = $this->createUser();
 
-        $url = URL::signedRoute('invitation', $user);
+        $url = URL::signedRoute('invitation', $user, null, false);
+        $url = url($url);
 
-        $this->get($url)
+        $this->post($url)
             ->assertStatus(200)
             ->assertJsonStructure([
                 'access_token',
@@ -62,10 +63,11 @@ class InvitationTest extends TestCase
     {
         $user = $this->createUser();
 
-        $url = URL::signedRoute('invitation', $user, -1);
+        $url = URL::signedRoute('invitation', $user, -1, false);
+        $url = url($url);
 
-        $this->get($url)
+        $this->post($url)
             ->assertStatus(401)
-            ->assertJson(['message' => 'Expired invitation']);
+            ->assertJson(['message' => 'Invalid invitation']);
     } 
 }

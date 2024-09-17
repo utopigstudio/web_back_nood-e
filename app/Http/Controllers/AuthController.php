@@ -63,8 +63,12 @@ class AuthController extends Controller
     {
         $user = User::findOrFail($user->id);
 
-        if (!request()->hasValidSignature()) {
-            return response()->json(['message' => 'Expired invitation'], 401);
+        if ($user->invite_accepted_at) {
+            return response()->json(['message' => 'Invitation already accepted'], 401);
+        }
+
+        if (!request()->hasValidSignature(false)) {
+            return response()->json(['message' => 'Invalid invitation'], 401);
         }
         
         $user->update([
