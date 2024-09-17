@@ -42,4 +42,9 @@ class Room extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    public function scopeIsAvailable($query)
+    {
+        return $query->where('is_available', true);
+    }
 }

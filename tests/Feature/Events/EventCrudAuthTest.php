@@ -219,6 +219,37 @@ class EventCrudAuthTest extends TestCase
         //     );
     }
 
+    public function test_auth_user_can_get_free_rooms(): void
+    {
+        $room1 = $this->createRoom($this->user);
+        $room2 = $this->createRoom($this->user);
+        $room2->update(['is_available' => false]);
+        $room3 = $this->createRoom($this->user);
+        $event = $this->createEvent($room3, $this->user);
+        $event->update(['start' => now()->addDay()->setHour(12)->setMinute(0)->setSecond(0)]);
+        $event->update(['end' => now()->addDay()->setHour(13)->setMinute(0)->setSecond(0)]);
+        $room4 = $this->createRoom($this->user);
+        $event = $this->createEvent($room4, $this->user);
+        $event->update(['start' => now()->addDay()->setHour(13)->setMinute(0)->setSecond(0)]);
+        $event->update(['end' => now()->addDay()->setHour(14)->setMinute(0)->setSecond(0)]);
+
+        $this->authenticated()
+            ->get('/api/v1/rooms/free?start='.now()->addDay()->setHour(12)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s')
+                .'&end=' . now()->addDay()->setHour(13)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'))
+            ->assertStatus(200)
+            ->assertJsonIsArray()
+            ->assertJsonCount(2)
+            ->assertJsonStructure([
+                '*' => [
+                    'name',
+                    'description',
+                    'image',
+                    'is_available',
+                    'updated_at',
+                    'created_at',
+            ]]);
+    }
+
     public function test_auth_user_can_get_event_by_id(): void
     {
         $room = $this->createRoom();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AvailableRoomRequest;
 use App\Http\Requests\RoomRequest;
 use App\Models\Room;
 use Carbon\Carbon;
@@ -20,10 +21,31 @@ class RoomController extends Controller
             $dateEnd = $dateStart->copy()->addMonth();
         }
 
-        $rooms = Room::with(['events' => function($query) use ($dateStart, $dateEnd) {
+        $rooms = Room::query();
+
+        // by default, show only available rooms
+        if (!isset($request->show_unavailable) && $request->show_unavailable == 0) {
+            $rooms = $rooms->isAvailable();
+        }
+
+        $rooms = $rooms->with(['events' => function($query) use ($dateStart, $dateEnd) {
             $query->where('start', '>=', $dateStart)
                 ->where('end', '<', $dateEnd);
         }])->get();
+
+        return response()->json($rooms, 200);
+    }
+
+    public function showFree(AvailableRoomRequest $request)
+    {
+        $data = $request->validated();
+        $dateStart = new Carbon($data['start']);
+        $dateEnd = new Carbon($data['end']);
+
+        $rooms = Room::isAvailable()->whereDoesntHave('events', function($query) use ($dateStart, $dateEnd) {
+            $query->where('start', '<', $dateEnd)
+                ->where('end', '>', $dateStart);
+        })->get();
 
         return response()->json($rooms, 200);
     }

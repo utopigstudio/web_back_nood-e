@@ -28,9 +28,11 @@ class RoomCrudAuthTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function test_auth_user_can_get_all_rooms(): void
+    public function test_auth_user_can_get_all_available_rooms(): void
     {
-        $this->createRoom($this->user);
+        $room1 = $this->createRoom($this->user);
+        $room2 = $this->createRoom($this->user);
+        $room2->update(['is_available' => false]);
 
         $this->authenticated()
             ->get('/api/v1/rooms')
