@@ -22,7 +22,7 @@ class UserController extends Controller
         }
 
         $users = $users->whereNotNull('invite_accepted_at')
-            ->with('organization')->orderBy('name')->get()->values();
+            ->with('organization', 'role')->orderBy('name')->get()->values();
         return response()->json($users);
     }
     
