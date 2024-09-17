@@ -454,6 +454,8 @@ class EventCrudAuthTest extends TestCase
             ->delete("/api/v1/rooms/{$room->id}")
             ->assertStatus(200)
             ->assertJson(['message' => 'Room deleted successfully']);
+
+        $this->assertNull((Event::find($event->id))->room_id);
     }
 
     public function test_room_cannot_be_deleted_if_it_has_future_events(): void

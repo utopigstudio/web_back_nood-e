@@ -17,7 +17,8 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'description' => fake()->sentence(),
             'password' => 'password',
-            'organization_id' => rand(1, 10),
+            'organization_id' => null,  // can't set organization_id here because organization_id
+                                        // is constrained by foreign key and organizations table is still empty
             'image' => fake()->imageUrl(),
             'invite_accepted_at' => fake()->dateTime(),
             'role_id' => Role::USER,

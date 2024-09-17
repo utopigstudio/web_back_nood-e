@@ -154,7 +154,7 @@ class OrganizationCrudAuthTest extends TestCase
             ->assertStatus(403);
     }
 
-    public function test_auth_user_can_delete_organization(): void
+    public function test_auth_superadmin_can_delete_organization(): void
     {
         $organization = $this->createOrganization($this->user);
 
@@ -165,5 +165,23 @@ class OrganizationCrudAuthTest extends TestCase
             ->assertJson(
                 ['message' => 'Organization deleted successfully']
             );
+    }
+
+    public function test_user_organization_id_is_nulled_when_organization_is_deleted(): void
+    {
+        $organization = $this->createOrganization($this->user);
+        $user = User::factory()->create();
+        $user->organization_id = $organization->id;
+        $user->save();
+
+        $this->userRoleSuperAdmin()
+            ->authenticated()
+            ->delete('/api/v1/organizations/'.$organization->id)
+            ->assertStatus(200)
+            ->assertJson(
+                ['message' => 'Organization deleted successfully']
+            );
+
+        $this->assertNull(User::find($user->id)->organization_id);
     }
 }

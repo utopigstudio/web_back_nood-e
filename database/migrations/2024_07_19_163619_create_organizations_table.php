@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('owner_id')->constrained('users')->onDelete('restrict');
             $table->timestamps();
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('organization_id')->nullable()->constrained()->onDelete('set null');
+        });
     }
 
     public function down(): void
