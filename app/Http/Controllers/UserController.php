@@ -102,4 +102,13 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deactivated successfully'], 200);
     }
+
+    public function restore(User $user)
+    {
+        Gate::authorize('restore', $user);
+
+        $user->restore();
+
+        return response()->json($user, 200);
+    }
 }

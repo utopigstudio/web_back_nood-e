@@ -26,4 +26,9 @@ class UserPolicy extends Policy
         return $authUser->isAdmin();
     }
 
+    public function restore(User $authUser, User $user)
+    {
+        return $authUser->isAdmin();
+    }
+
 }

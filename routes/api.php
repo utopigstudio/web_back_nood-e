@@ -68,6 +68,7 @@ Route::middleware('api')->group(function () {
         Route::post('/users', [UserController::class, 'store']);
         Route::post('/users/mass-invite', [UserController::class, 'massInvite']);
         Route::put('/users/{user}/basic', [UserController::class, 'updateBasicData']);
+        Route::put('/users/{trashed_user}/restore', [UserController::class, 'restore']);
         Route::put('/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
 

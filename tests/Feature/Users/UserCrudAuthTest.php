@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Authentication;
 use Tests\TestCase;
 
+use function PHPUnit\Framework\assertJson;
+
 class UserCrudAuthTest extends TestCase
 {
     use RefreshDatabase, Authentication;
@@ -226,6 +228,20 @@ class UserCrudAuthTest extends TestCase
             ->assertJson(
                 ['message' => 'User deactivated successfully']
             );
+    }
+
+    public function test_admin_can_restore_user(): void
+    {
+        $user = $this->createUser();
+        $user->delete();
+
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->put('/api/v1/users/'.$user->id.'/restore')
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'deleted_at' => null,
+            ]);
     }
 
 }
