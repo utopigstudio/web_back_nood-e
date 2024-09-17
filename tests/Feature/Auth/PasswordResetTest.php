@@ -33,8 +33,8 @@ class PasswordResetTest extends TestCase
             $this->post('/api/v1/auth/reset-password', [
                 'token' => $notification->token,
                 'email' => $this->user->email,
-                'password' => 'new password',
-                'password_confirmation' => 'new password',
+                'password' => 'newpassword',
+                'password_confirmation' => 'newpassword',
             ])->assertStatus(200);
 
             return true;
@@ -46,8 +46,8 @@ class PasswordResetTest extends TestCase
         $this->post('/api/v1/auth/reset-password', [
             'token' => 'invalid-token',
             'email' => $this->user->email,
-            'password' => 'new password',
-            'password_confirmation' => 'new password',
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
         ])->assertStatus(302);
     }
 }

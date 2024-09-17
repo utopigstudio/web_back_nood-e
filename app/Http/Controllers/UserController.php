@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MassInviteRequest;
+use App\Http\Requests\UserBasicDataUpdate;
 use App\Http\Requests\UserRequestCreate;
 use App\Http\Requests\UserRequestUpdate;
 use App\Models\User;
@@ -70,6 +71,16 @@ class UserController extends Controller
     {
         $user->load('role');
         return response()->json($user);
+    }
+
+    public function updateBasicData(UserBasicDataUpdate $request, User $user)
+    {
+        Gate::authorize('update', $user);
+
+        $data = $request->validated();
+        $user->update($data);
+
+        return response()->json($user, 200);
     }
 
     public function update(UserRequestUpdate $request, User $user)

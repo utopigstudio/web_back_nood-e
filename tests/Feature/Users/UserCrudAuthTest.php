@@ -137,6 +137,23 @@ class UserCrudAuthTest extends TestCase
             ]);
     }
 
+    public function test_auth_user_can_update_own_account_basic_data(): void
+    {
+        $data = [
+            'name' => 'Updated user name', 
+            'surname' => 'Updated user surname',
+            'password' => 'newpassword',
+        ];
+
+        $this->authenticated()
+            ->put('/api/v1/users/'.$this->user->id.'/basic', $data)
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'name' => 'Updated user name', 
+                'surname' => 'Updated user surname',
+            ]);
+    }
+
     public function test_auth_user_cannot_update_other_users(): void
     {
         $user = $this->createUser();
