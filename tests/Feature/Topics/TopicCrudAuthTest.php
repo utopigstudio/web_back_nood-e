@@ -220,16 +220,14 @@ class TopicCrudAuthTest extends TestCase
         $discussion = $this->createDiscussion($this->user);
         $topic = $this->createTopic($discussion, $this->user);
 
-        // expect exception
-        $this->expectException(\Exception::class);
-
-        $discussion->delete();
+        $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}")
+            ->assertStatus(409)
+            ->assertJson(['message' => 'Cannot delete discussion with topics']);
 
         $this->assertDatabaseHas('discussions', [
             'id' => $discussion->id
         ]);
-
     }
-
 
 }

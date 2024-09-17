@@ -54,6 +54,7 @@ class TopicController extends Controller
         Gate::authorize('delete', $topic);
 
         $topic->delete();
+
         return response()->json(['message' => 'Topic deleted successfully'], 200);
     }
 }

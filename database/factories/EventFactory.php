@@ -15,11 +15,14 @@ class EventFactory extends Factory
     
     public function definition()
     {
+        $start = fake()->dateTimeBetween($startDate = '-10 days', $endDate = '10 days', $timezone = null);
+        $end = (new \Carbon\Carbon($start))->addHours(rand(1, 5));
+
         return [
             'title' => fake()->name(),
             'description' => fake()->paragraph(),
-            'start' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '1 days', $timezone = null),
-            'end' => fake()->dateTimeBetween($startDate = '-1 days', $endDate = '7 days', $timezone = null),
+            'start' => $start,
+            'end' => $end,
             'meet_link' => fake()->url(),
             'room_id' => rand(1, 10),
             'author_id' => rand(1, 10), 

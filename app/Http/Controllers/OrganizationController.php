@@ -41,13 +41,9 @@ class OrganizationController extends Controller
     public function destroy(Organization $organization)
     {
         Gate::authorize('delete', $organization);
-
-        // TODO: move to observer (deleted event)
-        if ($organization->image) {
-            $organization->deleteImage($organization->image);
-        }
         
         $organization->delete();
+
         return response()->json(['message' => 'Organization deleted successfully'], 200);
     }
 }

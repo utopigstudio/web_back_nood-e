@@ -56,6 +56,7 @@ class CommentController extends Controller
         Gate::authorize('delete', $comment);
 
         $comment->delete();
+
         return response()->json(['message' => 'Comment deleted successfully'], 200);
     }
 }

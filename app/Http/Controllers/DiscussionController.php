@@ -65,6 +65,7 @@ class DiscussionController extends Controller
         Gate::authorize('delete', $discussion);
 
         $discussion->delete();
+
         return response()->json(['message' => 'Discussion deleted successfully'], 200);
     }
 

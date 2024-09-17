@@ -89,14 +89,9 @@ class RoomController extends Controller
     public function destroy(Room $room)
     {
         Gate::authorize('delete', $room);
-        // TODO: validate if the room can be deleted
-
-        // TODO: move to observer (deleted event)
-        if ($room->image) {
-            $room->deleteImage($room->image, 'local');
-        }
 
         $room->delete();
+
         return response()->json(['message' => 'Room deleted successfully'], 200);
     }
 }

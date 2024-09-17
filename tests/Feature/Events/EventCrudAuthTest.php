@@ -463,13 +463,15 @@ class EventCrudAuthTest extends TestCase
         $event->update(['start' => now()->addDay()]);
         $event->update(['end' => now()->addDay()->addHour()]);
 
-        // expect exception
-        $this->expectException(\Exception::class);
-
-        $room->delete();
+        $this->userRoleAdmin()
+            ->authenticated()
+            ->delete("/api/v1/rooms/{$room->id}")
+            ->assertStatus(409)
+            ->assertJson(['message' => 'Cannot delete room with future events']);
 
         $this->assertDatabaseHas('rooms', [
             'id' => $room->id
         ]);
     }
+
 }

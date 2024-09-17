@@ -200,16 +200,14 @@ class CommentCrudAuthTest extends TestCase
         $topic = $this->createTopic($discussion, $this->user);
         $comment = $this->createComment($topic, $this->user);
 
-        // expect exception
-        $this->expectException(\Exception::class);
-
-        $topic->delete();
+        $this->authenticated()
+            ->delete("/api/v1/discussions/{$discussion->id}/{$topic->id}")
+            ->assertStatus(409)
+            ->assertJson(['message' => 'Cannot delete topic with comments']);
 
         $this->assertDatabaseHas('topics', [
             'id' => $topic->id
         ]);
-
     }
-
 
 }
