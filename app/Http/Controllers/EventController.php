@@ -49,6 +49,7 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
+        $event->load('members');
         return response()->json($event);
     }
 
