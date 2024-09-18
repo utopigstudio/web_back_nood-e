@@ -69,7 +69,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('role');
+        $user->load('role', 'organization');
         return response()->json($user);
     }
 
