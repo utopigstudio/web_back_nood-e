@@ -73,6 +73,5 @@ Route::middleware('api')->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
         Route::get('/roles', [RoleController::class, 'index']);
-        Route::get('/roles/{id}', [RoleController::class, 'show']);
     });
 });

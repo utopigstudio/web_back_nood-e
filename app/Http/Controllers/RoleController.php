@@ -12,11 +12,4 @@ class RoleController extends Controller
 
         return response()->json($roles, 200);
     }
-
-    public function show($id)
-    {
-        $role = Role::find($id);
-
-        return response()->json($role, 200);
-    }
 }
