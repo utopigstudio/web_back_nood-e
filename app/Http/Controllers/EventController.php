@@ -22,14 +22,17 @@ class EventController extends Controller
         }
 
         $events = Event::where('start', '>=', $dateStart)
-            ->where('end', '<', $dateEnd)
-            ->where(function ($query) {
+            ->where('end', '<', $dateEnd);
+
+        if ($this->user->role_id === 1) {
+            $events->where(function ($query) {
                 $query->where('author_id', $this->user->id)->orWhereHas('members', function ($query) {
                     $query->where('user_id', $this->user->id);
+                });
             });
-        })->get();
+        }
 
-        return response()->json($events, 200);
+        return response()->json($events->get(), 200);
     }
 
     public function store(EventRequest $request): JsonResponse
