@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrganizationRequest;
 use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 
 class OrganizationController extends Controller
@@ -45,5 +46,13 @@ class OrganizationController extends Controller
         $organization->delete();
 
         return response()->json(['message' => 'Organization deleted successfully'], 200);
+    }
+
+    public function userDestroy(Organization $organization, User $user)
+    {
+        $user = User::where('organization_id', $organization->id)->findOrFail($user->id);
+        $user->update(['organization_id' => null]);
+
+        return response()->json(['message' => 'User removed successfully'], 200);
     }
 }

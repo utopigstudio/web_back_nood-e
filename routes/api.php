@@ -47,6 +47,7 @@ Route::middleware('api')->group(function () {
         
         Route::get('/organizations', [OrganizationController::class, 'index']);
         Route::get('/organizations/{organization}', [OrganizationController::class, 'show']);
+        Route::delete('/organizations/{organization}/{user}', [OrganizationController::class, 'userDestroy']);
         Route::post('/organizations', [OrganizationController::class, 'store']);
         Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
         Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
