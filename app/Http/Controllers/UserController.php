@@ -79,6 +79,7 @@ class UserController extends Controller
 
         $data = $request->validated();
         $user->update($data);
+        $user->load('role', 'organization');
 
         return response()->json($user, 200);
     }
@@ -91,6 +92,7 @@ class UserController extends Controller
 
         $data = $request->validated();
         $user->update($data);
+        $user->load('role', 'organization');
         return response()->json($user, 200);
     }
 
