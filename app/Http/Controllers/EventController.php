@@ -16,8 +16,8 @@ class EventController extends Controller
         $dateStart = $request->get('start') ? new Carbon($request->get('start')) : now()->startOfMonth();
         $dateEnd = $request->get('end') ? new Carbon($request->get('end')) : now()->addMonth()->startOfMonth();
 
-        //if dateEnd > dateStart + 1 month, set dateEnd to dateStart + 1 month
-        if ($dateEnd->diffInMonths($dateStart, true) > 1) {
+        //if dateEnd > dateStart + 2 months, set dateEnd to dateStart + 2 months
+        if ($dateEnd->diffInMonths($dateStart, true) > 2) {
             $dateEnd = $dateStart->copy()->addMonth();
         }
 
