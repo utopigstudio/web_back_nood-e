@@ -18,7 +18,7 @@ class EventController extends Controller
 
         //if dateEnd > dateStart + 2 months, set dateEnd to dateStart + 2 months
         if ($dateEnd->diffInMonths($dateStart, true) > 2) {
-            $dateEnd = $dateStart->copy()->addMonth();
+            $dateEnd = $dateStart->copy()->addMonths(2);
         }
 
         $events = Event::where('start', '>=', $dateStart)
