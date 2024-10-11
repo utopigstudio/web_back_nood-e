@@ -25,9 +25,11 @@ class UserInviteNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->greeting('Hola!')
             ->line('Has estat convidat com a col·laborador.')
             ->action('Accepta la invitació', $this->url)
-            ->line('Gràcies per utilitzar la nostra aplicació!');
+            ->line('Gràcies per utilitzar la nostra aplicació!')
+            ->salutation('Salutacions,<br>'.config('app.name'));
     }
 
     public function toArray($notifiable)
