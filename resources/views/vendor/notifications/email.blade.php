@@ -4,7 +4,7 @@
 # {{ $greeting }}
 @else
 @if ($level === 'error')
-# @lang('Whoops!')
+# @lang('Oops!')
 @else
 # Hola!
 @endif
@@ -39,20 +39,15 @@
 @if (! empty($salutation))
 {{ $salutation }}
 @else
-@lang('Salutacions'),<br>
+Salutacions,<br>
 {{ config('app.name') }}
 @endif
 
 {{-- Subcopy --}}
 @isset($actionText)
 <x-slot:subcopy>
-@lang(
-    "Si tens problemes per fer clic al botó \":actionText\", copia i enganxa l'URL següent\n".
-    'al teu navegador web:',
-    [
-        'actionText' => $actionText,
-    ]
-) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
+Si tens problemes per fer clic al botó {{ $actionText }}, copia i enganxa l'URL següent al teu navegador web:,
+<span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
 </x-slot:subcopy>
 @endisset
 </x-mail::message>

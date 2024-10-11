@@ -25,8 +25,9 @@ class UserInviteNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->line('Has estat convidat com a col·laborador.')
-            ->action('Accepta la invitació', $this->url)
+            ->subject('Has estat convidada a ser col·laboradora a Nood-e')
+            ->line('Has estat convidada a ser col·laboradora a Nood-e.')
+            ->action('Acceptar la invitació', $this->url)
             ->line('Gràcies per utilitzar la nostra aplicació!');
     }
 
