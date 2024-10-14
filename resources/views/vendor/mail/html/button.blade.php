@@ -1,7 +1,7 @@
 @props([
     'url',
     'color' => 'primary',
-    'align' => 'left',
+    'align' => 'center',
 ])
 <table class="action" align="{{ $align }}" width="100%" cellpadding="0" cellspacing="0" role="presentation">
     <tr>
@@ -12,7 +12,7 @@
                         <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                             <tr>
                                 <td>
-                                    <a href="{{ $url }}" class="button" target="_blank" rel="noopener"
+                                    <a href="{{ $url }}" class="button button-{{ $color }}" target="_blank" rel="noopener"
                                         style="
                                             border-radius: 36px;
                                             border: 1px solid rgba(190, 192, 245);
